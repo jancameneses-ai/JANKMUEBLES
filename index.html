@@ -5264,11 +5264,13 @@ function showTemplateForm(tpl){
      (Consola de Firebase → ⚙ Configuración del proyecto → Tus apps → Web).
 ============================================================ */
 const FIREBASE_CONFIG = {
-  apiKey: "",
-  authDomain: "",
-  databaseURL: "",
-  projectId: "",
-  appId: ""
+  apiKey: "AIzaSyB2zSeHdbRhvDTIW9rKFpyQgAI66JSbj5c",
+  authDomain: "jankmuebles.firebaseapp.com",
+  databaseURL: "https://jankmuebles-default-rtdb.firebaseio.com",
+  projectId: "jankmuebles",
+  storageBucket: "jankmuebles.firebasestorage.app",
+  messagingSenderId: "992612726338",
+  appId: "1:992612726338:web:c44294ea9792e165a21fdb"
 };
 
 let fbAuth = null, fbDb = null, cloudUser = null;
@@ -5321,7 +5323,7 @@ function updateAccountUI(){
     btn.title = 'Tu cuenta: ' + em;
   } else {
     btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span>Entrar</span>`;
-    btn.title = 'Entrar con tu correo para guardar tus proyectos';
+    btn.title = 'Entrar con Google o con tu correo para guardar tus proyectos';
   }
   name.textContent = cloudProjectName ? '· ' + cloudProjectName : '';
 }
@@ -5347,6 +5349,7 @@ function initCloud(){
       }).catch(()=> showToast('El enlace ya se usó o venció. Pide uno nuevo.', true));
     }
   }
+  if(fbAuth.getRedirectResult) fbAuth.getRedirectResult().catch(()=>{}); // por si entró con Google en la misma página
   fbAuth.onAuthStateChanged(u=>{
     cloudUser = u || null;
     if(!u){ cloudProjectId = null; cloudProjectName = ''; }
@@ -5372,7 +5375,7 @@ function openAccount(){
         <div class="ts" style="margin-bottom:8px;">Esta función necesita conectarse una sola vez a <b>Firebase</b> (gratis, de Google — el mismo que usas en Maximuebles). Mientras tanto puedes seguir usando <b>Guardar proyecto</b> (archivo).</div>
         <div class="fitbox"><ol class="ts" style="margin:0;padding-left:18px;line-height:1.6;">
           <li>Entra a <b>console.firebase.google.com</b> y crea un proyecto (por ejemplo <i>jankmuebles</i>).</li>
-          <li><b>Authentication</b> → Comenzar → <b>Correo electrónico/contraseña</b> → activa <b>"Vínculo de correo electrónico (acceso sin contraseña)"</b>.</li>
+          <li><b>Authentication</b> → Comenzar → Método de acceso → activa <b>Google</b> (y si quieres también <b>Correo electrónico/contraseña</b> con <b>"Vínculo de correo electrónico"</b>).</li>
           <li>Authentication → Configuración → <b>Dominios autorizados</b> → agrega tu página de GitHub (ej. <i>jancameneses-ai.github.io</i>).</li>
           <li><b>Realtime Database</b> → Crear base de datos → pestaña Reglas → pega las reglas de seguridad.</li>
           <li>⚙ Configuración del proyecto → Tus apps → <b>Web</b> → copia el <i>firebaseConfig</i> y pégalo en el archivo donde dice <b>FIREBASE_CONFIG</b>.</li>
@@ -5387,8 +5390,14 @@ function openAccount(){
     let last = ''; try{ last = localStorage.getItem('jank_email') || ''; }catch(e){}
     overlay.innerHTML = `
       <div id="modalCard" style="width:400px;">
-        <h2>Entrar con tu correo</h2>
-        <div class="hint" style="margin-bottom:10px;">Sin clave: te llega un enlace al correo, le das clic y quedas adentro. Tus proyectos se guardan en tu cuenta y los abres desde cualquier computador o celular.</div>
+        <h2>Entrar a tu cuenta</h2>
+        <div class="hint" style="margin-bottom:10px;">Tus proyectos se guardan en tu cuenta y los abres desde cualquier computador o celular.</div>
+        <button id="accGoogle" style="width:100%;padding:10px;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;background:#fff;border:1px solid var(--line);border-radius:var(--radius);cursor:pointer;">
+          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>
+          Entrar con Google
+        </button>
+        <div class="hint" id="acc-gmsg" style="margin-top:6px;"></div>
+        <div class="hint" style="text-align:center;margin:12px 0 8px;">— o con un enlace a tu correo, sin clave —</div>
         <div class="field"><label>Tu correo</label><input type="text" id="acc-email" placeholder="tucorreo@gmail.com" value="${esc(last)}" autocomplete="email"></div>
         <div class="hint" id="acc-msg"></div>
         <div class="modal-actions">
@@ -5398,6 +5407,29 @@ function openAccount(){
       </div>`;
     overlay.classList.add('open');
     document.getElementById('accCancel').addEventListener('click', ()=> overlay.classList.remove('open'));
+    document.getElementById('accGoogle').addEventListener('click', ()=>{
+      const gmsg = document.getElementById('acc-gmsg');
+      if(location.protocol === 'file:'){ gmsg.innerHTML = '<span style="color:var(--danger);font-weight:600;">Para entrar abre la app desde tu página de GitHub (https://…), no desde el archivo descargado.</span>'; return; }
+      const provider = new firebase.auth.GoogleAuthProvider();
+      provider.setCustomParameters({ prompt:'select_account' });
+      fbAuth.signInWithPopup(provider).then(r=>{
+        overlay.classList.remove('open');
+        showToast('¡Listo! Entraste con ' + ((r.user && r.user.email) || 'Google'));
+      }).catch(err=>{
+        const code = err && err.code || '';
+        if(code === 'auth/popup-blocked' || code === 'auth/operation-not-supported-in-this-environment'){
+          fbAuth.signInWithRedirect(provider); // el navegador bloqueó la ventanita: se entra en la misma página
+        } else if(code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request'){
+          gmsg.textContent = '';
+        } else if(code === 'auth/unauthorized-domain'){
+          gmsg.innerHTML = '<span style="color:var(--danger);font-weight:600;">Falta agregar esta página en Firebase → Authentication → Configuración → Dominios autorizados.</span>';
+        } else if(code === 'auth/operation-not-allowed'){
+          gmsg.innerHTML = '<span style="color:var(--danger);font-weight:600;">Falta activar Google en Firebase → Authentication → Método de acceso.</span>';
+        } else {
+          gmsg.innerHTML = '<span style="color:var(--danger);font-weight:600;">No se pudo entrar con Google. Revisa tu internet e intenta otra vez.</span>';
+        }
+      });
+    });
     document.getElementById('accSend').addEventListener('click', ()=>{
       const email = document.getElementById('acc-email').value.trim();
       const msg = document.getElementById('acc-msg');
