@@ -250,7 +250,20 @@
   th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);}
   th{color:var(--text-dim);font-weight:500;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;}
   .cantos-tags span{display:inline-block;font-size:9.5px;background:rgba(47,111,176,.12);color:var(--canto);border:1px solid rgba(47,111,176,.35);border-radius:3px;padding:1px 5px;margin-right:3px;}
-  #nestWrap{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;}
+  #nestWrap{display:flex;flex-wrap:wrap;align-items:flex-start;gap:14px;margin-top:10px;}
+  .nest-mat{flex:0 1 auto;max-width:100%;}
+  .nest-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:16px;padding-top:12px;border-top:1px dashed var(--line);}
+  .nest-opt{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text);cursor:pointer;}
+  .nest-mat{border:1px solid var(--line);border-radius:var(--radius);padding:10px;background:var(--panel-2);}
+  .nest-mat-title{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;margin-bottom:8px;}
+  .nest-mat-title .sw{width:16px;height:16px;border-radius:4px;border:1px solid rgba(0,0,0,.25);flex:none;}
+  .nest-sheets{display:flex;gap:14px;flex-wrap:wrap;}
+  .nest-card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px;width:300px;max-width:100%;}
+  .nest-card svg{display:block;width:100%;height:auto;}
+  .nest-card .nc-top{display:flex;justify-content:space-between;font-size:11.5px;font-weight:700;margin-bottom:4px;}
+  .nest-card .nc-foot{font-size:11px;color:var(--text-dim);margin-top:4px;}
+  .nest-bar{height:5px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:4px;}
+  .nest-bar i{display:block;height:100%;background:var(--ok);}
   .sheet{background:var(--bg);border:1px solid var(--line);border-radius:4px;position:relative;}
   .sheet .cut{position:absolute;background:rgba(163,90,46,.22);border:1px solid var(--wood-dim);font-size:9px;color:var(--text);display:flex;align-items:center;justify-content:center;overflow:hidden;text-align:center;}
   .sheet-label{font-size:10.5px;color:var(--text-dim);margin-bottom:4px;}
@@ -464,7 +477,14 @@
         <tbody id="cutlistBody"></tbody>
       </table>
       <div id="hardwareWrap"></div>
-      <div id="nestSummary" class="hint" style="margin-top:10px;"></div>
+      <div class="nest-head">
+        <div class="ts" style="font-weight:700;">Acomodo en láminas (optimizado)</div>
+        <label class="nest-opt" title="La veta de la lámina va a lo largo (244). Con esto cada pieza se pone con su lado largo a lo largo de la lámina, como se ve la madera.">
+          <input type="checkbox" id="nestVeta"> Respetar veta (no girar piezas)
+        </label>
+        <button class="ghost small" id="nestPrint" title="Abre el plan de corte listo para imprimir o guardar en PDF">Imprimir plan de corte / PDF</button>
+      </div>
+      <div id="nestSummary" class="hint" style="margin-top:6px;"></div>
       <div id="nestWrap"></div>
 
       <div class="ts" style="font-weight:600;margin-top:18px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px;"><circle cx="12" cy="6" r="3"/><rect x="10.2" y="9" width="3.6" height="12" rx="0.5"/><path d="M8.5 12.5h7M8.5 15.5h7M8.5 18.5h7"/></svg> Plan de perforación por lateral (coordenadas del panel — para la máquina)</div>
@@ -2919,10 +2939,10 @@ function cutGroups(){
   pieces.filter(p=>!isHardware(p) && p.w>0 && p.h>0).forEach(p=>{
     const { cutW, cutH } = cutSizeFor(p);
     const sides = ['top','bottom','left','right'].filter(k=>p.canto[k]);
-    const key = [round2(p.w), round2(p.h), cutW, cutH, p.t, p.color, sides.join(','), p.isRanurado ? 'R' : ''].join('|');
+    const key = cutKeyOf(p);
     let g = map.get(key);
     if(!g){
-      g = { w:round2(p.w), h:round2(p.h), cw:cutW, ch:cutH, t:p.t, color:p.color, sides, ranurado:!!p.isRanurado, qty:0, names:[] };
+      g = { key, w:round2(p.w), h:round2(p.h), cw:cutW, ch:cutH, t:p.t, color:p.color, sides, ranurado:!!p.isRanurado, qty:0, names:[] };
       map.set(key, g);
     }
     g.qty += (p.qty || 1);
@@ -3056,103 +3076,276 @@ function renderScrewTable(){
 }
 
 // bin packing tipo guillotina muy simple, por lámina de espesor uniforme
+/* ---------- Optimizador de láminas (como CutList Optimizer) ----------
+   Acomoda las piezas con cortes de "guillotina" (de lado a lado, como corta
+   la sierra escuadradora), descontando el grosor del disco entre pieza y
+   pieza. Prueba muchas formas de ordenar y de cortar y se queda con la que
+   usa MENOS láminas (y, a igualdad, la que deja el sobrante más junto). */
+let nestVeta = false;
+try{ nestVeta = localStorage.getItem('jank_veta') === '1'; }catch(e){}
+let lastNest = null;
+
+function cutKeyOf(p){
+  const { cutW, cutH } = cutSizeFor(p);
+  const sides = ['top','bottom','left','right'].filter(k=>p.canto[k]);
+  return [round2(p.w), round2(p.h), cutW, cutH, p.t, p.color, sides.join(','), p.isRanurado ? 'R' : ''].join('|');
+}
+
+function packGuillotine(items, SH, kerf, veta, sortFn, choose, split){
+  const sheets = [];
+  const order = items.slice().sort(sortFn);
+  const orients = it => {
+    if(veta){ const a = Math.min(it.w, it.h), b = Math.max(it.w, it.h); return SH.h >= SH.w ? [[a,b]] : [[b,a]]; }
+    return it.w === it.h ? [[it.w, it.h]] : [[it.w, it.h],[it.h, it.w]];
+  };
+  const EPS = 1e-6;
+  const place = (sh, fi, pw, ph, it)=>{
+    const f = sh.free[fi];
+    sh.placed.push({ x:f.x, y:f.y, w:pw, h:ph, it });
+    sh.used += pw*ph;
+    const rw = f.w - pw - kerf, bh = f.h - ph - kerf;
+    let horiz;
+    if(split === 'h') horiz = true;
+    else if(split === 'v') horiz = false;
+    else if(split === 'sas') horiz = (f.w - pw) <= (f.h - ph);
+    else horiz = (f.w - pw) > (f.h - ph);
+    const out = [];
+    if(horiz){
+      if(bh > EPS) out.push({ x:f.x, y:f.y+ph+kerf, w:f.w, h:bh });
+      if(rw > EPS) out.push({ x:f.x+pw+kerf, y:f.y, w:rw, h:ph });
+    } else {
+      if(rw > EPS) out.push({ x:f.x+pw+kerf, y:f.y, w:rw, h:f.h });
+      if(bh > EPS) out.push({ x:f.x, y:f.y+ph+kerf, w:pw, h:bh });
+    }
+    sh.free.splice(fi, 1, ...out);
+  };
+  for(const it of order){
+    let best = null;
+    const tryIn = (sh, si)=>{
+      sh.free.forEach((f, fi)=>{
+        orients(it).forEach(([pw, ph])=>{
+          if(pw > f.w + EPS || ph > f.h + EPS) return;
+          const dw = f.w - pw, dh = f.h - ph;
+          const sc = choose === 'area' ? f.w*f.h - pw*ph : choose === 'short' ? Math.min(dw, dh) : Math.max(dw, dh);
+          if(!best || sc < best.sc - EPS || (Math.abs(sc - best.sc) <= EPS && si < best.si)) best = { sc, si, fi, pw, ph };
+        });
+      });
+    };
+    sheets.forEach(tryIn);
+    if(!best){
+      const sh = { free:[{ x:0, y:0, w:SH.w, h:SH.h }], placed:[], used:0 };
+      sheets.push(sh);
+      tryIn(sh, sheets.length - 1);
+      if(!best){ sheets.pop(); continue; }
+    }
+    place(sheets[best.si], best.fi, best.pw, best.ph, it);
+  }
+  return sheets;
+}
+
+const _nestCache = new Map();
+function optimizeSheets(items, SH, kerf, veta){
+  // si nada cambió (solo seleccionaste otra pieza), no se vuelve a calcular
+  const sig = SH.w+'x'+SH.h+'|'+kerf+'|'+veta+'|'+items.map(it=>it.w+'x'+it.h+'#'+it.num).sort().join(',');
+  const hit = _nestCache.get(sig);
+  if(hit){
+    // devolver copias con las piezas actuales (nombre/número pueden haber cambiado)
+    return hit.map(sh=>({ used:sh.used, free:[], placed: sh.placed.map(pl=>({ x:pl.x, y:pl.y, w:pl.w, h:pl.h, it:pl.it })) }));
+  }
+  const res = optimizeSheetsRaw(items, SH, kerf, veta);
+  if(_nestCache.size > 40) _nestCache.clear();
+  _nestCache.set(sig, res);
+  return res;
+}
+function optimizeSheetsRaw(items, SH, kerf, veta){
+  const sorts = [
+    (a,b)=> b.w*b.h - a.w*a.h,
+    (a,b)=> Math.max(b.w,b.h) - Math.max(a.w,a.h) || b.w*b.h - a.w*a.h,
+    (a,b)=> (b.w+b.h) - (a.w+a.h),
+    (a,b)=> b.h - a.h || b.w - a.w,
+    (a,b)=> b.w - a.w || b.h - a.h,
+    (a,b)=> Math.min(b.w,b.h) - Math.min(a.w,a.h) || Math.max(b.w,b.h) - Math.max(a.w,a.h)
+  ];
+  let best = null;
+  for(const so of sorts) for(const ch of ['area','short','long']) for(const sp of ['sas','las','h','v']){
+    const sheets = packGuillotine(items, SH, kerf, veta, so, ch, sp);
+    // menos láminas; con las mismas, la que deja el sobrante concentrado en una sola (más aprovechable)
+    const conc = sheets.reduce((s,sh)=> s + sh.used*sh.used, 0);
+    if(!best || sheets.length < best.sheets.length || (sheets.length === best.sheets.length && conc > best.conc + 1e-6)) best = { sheets, conc };
+  }
+  // unas vueltas más con órdenes un poco revueltos (a veces encuentran una lámina menos)
+  const area = items.reduce((s,it)=> s + it.w*it.h, 0), lower = Math.ceil(area / (SH.w*SH.h));
+  let seed = 12345; const rnd = ()=> (seed = (seed*16807) % 2147483647) / 2147483647;
+  const t0 = performance.now();
+  for(let k=0; k<300 && best.sheets.length > lower && performance.now() - t0 < 60; k++){
+    const noise = new Map(items.map(it=>[it, 0.75 + rnd()*0.5]));
+    const so = (a,b)=> b.w*b.h*noise.get(b) - a.w*a.h*noise.get(a);
+    for(const ch of ['area','short']) for(const sp of ['sas','las']){
+      const sheets = packGuillotine(items, SH, kerf, veta, so, ch, sp);
+      const conc = sheets.reduce((s,sh)=> s + sh.used*sh.used, 0);
+      if(sheets.length < best.sheets.length || (sheets.length === best.sheets.length && conc > best.conc + 1e-6)) best = { sheets, conc };
+    }
+  }
+  // las más llenas primero
+  best.sheets.sort((a,b)=> b.used - a.used);
+  return best.sheets;
+}
+
+function mixWhite(hex, k){
+  const n = parseInt(String(hex||'#cccccc').replace('#',''), 16);
+  const r = (n>>16)&255, g = (n>>8)&255, b = n&255;
+  const m = c => Math.round(c + (255 - c)*k);
+  return { css:`rgb(${m(r)},${m(g)},${m(b)})`, lum:(0.299*m(r) + 0.587*m(g) + 0.114*m(b)) };
+}
+
+// dibuja una lámina con sus piezas (medidas en cm, el dibujo escala solo)
+function sheetSvg(sh, SH, big){
+  const pad = 9, W = SH.w + pad*2, H = SH.h + pad*2;
+  const fs0 = big ? 1 : 1.25;
+  let out = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" font-family="Inter,Arial,sans-serif">
+    <defs><pattern id="hatch${big?'B':''}" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="4" stroke="#c9c2b6" stroke-width="1"/></pattern></defs>
+    <rect x="${pad}" y="${pad}" width="${SH.w}" height="${SH.h}" fill="url(#hatch${big?'B':''})" stroke="#555" stroke-width="0.6"/>
+    <text x="${pad + SH.w/2}" y="${pad-2.5}" font-size="${5*fs0}" text-anchor="middle" fill="#666">${SH.w}</text>
+    <text x="${pad-2.5}" y="${pad + SH.h/2}" font-size="${5*fs0}" text-anchor="middle" fill="#666" transform="rotate(-90 ${pad-2.5} ${pad + SH.h/2})">${SH.h}</text>`;
+  sh.placed.forEach(pl=>{
+    const x = pad + pl.x, y = pad + pl.y, it = pl.it;
+    const fill = mixWhite(it.color, 0.55), tc = fill.lum > 140 ? '#2b2b2b' : '#fff';
+    const vertical = pl.h > pl.w * 1.25 && pl.w < 30;
+    const len = vertical ? pl.h : pl.w, thick = vertical ? pl.w : pl.h;
+    const cx = x + pl.w/2, cy = y + pl.h/2;
+    const rot = vertical ? ` transform="rotate(-90 ${cx} ${cy})"` : '';
+    const dims = `${round1(pl.w)}×${round1(pl.h)}`, tag = `#${it.num}`;
+    // tamaño de letra que de verdad quepa (ancho aprox. de cada letra = 0.58 del tamaño)
+    const fitFs = (txt, maxH)=> Math.min(maxH, (len*0.9) / (txt.length*0.58)) * 1;
+    out += `<g><title>${tag} ${esc(it.name)} — ${dims} cm</title>
+      <rect x="${x}" y="${y}" width="${pl.w}" height="${pl.h}" fill="${fill.css}" stroke="#333" stroke-width="0.35"/>`;
+    const cap = 9 * fs0;
+    const fsTag2 = fitFs(tag, Math.min(cap, thick*0.36)), fsDim2 = fitFs(dims, Math.min(cap*0.85, thick*0.3));
+    const one = `${tag} · ${dims}`, fsOne = fitFs(one, Math.min(cap, thick*0.62));
+    if(thick >= 9 && fsTag2 >= 2.4 && fsDim2 >= 2.2){
+      out += `<text x="${cx}" y="${cy - fsTag2*0.12}" font-size="${fsTag2}" font-weight="700" text-anchor="middle" fill="${tc}"${rot}>${tag}</text>`;
+      out += `<text x="${cx}" y="${cy + fsDim2*1.05}" font-size="${fsDim2}" text-anchor="middle" fill="${tc}"${rot}>${dims}</text>`;
+    } else if(fsOne >= 2.2){
+      out += `<text x="${cx}" y="${cy + fsOne*0.35}" font-size="${fsOne}" font-weight="700" text-anchor="middle" fill="${tc}"${rot}>${one}</text>`;
+    } else {
+      const f = fitFs(tag, Math.min(cap, thick*0.7));
+      if(f >= 1.8) out += `<text x="${cx}" y="${cy + f*0.35}" font-size="${f}" font-weight="700" text-anchor="middle" fill="${tc}"${rot}>${tag}</text>`;
+    }
+    out += `</g>`;
+  });
+  return out + `</svg>`;
+}
+
 function nestSheets(){
   const wrap = document.getElementById('nestWrap');
   wrap.innerHTML = '';
   document.getElementById('nestSummary').textContent = '';
+  const vetaBox = document.getElementById('nestVeta');
+  if(vetaBox) vetaBox.checked = nestVeta;
+  lastNest = null;
   const cuttable = pieces.filter(p=>!isHardware(p) && p.w>0 && p.h>0);
   if(!cuttable.length) return;
 
+  // número de cada pieza = su número en la lista agrupada (#), para ubicarla en el dibujo
+  const numOf = new Map(); cutGroups().forEach((g,i)=> numOf.set(g.key, i+1));
   const kerfCM = kerfMM / 10;
-  const byThickness = {};
+  const byKey = {};
   const tooBig = [];
   cuttable.forEach(p=>{
     const { cutW, cutH } = cutSizeFor(p);
-    const w = round1(cutW+kerfCM), h = round1(cutH+kerfCM);
     const SH = p.isRanurado ? SHEET_RANURADO : SHEET;
-    const fits = (w<=SH.w && h<=SH.h) || (h<=SH.w && w<=SH.h);
+    const fits = nestVeta
+      ? (Math.min(cutW,cutH) <= Math.min(SH.w,SH.h) && Math.max(cutW,cutH) <= Math.max(SH.w,SH.h))
+      : ((cutW<=SH.w && cutH<=SH.h) || (cutH<=SH.w && cutW<=SH.h));
     if(!fits){ tooBig.push(p.name); return; }
     // cada color/acabado es una lámina distinta, y el ranurado se compra en su propia lámina
     const key = (p.isRanurado ? 'R|' : 'M|') + p.t + '|' + p.color;
-    for(let i=0;i<p.qty;i++){
-      (byThickness[key] = byThickness[key]||[]).push({ w, h, name:p.name, color:p.color });
+    for(let i=0;i<(p.qty||1);i++){
+      (byKey[key] = byKey[key]||[]).push({ w:cutW, h:cutH, name:p.name, color:p.color, num:numOf.get(cutKeyOf(p)) || '' });
     }
   });
 
   let totalSheets = 0, totalRan = 0;
   const sheetCount = {};
-  const maxDrawW = 260;
-
-  Object.keys(byThickness).forEach(key=>{
+  const mats = [];
+  Object.keys(byKey).forEach(key=>{
     const [kind, t, kcolor] = key.split('|'), isR = kind==='R', SH = isR ? SHEET_RANURADO : SHEET;
-    let rects = byThickness[key].slice().sort((a,b)=> (b.w*b.h)-(a.w*a.h));
-    const sheets = [];
-    rects.forEach(r=>{
-      let placed = false;
-      for(const sh of sheets){
-        if(tryPlace(sh, r)){ placed = true; break; }
-      }
-      if(!placed){
-        const sh = { free:[{x:0,y:0,w:SH.w,h:SH.h}], placed:[] };
-        tryPlace(sh, r);
-        sheets.push(sh);
-      }
-    });
+    const sheets = optimizeSheets(byKey[key], SH, kerfCM, nestVeta);
     if(isR) totalRan += sheets.length; else totalSheets += sheets.length;
     sheetCount[key] = sheets.length;
+    mats.push({ key, isR, t, color:kcolor, SH, sheets, count: byKey[key].length });
+  });
+  mats.sort((a,b)=> (a.isR - b.isR) || (b.sheets.length - a.sheets.length) || finishName(a.color).localeCompare(finishName(b.color)));
+  lastNest = { mats, tooBig };
 
-    sheets.forEach((sh, idx)=>{
-      const scale = maxDrawW / SHEET.w;
-      const div = document.createElement('div');
-      const sheetLabelWrap = document.createElement('div');
-      sheetLabelWrap.className='sheet-label';
-      sheetLabelWrap.textContent = isR ? `Lámina ranurada ${finishName(kcolor)} ${idx+1} (${SH.w}×${SH.h}) · esp. ${t} cm` : `Lámina ${finishName(kcolor)} ${idx+1} · esp. ${t} cm`;
-      const sheetDiv = document.createElement('div');
-      sheetDiv.className='sheet';
-      sheetDiv.style.width = (SH.w*scale)+'px';
-      sheetDiv.style.height = (SH.h*scale)+'px';
-      sh.placed.forEach(pl=>{
-        const c = document.createElement('div');
-        c.className='cut';
-        c.style.left=(pl.x*scale)+'px'; c.style.top=(pl.y*scale)+'px';
-        c.style.width=(pl.w*scale)+'px'; c.style.height=(pl.h*scale)+'px';
-        c.style.background = pl.color;
-        c.textContent = pl.name;
-        sheetDiv.appendChild(c);
-      });
-      div.appendChild(sheetLabelWrap);
-      div.appendChild(sheetDiv);
-      wrap.appendChild(div);
+  mats.forEach(m=>{
+    const usedAll = m.sheets.reduce((s,sh)=>s+sh.used,0), areaAll = m.sheets.length * m.SH.w * m.SH.h;
+    const box = document.createElement('div');
+    box.className = 'nest-mat';
+    box.innerHTML = `<div class="nest-mat-title"><span class="sw" style="${finishSwatchCss(m.color)}"></span>
+      ${esc(finishName(m.color))} · ${m.t} cm${m.isR ? ' · <b>ranurado</b>' : ''} — ${m.sheets.length} lámina${m.sheets.length>1?'s':''} de ${m.SH.w}×${m.SH.h}
+      <span class="hint" style="margin:0;font-weight:400;">· ${m.count} piezas · aprovechamiento ${Math.round(usedAll/areaAll*100)}%</span></div>
+      <div class="nest-sheets"></div>`;
+    const row = box.querySelector('.nest-sheets');
+    m.sheets.forEach((sh, idx)=>{
+      const pct = Math.round(sh.used / (m.SH.w*m.SH.h) * 100);
+      const card = document.createElement('div');
+      card.className = 'nest-card';
+      card.innerHTML = `<div class="nc-top"><span>Lámina ${idx+1} de ${m.sheets.length}</span><span>${sh.placed.length} piezas</span></div>
+        ${sheetSvg(sh, m.SH, false)}
+        <div class="nest-bar"><i style="width:${pct}%"></i></div>
+        <div class="nc-foot">Aprovechada ${pct}% · sobrante ${round2((m.SH.w*m.SH.h - sh.used)/10000)} m²</div>`;
+      row.appendChild(card);
     });
+    wrap.appendChild(box);
   });
 
   // cuántas láminas de cada color/espesor
   const perKind = {};
-  Object.keys(byThickness).forEach(k=>{ const [kind,t,c] = k.split('|'); if(kind==='M'){ const lbl = `${finishName(c)} ${t} cm`; perKind[lbl] = (perKind[lbl]||0) + (sheetCount[k]||0); } });
+  Object.keys(byKey).forEach(k=>{ const [kind,t,c] = k.split('|'); if(kind==='M'){ const lbl = `${finishName(c)} ${t} cm`; perKind[lbl] = (perKind[lbl]||0) + (sheetCount[k]||0); } });
   const detail = Object.keys(perKind).map(k=>`${perKind[k]} de ${k}`).join(' · ');
-  let summary = `Total: ${totalSheets} lámina(s) de ${SHEET.w}×${SHEET.h} cm necesarias${detail ? ` (${detail})` : ''} — calculado con la medida de corte real, sin canto, más ${kerfMM} mm de sierra entre pieza y pieza.`;
+  let summary = `Total: ${totalSheets} lámina(s) de ${SHEET.w}×${SHEET.h} cm necesarias${detail ? ` (${detail})` : ''} — acomodo optimizado con la medida de corte real (sin canto), dejando ${kerfMM} mm de sierra entre pieza y pieza${nestVeta ? ', respetando la veta' : ''}. Los números (#) son los de la lista agrupada.`;
   if(totalRan) summary += ` Además: ${totalRan} lámina(s) RANURADA(S) de ${SHEET_RANURADO.w}×${SHEET_RANURADO.h} cm.`;
   if(tooBig.length) summary += ` ⚠ No caben en una lámina entera (hay que empalmar o pedir lámina más grande): ${tooBig.join(', ')}.`;
   document.getElementById('nestSummary').textContent = summary;
 }
 
-function tryPlace(sheet, rect){
-  for(let i=0;i<sheet.free.length;i++){
-    const f = sheet.free[i];
-    let w=rect.w, h=rect.h;
-    if(w<=f.w && h<=f.h){ /* cabe normal */ }
-    else if(h<=f.w && w<=f.h){ w=rect.h; h=rect.w; }
-    else continue;
-
-    sheet.placed.push({ x:f.x, y:f.y, w, h, name:rect.name, color:rect.color });
-    const rightW = f.w - w, bottomH = f.h - h;
-    sheet.free.splice(i,1);
-    if(rightW>0) sheet.free.push({ x:f.x+w, y:f.y, w:rightW, h:h });
-    if(bottomH>0) sheet.free.push({ x:f.x, y:f.y+h, w:f.w, h:bottomH });
-    sheet.free.sort((a,b)=>(a.w*a.h)-(b.w*b.h));
-    return true;
-  }
-  return false;
+// plan de corte para imprimir o guardar en PDF (una lámina por hoja)
+function printCutPlan(){
+  if(cutlistDirty || !lastNest) renderCutlist();
+  if(!lastNest || !lastNest.mats.length){ alert('No hay piezas para cortar todavía.'); return; }
+  const groupsList = cutGroups();
+  const name = (typeof cloudProjectName !== 'undefined' && cloudProjectName) ? cloudProjectName : 'Proyecto';
+  const fecha = new Date().toLocaleDateString('es-CO');
+  const rows = groupsList.map((g,i)=>`<tr><td>${i+1}</td><td>${g.cw}</td><td>${g.ch}</td><td>${g.t}</td><td>${esc(finishName(g.color))}${g.ranurado?' (ranurado)':''}</td><td><b>${g.qty}</b></td><td>${g.sides.length ? g.sides.map(k=>CANTO_LBL[k]).join(', ') : '—'}</td><td>${esc(g.names.join(', '))}</td></tr>`).join('');
+  let pages = '';
+  lastNest.mats.forEach(m=>{
+    m.sheets.forEach((sh, idx)=>{
+      const pct = Math.round(sh.used / (m.SH.w*m.SH.h) * 100);
+      pages += `<section class="pg"><div class="ph"><b>${esc(finishName(m.color))} · ${m.t} cm${m.isR?' · ranurado':''}</b> — Lámina ${idx+1} de ${m.sheets.length} (${m.SH.w}×${m.SH.h} cm) · ${sh.placed.length} piezas · aprovechada ${pct}%</div>${sheetSvg(sh, m.SH, true)}</section>`;
+    });
+  });
+  const totalTxt = document.getElementById('nestSummary').textContent;
+  const html = `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Plan de corte · ${esc(name)}</title>
+  <style>
+    body{font-family:Inter,Arial,sans-serif;color:#222;margin:18px;}
+    header{display:flex;align-items:center;gap:14px;border-bottom:2px solid #a35a2e;padding-bottom:8px;margin-bottom:10px;}
+    header img{height:56px;} h1{font-size:18px;margin:0;} .sub{font-size:12px;color:#666;}
+    table{border-collapse:collapse;width:100%;font-size:11px;margin:8px 0 14px;} th,td{border:1px solid #bbb;padding:3px 5px;text-align:left;} th{background:#f1ebe3;}
+    .tot{font-size:12px;margin:6px 0 10px;}
+    .pg{page-break-inside:avoid;break-inside:avoid;margin:14px 0;} .ph{font-size:13px;margin-bottom:4px;}
+    .pg svg{width:100%;max-height:92vh;}
+    @media print{ .pg{page-break-before:always;} .pg svg{height:88vh;width:auto;max-width:100%;} button{display:none;} }
+  </style></head><body>
+  <header><img src="${typeof LOGO_FULL!=='undefined'?LOGO_FULL:''}" alt=""><div><h1>Plan de corte — ${esc(name)}</h1><div class="sub">${fecha} · medidas en cm · sierra ${kerfMM} mm · canto ${cantoThicknessMM} mm${nestVeta?' · respetando veta':''}</div></div></header>
+  <div class="tot">${esc(totalTxt)}</div>
+  <table><thead><tr><th>#</th><th>Ancho corte</th><th>Alto corte</th><th>Esp.</th><th>Material</th><th>Cant.</th><th>Canto</th><th>Piezas</th></tr></thead><tbody>${rows}</tbody></table>
+  ${pages}
+  <script>setTimeout(function(){ window.print(); }, 400);<\/script>
+  </body></html>`;
+  const w = window.open('', '_blank');
+  if(!w){ alert('El navegador bloqueó la ventana. Permite las ventanas emergentes para esta página e intenta de nuevo.'); return; }
+  w.document.open(); w.document.write(html); w.document.close();
 }
 
 /* ============================================================
@@ -6294,6 +6487,12 @@ document.getElementById('fileInput').addEventListener('change', (e)=>{
   e.target.value = ''; // así se puede volver a abrir el mismo archivo (antes no reaccionaba la segunda vez)
 });
 document.getElementById('btnExportCsv').addEventListener('click', exportCsv);
+document.getElementById('nestVeta').addEventListener('change', e=>{
+  nestVeta = e.target.checked;
+  try{ localStorage.setItem('jank_veta', nestVeta ? '1' : '0'); }catch(err){}
+  nestSheets();
+});
+document.getElementById('nestPrint').addEventListener('click', printCutPlan);
 document.querySelectorAll('[data-cv]').forEach(b=>b.addEventListener('click', ()=>setCutView(b.dataset.cv)));
 setCutView(cutView);
 
