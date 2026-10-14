@@ -137,6 +137,23 @@
   .canto-chip.on{border-color:var(--canto);background:rgba(47,111,176,.1);color:var(--canto);}
   .canto-chip input{display:none;}
   .colors{display:flex;gap:6px;flex-wrap:wrap;}
+  .colors:has(> .pal){display:block;}
+  .pal{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);padding:6px;}
+  .pal-top{display:flex;flex-direction:column;gap:5px;margin-bottom:6px;}
+  .pal-search{width:100%;}
+  .pal-brands{display:flex;gap:4px;}
+  .pal-brands button{flex:1;padding:3px 6px;font-size:11px;border-radius:999px;}
+  .pal-brands button.on{background:var(--wood);border-color:var(--wood);color:#fff;}
+  .pal-used{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin:2px 0 6px;font-size:11px;color:var(--text-dim);}
+  .pal-used .color-dot{width:18px;height:18px;}
+  .pal-list{display:grid;grid-template-columns:1fr 1fr;gap:3px;max-height:210px;overflow-y:auto;padding-right:2px;}
+  .pal-item{display:flex;align-items:center;gap:6px;padding:3px 5px;border-radius:6px;border:1px solid transparent;cursor:pointer;min-width:0;}
+  .pal-item:hover{background:var(--panel-2);}
+  .pal-item.sel{border-color:var(--wood);background:var(--panel-2);}
+  .pal-item[hidden]{display:none;}
+  .pal-sw{width:20px;height:20px;border-radius:5px;flex:none;border:1px solid rgba(0,0,0,.18);}
+  .pal-nm{font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;}
+  .pal-br{font-size:9.5px;color:var(--text-dim);}
   .color-dot{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;}
   .color-dot.sel{border-color:var(--text);}
   .seg{display:flex;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
@@ -505,7 +522,10 @@
 /* ============================================================
    ESTADO
 ============================================================ */
-const MATERIAL_COLORS = ['#d8cdbb','#efe9e0','#8a6a4a','#3d3128','#c7c9cb','#4a4d52','#7a5a41','#e3d3c0'];
+// colores por defecto (todos de Madeofi / Duratex)
+const MATERIAL_COLORS = ["#dbc8a9", "#f3f2ee", "#86664c", "#40302a", "#bdb8b0", "#4b4c4f", "#7b5337", "#e1d4bd"];
+// colores viejos (antes de Madeofi/Duratex) → el más parecido
+const LEGACY_COLOR_MAP = {"#efe9e0": "#f3f2ee", "#d8cdbb": "#dbc8a9", "#e3d3c0": "#e1d4bd", "#8a6a4a": "#86664c", "#7a5a41": "#7b5337", "#3d3128": "#40302a", "#c7c9cb": "#bdb8b0", "#4a4d52": "#4b4c4f"};
 const SHEET = { w:183, h:244 }; // cm — lámina estándar 1.83 x 2.44 m
 const DRAG_SNAP_THRESHOLD = 3; // cm — distancia bajo la cual una pieza arrastrada se pega sola
 const CLICK_MAX_PX = 6; // si el mouse se mueve menos que esto, se toma como un clic (no un arrastre)
@@ -1080,11 +1100,124 @@ const FINISHES = {
   '#7a5a41': { name:'Nogal',      wood:true  },
   '#3d3128': { name:'Wengué',     wood:true  },
   '#c7c9cb': { name:'Gris humo',  wood:false },
-  '#4a4d52': { name:'Grafito',    wood:false }
+  '#4a4d52': { name:'Grafito',    wood:false },
+  // ---- Madeofi y Duratex (nombres de los catálogos; el tono es aproximado) ----
+  '#d4c09f': { name:'Venecia', brand:'Madeofi', type:'wood', wood:true },
+  '#b98d61': { name:'Roma', brand:'Madeofi', type:'wood', wood:true },
+  '#cdb18b': { name:'Parma', brand:'Madeofi', type:'wood', wood:true },
+  '#c6b294': { name:'Germany', brand:'Madeofi', type:'wood', wood:true },
+  '#a69d90': { name:'Cenizo', brand:'Madeofi', type:'wood', wood:true },
+  '#9b5a3a': { name:'Cedro', brand:'Madeofi', type:'wood', wood:true },
+  '#40302a': { name:'Wengue', brand:'Madeofi', type:'wood', wood:true },
+  '#94704f': { name:'Ferrara', brand:'Madeofi', type:'wood', wood:true },
+  '#c29a6c': { name:'Firenze', brand:'Madeofi', type:'wood', wood:true },
+  '#dbc8a9': { name:'Génova', brand:'Madeofi', type:'wood', wood:true },
+  '#86664c': { name:'Palermo', brand:'Madeofi', type:'wood', wood:true },
+  '#a5764c': { name:'Toscana', brand:'Madeofi', type:'wood', wood:true },
+  '#7d6350': { name:'Turín', brand:'Madeofi', type:'wood', wood:true },
+  '#e1d4bd': { name:'Amalfi', brand:'Madeofi', type:'wood', wood:true },
+  '#aa9b8c': { name:'Merano', brand:'Madeofi', type:'wood', wood:true },
+  '#c3a27e': { name:'Verona', brand:'Madeofi', type:'wood', wood:true },
+  '#b07946': { name:'Caramello', brand:'Madeofi', type:'wood', wood:true },
+  '#f3f2ee': { name:'Blanco Nevado', brand:'Duratex', type:'solid', wood:false },
+  '#e3dccf': { name:'Perla', brand:'Duratex', type:'solid', wood:false },
+  '#bdb8b0': { name:'Viena', brand:'Duratex', type:'solid', wood:false },
+  '#6f7479': { name:'Cinza Cobalto', brand:'Duratex', type:'solid', wood:false },
+  '#4b4c4f': { name:'Graffo', brand:'Duratex', type:'solid', wood:false },
+  '#1f1f21': { name:'Negro', brand:'Duratex', type:'solid', wood:false },
+  '#c99641': { name:'Ámbar', brand:'Duratex', type:'solid', wood:false },
+  '#6a6a48': { name:'Verde Olivo', brand:'Duratex', type:'solid', wood:false },
+  '#2f4b6c': { name:'Ultramar', brand:'Duratex', type:'solid', wood:false },
+  '#b39a63': { name:'Auro', brand:'Duratex', type:'metal', wood:false },
+  '#6b6058': { name:'Bohemm', brand:'Duratex', type:'metal', wood:false },
+  '#ebe8e3': { name:'Mármoro', brand:'Duratex', type:'stone', wood:false },
+  '#bcb9b3': { name:'Lunar', brand:'Duratex', type:'stone', wood:false },
+  '#5a5551': { name:'Étna', brand:'Duratex', type:'stone', wood:false },
+  '#dad3c8': { name:'Ágatha', brand:'Duratex', type:'stone', wood:false },
+  '#a59e94': { name:'Meril', brand:'Duratex', type:'stone', wood:false },
+  '#d5cec2': { name:'Lana', brand:'Duratex', type:'textile', wood:false },
+  '#8b8984': { name:'Sarga', brand:'Duratex', type:'textile', wood:false },
+  '#985b3d': { name:'Cedro', brand:'Duratex', type:'wood', wood:true },
+  '#7b5337': { name:'Nuez', brand:'Duratex', type:'wood', wood:true },
+  '#b58b63': { name:'Vienés', brand:'Duratex', type:'wood', wood:true },
+  '#3f2f25': { name:'Wengue', brand:'Duratex', type:'wood', wood:true },
+  '#c8a983': { name:'Grácia', brand:'Duratex', type:'wood', wood:true },
+  '#d7c3a2': { name:'Arena', brand:'Duratex', type:'wood', wood:true },
+  '#b8a68b': { name:'Mitte', brand:'Duratex', type:'wood', wood:true },
+  '#8e857a': { name:'Humo', brand:'Duratex', type:'wood', wood:true },
+  '#8a6b53': { name:'Capuccino', brand:'Duratex', type:'wood', wood:true },
+  '#9f7751': { name:'Soder', brand:'Duratex', type:'wood', wood:true },
+  '#e5e0d7': { name:'Glacial', brand:'Duratex', type:'wood', wood:true },
+  '#c1a37d': { name:'Kallio', brand:'Duratex', type:'wood', wood:true },
+  '#e7dbc7': { name:'Chantilli', brand:'Duratex', type:'wood', wood:true },
+  '#6d5a4a': { name:'Tribeca', brand:'Duratex', type:'wood', wood:true },
+  '#a17140': { name:'Koa', brand:'Duratex', type:'wood', wood:true },
+  '#897a69': { name:'Mácula', brand:'Duratex', type:'wood', wood:true },
+  '#3a3634': { name:'Carbono', brand:'Duratex', type:'wood', wood:true },
+  '#996c46': { name:'Amaretto', brand:'Duratex', type:'wood', wood:true },
+  '#b59063': { name:'Austral', brand:'Duratex', type:'wood', wood:true },
+  '#d1b48d': { name:'Cala', brand:'Duratex', type:'wood', wood:true },
+  '#6a4b33': { name:'Tabacco Chic', brand:'Duratex', type:'wood', wood:true },
+  '#c7ac85': { name:'Riviera', brand:'Duratex', type:'wood', wood:true },
+  '#b89b77': { name:'Bahía', brand:'Duratex', type:'wood', wood:true },
+  '#a78864': { name:'Sagano', brand:'Duratex', type:'wood', wood:true },
+  '#8d6547': { name:'Terranta', brand:'Duratex', type:'wood', wood:true },
+  '#d5c09b': { name:'Oasis', brand:'Duratex', type:'wood', wood:true },
+  '#cec7b9': { name:'Boreal', brand:'Duratex', type:'wood', wood:true },
+  '#7b5d46': { name:'Traviata', brand:'Duratex', type:'wood', wood:true },
+  '#5b4737': { name:'Bosco', brand:'Duratex', type:'wood', wood:true },
 };
-function finishName(hex){ return (FINISHES[hex] && FINISHES[hex].name) || hex; }
+const BRAND_COLORS = {
+  Madeofi: ["#d4c09f", "#b98d61", "#cdb18b", "#c6b294", "#a69d90", "#9b5a3a", "#40302a", "#94704f", "#c29a6c", "#dbc8a9", "#86664c", "#a5764c", "#7d6350", "#e1d4bd", "#aa9b8c", "#c3a27e", "#b07946"],
+  Duratex: ["#f3f2ee", "#e3dccf", "#bdb8b0", "#6f7479", "#4b4c4f", "#1f1f21", "#c99641", "#6a6a48", "#2f4b6c", "#b39a63", "#6b6058", "#ebe8e3", "#bcb9b3", "#5a5551", "#dad3c8", "#a59e94", "#d5cec2", "#8b8984", "#985b3d", "#7b5337", "#b58b63", "#3f2f25", "#c8a983", "#d7c3a2", "#b8a68b", "#8e857a", "#8a6b53", "#9f7751", "#e5e0d7", "#c1a37d", "#e7dbc7", "#6d5a4a", "#a17140", "#897a69", "#3a3634", "#996c46", "#b59063", "#d1b48d", "#6a4b33", "#c7ac85", "#b89b77", "#a78864", "#8d6547", "#d5c09b", "#cec7b9", "#7b5d46", "#5b4737"]
+};
+function finishName(hex){ const f = FINISHES[hex]; return f ? (f.brand ? `${f.name} (${f.brand})` : f.name) : hex; }
+// paleta de colores Madeofi + Duratex con buscador (recuerda lo último que buscaste)
+const palState = { q:'', brand:'all' };
+const _norm = t => String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+function palMatch(hex){
+  const f = FINISHES[hex]; if(!f) return false;
+  if(palState.brand !== 'all' && f.brand !== palState.brand) return false;
+  const q = _norm(palState.q.trim()); if(!q) return true;
+  const TYPE_ES = { wood:'madera', solid:'liso unicolor', stone:'piedra marmol', textile:'textil tela', metal:'metalizado' };
+  return _norm(`${f.name} ${f.brand} ${TYPE_ES[f.type]||''}`).includes(q);
+}
+function colorPaletteHtml(sel, attr, extraTitle){
+  const all = [...BRAND_COLORS.Madeofi, ...BRAND_COLORS.Duratex];
+  const item = c=>`<div class="pal-item ${sel===c?'sel':''}" ${attr}="${c}" data-hex="${c}" title="${esc(finishName(c))}${extraTitle||''}"${palMatch(c)?'':' hidden'}>
+      <span class="pal-sw" style="${finishSwatchCss(c)}"></span><span class="pal-nm">${esc(FINISHES[c].name)}</span><span class="pal-br" title="${FINISHES[c].brand}">${FINISHES[c].brand==='Madeofi'?'MO':'DX'}</span></div>`;
+  // los colores que ya tiene el mueble, a la mano
+  const used = [...new Set(pieces.filter(p=>!isHardware(p)).map(p=>p.color))].filter(c=>FINISHES[c]).slice(0, 10);
+  const usedHtml = used.length ? `<div class="pal-used"><span>En este mueble:</span>${used.map(c=>`<div class="color-dot ${sel===c?'sel':''}" style="${finishSwatchCss(c)}" ${attr}="${c}" title="${esc(finishName(c))}${extraTitle||''}"></div>`).join('')}</div>` : '';
+  const legacyNote = sel && FINISHES[sel] && !FINISHES[sel].brand ? `<div class="hint" style="margin:0 0 4px;">Color actual: ${esc(finishName(sel))} (viejo). Escoge uno de la lista.</div>` : '';
+  return `<div class="pal" data-pal>
+    <div class="pal-top">
+      <input type="search" class="pal-search" placeholder="Buscar color: cedro, gris, mármol…" value="${esc(palState.q)}">
+      <div class="pal-brands">${['all','Madeofi','Duratex'].map(b=>`<button type="button" data-pb="${b}" class="${palState.brand===b?'on':''}">${b==='all'?'Todos':b}</button>`).join('')}</div>
+    </div>
+    ${legacyNote}${usedHtml}
+    <div class="pal-list">${all.map(item).join('')}</div>
+    <div class="pal-empty hint" ${all.some(palMatch)?'hidden':''}>No hay colores con ese nombre.</div>
+  </div>`;
+}
+function palRefilter(root){
+  root.querySelectorAll('.pal-item').forEach(el=>{ el.hidden = !palMatch(el.dataset.hex); });
+  root.querySelectorAll('[data-pb]').forEach(b=>b.classList.toggle('on', b.dataset.pb===palState.brand));
+  const empty = root.querySelector('.pal-empty'); if(empty) empty.hidden = !!root.querySelector('.pal-item:not([hidden])');
+}
+document.addEventListener('input', e=>{
+  if(!e.target.classList || !e.target.classList.contains('pal-search')) return;
+  palState.q = e.target.value;
+  palRefilter(e.target.closest('[data-pal]'));
+});
+document.addEventListener('click', e=>{
+  const b = e.target.closest && e.target.closest('[data-pb]');
+  if(!b) return;
+  palState.brand = b.dataset.pb;
+  palRefilter(b.closest('[data-pal]'));
+});
 
-const TEX_CM = 60; // una textura cubre 60 × 60 cm de tabla
+const TEX_CM = 110; // una textura cubre 110 × 110 cm de tabla (casi no se nota que se repite)
 const _texCache = {}, _texPreview = {};
 
 // generador pseudo-aleatorio con semilla: la misma veta cada vez que se dibuja
@@ -1098,45 +1231,102 @@ function shade(hex, amt){
   const r = Math.max(0,Math.min(255,(n>>16)+amt)), g = Math.max(0,Math.min(255,((n>>8)&255)+amt)), b = Math.max(0,Math.min(255,(n&255)+amt));
   return `rgb(${r},${g},${b})`;
 }
+function hexLum(hex){ const n = parseInt(hex.slice(1),16); return 0.299*(n>>16) + 0.587*((n>>8)&255) + 0.114*(n&255); }
+// ruido suave (para manchas y ondas naturales)
+function makeNoise1D(rnd){ const a = Array.from({length:64}, ()=>rnd()); return x=>{ const i = Math.floor(x), f = x - i, t = f*f*(3-2*f); return a[i & 63]*(1-t) + a[(i+1) & 63]*t; }; }
 function drawFinishCanvas(hex, size){
   const c = document.createElement('canvas'); c.width = c.height = size;
   const g = c.getContext && c.getContext('2d');
   if(!g) return c;
   const info = FINISHES[hex] || { wood:false };
+  const type = info.type || (info.wood ? 'wood' : 'solid');
   const rnd = seededRand(hex);
+  const k = size / 512;                         // los detalles se escalan con el tamaño
+  const dark = hexLum(hex) < 85;
   g.fillStyle = hex; g.fillRect(0,0,size,size);
-  if(info.wood){
-    const dark = (FINISHES[hex].name==='Wengué');
-    // bandas anchas (cambio de tono de la veta)
-    for(let i=0;i<14;i++){
-      const y = rnd()*size, h = 6 + rnd()*size*0.12;
-      g.fillStyle = shade(hex, (rnd()-0.5)*(dark?18:26)); g.globalAlpha = 0.35;
-      g.fillRect(0, y, size, h);
+  if(type === 'wood'){
+    const nA = makeNoise1D(rnd), nB = makeNoise1D(rnd);
+    // 1) cambios de tono anchos y suaves a lo largo de la tabla
+    for(let y=0; y<size; y+=2){
+      const v = (nA(y/size*6) - 0.5) * (dark ? 22 : 34);
+      g.globalAlpha = 0.5; g.fillStyle = shade(hex, Math.round(v)); g.fillRect(0, y, size, 2);
     }
-    // vetas finas onduladas
-    g.globalAlpha = 1;
-    for(let i=0;i<170;i++){
-      const y0 = rnd()*size, amp = 1 + rnd()*4, freq = 0.004 + rnd()*0.012, ph = rnd()*6.28;
-      g.strokeStyle = shade(hex, -(dark?10:18) - rnd()*(dark?14:30));
-      g.globalAlpha = 0.08 + rnd()*0.22;
-      g.lineWidth = 0.6 + rnd()*1.6;
+    // 2) "catedrales": arcos de la veta (corte tangencial), como en la madera real
+    const arches = 2 + Math.floor(rnd()*3);
+    for(let a=0; a<arches; a++){
+      const cy = rnd()*size, cx = rnd()*size, span = size*(0.35 + rnd()*0.4), rings = 8 + Math.floor(rnd()*10);
+      for(let r=0; r<rings; r++){
+        const off = r * (3 + rnd()*5) * k;
+        g.strokeStyle = shade(hex, -(dark?10:20) - rnd()*(dark?12:26));
+        g.globalAlpha = 0.10 + rnd()*0.18; g.lineWidth = (0.7 + rnd()*1.4) * k;
+        g.beginPath();
+        for(let x=-span; x<=span; x+=6*k){
+          const tip = Math.pow(Math.abs(x)/span, 2.2);
+          const y = cy + off - (1 - tip) * span * 0.18 + (nB((cx+x)/size*10 + r) - 0.5)*4*k;
+          x===-span ? g.moveTo(cx+x, y) : g.lineTo(cx+x, y);
+        }
+        g.stroke();
+      }
+    }
+    // 3) vetas rectas finas que corren a lo largo
+    for(let i=0;i<260;i++){
+      const y0 = rnd()*size, amp = (0.5 + rnd()*3)*k, ph = rnd()*100;
+      g.strokeStyle = shade(hex, -(dark?8:14) - rnd()*(dark?14:28));
+      g.globalAlpha = 0.05 + rnd()*0.18;
+      g.lineWidth = (0.4 + rnd()*1.3) * k;
       g.beginPath();
-      for(let x=0;x<=size;x+=8){ const y = y0 + Math.sin(x*freq + ph)*amp; x===0 ? g.moveTo(x,y) : g.lineTo(x,y); }
+      for(let x=0;x<=size;x+=8*k){ const y = y0 + (nB(x/size*8 + ph) - 0.5)*amp*2; x===0 ? g.moveTo(x,y) : g.lineTo(x,y); }
       g.stroke();
     }
-    // poros
-    g.globalAlpha = 0.18;
-    for(let i=0;i<1400;i++){ g.fillStyle = shade(hex, -35); g.fillRect(rnd()*size, rnd()*size, 1 + rnd()*3, 1); }
+    // 4) brillos claros entre vetas
+    for(let i=0;i<60;i++){ g.globalAlpha = 0.06 + rnd()*0.08; g.fillStyle = shade(hex, dark?14:22); g.fillRect(0, rnd()*size, size, (0.6+rnd()*1.6)*k); }
+    // 5) poros alargados
+    g.globalAlpha = 0.16;
+    for(let i=0;i<2600*k*k;i++){ g.fillStyle = shade(hex, -38); g.fillRect(rnd()*size, rnd()*size, (1 + rnd()*5)*k, 0.8*k); }
+  } else if(type === 'stone'){
+    // piedra / mármol: nubes suaves + vetas finas
+    for(let i=0;i<40;i++){ const x = rnd()*size, y = rnd()*size, r = (30 + rnd()*120)*k;
+      const gr = g.createRadialGradient(x,y,0,x,y,r); gr.addColorStop(0, shade(hex, (rnd()-0.5)*30)); gr.addColorStop(1, 'rgba(0,0,0,0)');
+      g.globalAlpha = 0.35; g.fillStyle = gr; g.fillRect(x-r,y-r,r*2,r*2); }
+    for(let v=0; v<7; v++){
+      let x = rnd()*size, y = 0; g.beginPath(); g.moveTo(x,y);
+      g.strokeStyle = shade(hex, dark ? 40 : -50); g.globalAlpha = 0.15 + rnd()*0.25; g.lineWidth = (0.6 + rnd()*1.6)*k;
+      while(y < size){ x += (rnd()-0.5)*26*k; y += (8 + rnd()*14)*k; g.lineTo(x,y); }
+      g.stroke();
+    }
+    for(let i=0;i<9000*k*k;i++){ g.globalAlpha = 0.07; g.fillStyle = rnd()>0.5 ? shade(hex,14) : shade(hex,-14); g.fillRect(rnd()*size, rnd()*size, 1.4*k, 1.4*k); }
+  } else if(type === 'textile'){
+    // tejido: trama cruzada muy fina
+    for(let y=0;y<size;y+=3*k){ g.globalAlpha = 0.10 + rnd()*0.06; g.fillStyle = shade(hex, -16); g.fillRect(0, y, size, 1*k); }
+    for(let x=0;x<size;x+=3*k){ g.globalAlpha = 0.08 + rnd()*0.05; g.fillStyle = shade(hex, 12); g.fillRect(x, 0, 1*k, size); }
+    for(let i=0;i<5000*k*k;i++){ g.globalAlpha = 0.06; g.fillStyle = rnd()>0.5 ? shade(hex,10) : shade(hex,-12); g.fillRect(rnd()*size, rnd()*size, 2*k, 1*k); }
+  } else if(type === 'metal'){
+    // metalizado: líneas de cepillado
+    for(let i=0;i<900;i++){ g.globalAlpha = 0.05 + rnd()*0.08; g.fillStyle = rnd()>0.5 ? shade(hex, 26) : shade(hex, -20); g.fillRect(0, rnd()*size, size, (0.5+rnd())*k); }
   } else {
-    // liso: textura muy suave, como melamina mate
-    for(let i=0;i<5000;i++){ g.globalAlpha = 0.05; g.fillStyle = rnd()>0.5 ? shade(hex,10) : shade(hex,-10); g.fillRect(rnd()*size, rnd()*size, 1.5, 1.5); }
+    // liso mate: grano muy fino, como la melamina de verdad
+    for(let i=0;i<9000*k*k;i++){ g.globalAlpha = 0.045; g.fillStyle = rnd()>0.5 ? shade(hex,9) : shade(hex,-9); g.fillRect(rnd()*size, rnd()*size, 1.5*k, 1.5*k); }
   }
   g.globalAlpha = 1;
   return c;
 }
+// relieve: la misma textura en gris (la veta se siente al ver la luz rasante)
+const _bumpCache = {};
+function getFinishBump(hex){
+  if(_bumpCache[hex] !== undefined) return _bumpCache[hex];
+  const src = getFinishTexture(hex).image;
+  let tex = null;
+  try{
+    const c = document.createElement('canvas'); c.width = c.height = 512;
+    const g = c.getContext('2d'); if(!g || !src || !src.width) throw 0; g.filter = 'grayscale(1) contrast(1.6)'; g.drawImage(src, 0, 0, 512, 512);
+    tex = new THREE.CanvasTexture(c); tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.__cached = true;
+  }catch(e){ tex = null; }
+  _bumpCache[hex] = tex;
+  return tex;
+}
 function getFinishTexture(hex){
   if(_texCache[hex]) return _texCache[hex];
-  const tex = new THREE.CanvasTexture(drawFinishCanvas(hex, 512));
+  const tex = new THREE.CanvasTexture(drawFinishCanvas(hex, 1024));
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   tex.encoding = THREE.sRGBEncoding;
   tex.anisotropy = renderer ? Math.min(8, renderer.capabilities.getMaxAnisotropy()) : 1;
@@ -1182,7 +1372,11 @@ function makePieceMaterial(p, warn, picked, sel){
   else if(p.isCaster) m = new THREE.MeshStandardMaterial({ color:'#2b2b2e', roughness:0.6 });
   else {
     const tex = renderOpts.realista ? getFinishTexture(p.color) : null;
-    m = new THREE.MeshStandardMaterial({ map:tex, color: tex ? 0xffffff : p.color, roughness: 0.55, metalness: 0, envMapIntensity: 0.55 });
+    const fi = FINISHES[p.color] || {}, type = fi.type || (fi.wood ? 'wood' : 'solid');
+    const bump = tex && !renderOpts.xray && (type === 'wood' || type === 'textile' || type === 'stone') ? getFinishBump(p.color) : null;
+    m = new THREE.MeshStandardMaterial({ map:tex, color: tex ? 0xffffff : p.color,
+      roughness: type==='metal' ? 0.35 : (type==='stone' ? 0.4 : 0.5), metalness: type==='metal' ? 0.45 : 0,
+      envMapIntensity: type==='metal' ? 1.0 : 0.7, bumpMap: bump, bumpScale: bump ? (type==='textile' ? 0.03 : 0.018) : 1 });
     if(warn) m.color.set(tex ? '#ff7a6e' : '#d0473a');
   }
   if(warn && (p.isRod || p.isCaster)) m.color.set('#d0473a');
@@ -1204,10 +1398,34 @@ function applyRendererMode(){
   markShadow();
 }
 
+// sombra suave "de contacto" pegada al piso (lo que hace que el mueble se vea apoyado de verdad)
+let contactShadow = null;
+function updateContactShadow(b){
+  if(!scene) return;
+  if(!contactShadow){
+    const c = document.createElement('canvas'); c.width = c.height = 256;
+    const g = c.getContext && c.getContext('2d');
+    if(!g) return;
+    const gr = g.createRadialGradient(128,128,10,128,128,128);
+    gr.addColorStop(0,'rgba(0,0,0,0.55)'); gr.addColorStop(0.55,'rgba(0,0,0,0.22)'); gr.addColorStop(1,'rgba(0,0,0,0)');
+    g.fillStyle = gr; g.fillRect(0,0,256,256);
+    const tex = new THREE.CanvasTexture(c);
+    contactShadow = new THREE.Mesh(new THREE.PlaneGeometry(1,1), new THREE.MeshBasicMaterial({ map:tex, transparent:true, depthWrite:false, opacity:0.55 }));
+    contactShadow.rotation.x = -Math.PI/2; contactShadow.position.y = 0.03; contactShadow.renderOrder = -1;
+    scene.add(contactShadow);
+  }
+  contactShadow.visible = renderOpts.realista && !renderOpts.xray && pieces.length > 0 && b.minY < 15;
+  if(!contactShadow.visible) return;
+  const w = (b.maxX - b.minX), d = (b.maxZ - b.minZ);
+  contactShadow.scale.set(w*1.25 + 12, d*1.5 + 12, 1);
+  contactShadow.position.x = (b.minX+b.maxX)/2; contactShadow.position.z = (b.minZ+b.maxZ)/2;
+}
+
 // la luz que da la sombra sigue al mueble, para que la sombra quede nítida
 function updateSunForModel(){
-  if(!sunLight || !pieces.length) return;
+  if(!sunLight || !pieces.length){ if(contactShadow) contactShadow.visible = false; return; }
   const b = overallBounds();
+  updateContactShadow(b);
   const cx = (b.minX+b.maxX)/2, cz = (b.minZ+b.maxZ)/2;
   const r = Math.max(b.maxX-b.minX, b.maxY-b.minY, b.maxZ-b.minZ, 60);
   sunLight.position.set(cx + r*0.6, b.maxY + r*1.4, cz + r*0.9);
@@ -2322,7 +2540,7 @@ function renderPieceList(){
         <div class="pc-name-row">${checkboxHtml}<span class="swatch" style="background:${p.color}"></span><span class="pc-name">${esc(p.name)}</span>${p.compId && componentCount(p)>1 ? ' <span title="Componente (copias vinculadas)" style="color:var(--blue);font-size:11px;">◆</span>' : ''}${p.isDoor ? ICON_DOOR : ''}${p.locked ? ' '+ICON_LOCK : ''}${warn ? ' <span style="color:var(--danger);font-weight:600;">⚠</span>' : ''}</div>
         <div class="pc-actions">${groupBadge}${multiSelectMode ? '' : `<button class="small ghost" data-lock="${p.id}" title="${p.locked?'Desbloquear':'Bloquear (evita moverla sin querer)'}">${p.locked?ICON_LOCK:ICON_UNLOCK}</button><button class="small ghost" data-dup="${p.id}" title="Duplicar pieza">⧉</button><button class="small ghost danger" data-del="${p.id}" title="Eliminar">✕</button>`}</div>
       </div>
-      <div class="pc-dims mono">${p.w}×${p.h}×${p.t} cm · x${p.qty} · ${orientationLabel(p.orientation)}</div>
+      <div class="pc-dims mono">${p.w}×${p.h}×${p.t} cm${p.qty>1 ? ` · <b style="color:var(--danger)">x${p.qty} sin ver en 3D</b>` : ''} · ${orientationLabel(p.orientation)}</div>
     </div>`;
   }).join('');
   // solo se reescribe si cambió algo de lo que muestra (antes se rehacía en cada clic aunque fuera igual)
@@ -2544,6 +2762,29 @@ function duplicatePiece(id){
   refreshAll();
 }
 
+// crea n copias reales de una pieza, en fila a su lado (no se encima con nada)
+function makeCopies(id, n){
+  const src = pieces.find(x=>x.id===id);
+  if(!src || n < 1) return;
+  snapshot();
+  const pos = piecePosition(src), size = boxSize(src);
+  const b = overallBounds();
+  const step = size.sx + 5;
+  let last = null;
+  for(let i=1;i<=n;i++){
+    const c = JSON.parse(JSON.stringify(src));
+    c.id = uid(); c.qty = 1;
+    c.name = src.name + (n > 1 ? ` (copia ${i})` : ' (copia)');
+    c.posMode = 'free'; c.attachTo = null; c.locked = false; c.groupId = null;
+    c.isDrawer = false; c.drawerId = null; c.drawerRole = null; c.compId = null; c.doorOpen = false;
+    c.x = round1(b.maxX + 15 + step*(i-1)); c.y = pos.y; c.z = pos.z;
+    pieces.push(c); last = c;
+  }
+  selectedId = last.id;
+  refreshAll();
+  showToast(n > 1 ? `Se crearon ${n} copias a la derecha del mueble.` : 'Se creó la copia a la derecha del mueble.');
+}
+
 function orientationLabel(o){
   return o==='vertical-front' ? 'panel frontal' : o==='vertical-side' ? 'panel lateral' : 'horizontal';
 }
@@ -2744,9 +2985,11 @@ function renderForm(){
     </div>
     <div class="row2">
       <div class="field"><label>Espesor (cm)</label><input type="number" step="0.1" min="0" id="f-t" value="${p.t}"></div>
-      <div class="field"><label>Cantidad (para la lista de corte)</label><input type="number" id="f-qty" value="${p.qty}" min="1"></div>
+      <div class="field"><label>Hacer más iguales</label>
+        <div style="display:flex;gap:6px;"><input type="number" id="f-copies" value="1" min="1" max="50" style="width:64px;" title="Cuántas copias más"><button class="ghost small" id="f-mkcopies" style="flex:1;white-space:nowrap;">Crear copias</button></div>
+      </div>
     </div>
-    <div class="hint" style="margin-top:-6px;margin-bottom:10px;">"Cantidad" solo suma piezas iguales en la lista de corte y el aprovechamiento de láminas — no crea copias en el 3D. Para eso usa "Duplicar pieza" arriba.</div>
+    <div class="hint" style="margin-top:-6px;margin-bottom:10px;">Cada pieza del 3D es una pieza de verdad en la lista de corte. Si necesitas 2, crea 1 copia: aparece al lado y la llevas a su lugar.</div>
 
     <div class="field">
       <label>Orientación en el mueble</label>
@@ -2761,7 +3004,7 @@ function renderForm(){
     <div class="field">
       <label>Color / material: <b style="color:var(--text);">${esc(finishName(p.color))}</b></label>
       <div class="colors">
-        ${MATERIAL_COLORS.map(c=>`<div class="color-dot ${p.color===c?'sel':''}" style="${finishSwatchCss(c)}" data-color="${c}" title="${finishName(c)}"></div>`).join('')}
+        ${colorPaletteHtml(p.color, 'data-color')}
       </div>
     </div>
 
@@ -2854,9 +3097,10 @@ function renderForm(){
     inp.addEventListener('input', e=>{ const v = numOr(e.target.value, p[k]); p[k] = Math.max(0, v); refreshLight(); });
     inp.addEventListener('blur', e=>{ e.target.value = p[k]; });
   });
-  const qtyInp = panel.querySelector('#f-qty');
-  qtyInp.addEventListener('focus', snapshot);
-  qtyInp.addEventListener('input', e=>{ p.qty=Math.max(1,parseInt(e.target.value)||1); refreshLight(); });
+  panel.querySelector('#f-mkcopies').addEventListener('click', ()=>{
+    const n = Math.min(50, Math.max(1, parseInt(panel.querySelector('#f-copies').value) || 1));
+    makeCopies(p.id, n);
+  });
 
   panel.querySelectorAll('[data-or]').forEach(b=>b.addEventListener('click', ()=>{ snapshot(); p.orientation=b.dataset.or; refreshAll(); }));
   panel.querySelector('#f-isdoor').addEventListener('change', e=>{
@@ -3509,7 +3753,8 @@ function openNewPieceModal(){
     p.w = parseFloat(document.getElementById('m-w').value) || 60;
     p.h = parseFloat(document.getElementById('m-h').value) || 40;
     p.t = parseFloat(document.getElementById('m-t').value) || 1.5;
-    p.qty = Math.max(1, parseInt(document.getElementById('m-qty').value) || 1);
+    const n = Math.min(50, Math.max(1, parseInt(document.getElementById('m-qty').value) || 1));
+    p.qty = 1;
     p.orientation = mOrientation;
     // aparece al lado del mueble, no encima de lo que ya existe
     if(pieces.length){
@@ -3519,9 +3764,21 @@ function openNewPieceModal(){
       p.z = round1(b.minZ);
     }
     pieces.push(p);
+    // cantidad = piezas de verdad en el 3D (antes solo se sumaba en la lista de corte y no se veían)
+    if(n > 1){
+      p.name = p.name + ' 1';
+      const step = boxSize(p).sx + 5;
+      for(let i=2;i<=n;i++){
+        const c = JSON.parse(JSON.stringify(p));
+        c.id = uid(); c.name = p.name.replace(/ 1$/, ' ' + i);
+        c.x = round1(p.x + step*(i-1));
+        pieces.push(c);
+      }
+    }
     selectedId = p.id;
     overlay.classList.remove('open');
     refreshAll();
+    if(n > 1) showToast(`Se crearon ${n} piezas "${p.name.replace(/ 1$/,'')}" (una al lado de la otra). Muévelas a su lugar.`);
   });
 }
 
@@ -4215,12 +4472,12 @@ function renderBulkForm(){
     <div class="field">
       <label>Color / material ${cc===null?'<span style="color:var(--text-dim);">(ahora tienen colores distintos)</span>':''}</label>
       <div class="colors">
-        ${MATERIAL_COLORS.map(c=>`<div class="color-dot ${cc===c?'sel':''}" style="${finishSwatchCss(c)}" data-bcolor="${c}" title="${finishName(c)} — pintar las ${n}"></div>`).join('')}
+        ${colorPaletteHtml(cc, 'data-bcolor', ` — pintar las ${n}`)}
       </div>
     </div>
 
     <div class="row2">${numField('b-w','Ancho (cm)',cw,'0.1')}${numField('b-h','Alto (cm)',ch,'0.1')}</div>
-    <div class="row2">${numField('b-t','Espesor (cm)',ct,'0.1')}${numField('b-qty','Cantidad',cq,'1')}</div>
+    <div class="row2">${numField('b-t','Espesor (cm)',ct,'0.1')}<div></div></div>
     <button class="primary small" id="b-apply" style="width:100%;padding:8px;">Aplicar medidas a las ${n}</button>
     <div class="hint" id="b-msg" style="min-height:14px;"></div>
 
@@ -4270,7 +4527,7 @@ function renderBulkForm(){
   }));
   panel.querySelector('#b-apply').addEventListener('click', ()=>{
     const read = id => { const v = document.getElementById(id).value.trim(); if(v==='') return null; const n2 = parseFloat(v); return (isNaN(n2) || n2<=0) ? NaN : n2; };
-    const w = read('b-w'), h = read('b-h'), t = read('b-t'), q = read('b-qty');
+    const w = read('b-w'), h = read('b-h'), t = read('b-t'), q = null;
     const msg = document.getElementById('b-msg');
     if([w,h,t,q].some(v=>Number.isNaN(v))){
       msg.innerHTML = '<span style="color:var(--danger);font-weight:600;">Revisa: las medidas tienen que ser mayores que 0.</span>';
@@ -5330,7 +5587,7 @@ function T_drawers(f, x0, x1, y0, y1, n, color, handle, sides){
 const TEMPLATE_ICON = (body)=>`<svg width="64" height="56" viewBox="0 0 64 56" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
 const TEMPLATES = [
   { id:'armario2p', name:'Armario 2 puertas', desc:'Maletero arriba, colgadero y 2 puertas.',
-    def:{ W:90, H:190, D:55, t:1.8, color:'#efe9e0', color2:'#8a6a4a' },
+    def:{ W:90, H:190, D:55, t:1.8, color:'#f3f2ee', color2:'#86664c' },
     icon:TEMPLATE_ICON('<rect x="14" y="3" width="36" height="50"/><path d="M32 3v50M14 12h36M18 16h28"/><path d="M28 32v4M36 32v4"/>'),
     build(f, c2){
       const sd = round2(f.D - f.t - 0.5);
@@ -5339,7 +5596,7 @@ const TEMPLATES = [
       T_doors(f, f.x0, f.x1, f.y0, f.y1, 2, c2, { type:'barra', cc:192, pos:'centro', color:'negro' });
     } },
   { id:'armarioGav', name:'Armario con gavetas', desc:'2 gavetas abajo, colgadero, maletero y 2 puertas.',
-    def:{ W:100, H:200, D:55, t:1.8, color:'#efe9e0', color2:'#7a5a41' },
+    def:{ W:100, H:200, D:55, t:1.8, color:'#f3f2ee', color2:'#7b5337' },
     icon:TEMPLATE_ICON('<rect x="14" y="3" width="36" height="50"/><path d="M14 38h36M14 45.5h36M32 3v35"/><path d="M29 41.5h6M29 49h6M28 20v4M36 20v4"/>'),
     build(f, c2){
       const base = T_shelf(f, f.y0 + 40, 'Base de gavetas');
@@ -5350,15 +5607,15 @@ const TEMPLATES = [
       T_doors(f, f.x0, f.x1, round2(base.y + f.t), f.y1, 2, c2, { type:'barra', cc:192, pos:'centro', color:'negro' });
     } },
   { id:'mesaNoche', name:'Mesa de noche', desc:'2 gavetas con riel telescópico.',
-    def:{ W:45, H:55, D:40, t:1.5, color:'#d8cdbb', color2:'#d8cdbb' },
+    def:{ W:45, H:55, D:40, t:1.5, color:'#dbc8a9', color2:'#dbc8a9' },
     icon:TEMPLATE_ICON('<rect x="16" y="12" width="32" height="38"/><path d="M16 31h32"/><path d="M29 21.5h6M29 40.5h6"/>'),
     build(f, c2){ T_drawers(f, f.x0, f.x1, f.y0, f.y1, 2, c2, { type:'barra', cc:128, pos:'centro', color:'dorado' }); } },
   { id:'comoda', name:'Cómoda / cajonera', desc:'4 gavetas sobre zócalo.',
-    def:{ W:80, H:95, D:45, t:1.8, color:'#efe9e0', color2:'#3d3128', zocalo:8 },
+    def:{ W:80, H:95, D:45, t:1.8, color:'#f3f2ee', color2:'#40302a', zocalo:8 },
     icon:TEMPLATE_ICON('<rect x="12" y="6" width="40" height="44"/><path d="M12 16.5h40M12 27h40M12 37.5h40"/><path d="M28 11h8M28 21.5h8M28 32h8M28 42.5h8"/>'),
     build(f, c2){ T_drawers(f, f.x0, f.x1, f.y0, f.y1, 4, c2, { type:'perfil', cc:128, pos:'centro', color:'niquel' }); } },
   { id:'escritorio', name:'Escritorio', desc:'Tablero, faldón y cajonera de 3 gavetas.',
-    def:{ W:120, H:75, D:60, t:1.8, color:'#8a6a4a', color2:'#efe9e0' },
+    def:{ W:120, H:75, D:60, t:1.8, color:'#86664c', color2:'#f3f2ee' },
     icon:TEMPLATE_ICON('<path d="M4 16h56"/><path d="M6 16v34M58 16v34M40 16v34"/><path d="M40 27h18M40 38h18M47 21.5h4M47 32.5h4M47 43.5h4"/><path d="M6 16v0M8 20h30v10H8z"/>'),
     custom:true,
     build(f0, c2, v){
@@ -5379,14 +5636,14 @@ const TEMPLATES = [
       return { noFondo:true };
     } },
   { id:'biblioteca', name:'Biblioteca', desc:'4 repisas repartidas parejo.',
-    def:{ W:80, H:180, D:30, t:1.8, color:'#7a5a41', color2:'#7a5a41' },
+    def:{ W:80, H:180, D:30, t:1.8, color:'#7b5337', color2:'#7b5337' },
     icon:TEMPLATE_ICON('<rect x="16" y="3" width="32" height="50"/><path d="M16 13h32M16 23h32M16 33h32M16 43h32"/>'),
     build(f){
       const n = 4, gap = (f.y1 - f.y0 - n*f.t)/(n+1);
       for(let i=1;i<=n;i++) T_shelf(f, f.y0 + i*gap + (i-1)*f.t, `Repisa ${i}`);
     } },
   { id:'muebleTV', name:'Mueble de TV', desc:'3 espacios: puertas a los lados y centro abierto.',
-    def:{ W:160, H:50, D:40, t:1.8, color:'#3d3128', color2:'#d8cdbb' },
+    def:{ W:160, H:50, D:40, t:1.8, color:'#40302a', color2:'#dbc8a9' },
     icon:TEMPLATE_ICON('<rect x="3" y="18" width="58" height="22"/><path d="M22 18v22M42 18v22M22 29h20"/><path d="M19 27v4M45 27v4"/>'),
     build(f, c2){
       const cw = (f.x1 - f.x0 - 2*f.t)/3;
@@ -5399,14 +5656,14 @@ const TEMPLATES = [
       T_doors(f, round2(d2+f.t), f.x1, f.y0, f.y1, 1, c2, h, 'right');
     } },
   { id:'cocinaBase', name:'Mueble de cocina (abajo)', desc:'Zócalo, repisa y 2 puertas. Listo para mesón.',
-    def:{ W:80, H:86, D:56, t:1.8, color:'#efe9e0', color2:'#c7c9cb', zocalo:10 },
+    def:{ W:80, H:86, D:56, t:1.8, color:'#f3f2ee', color2:'#bdb8b0', zocalo:10 },
     icon:TEMPLATE_ICON('<path d="M6 12h52"/><rect x="10" y="12" width="44" height="34"/><path d="M32 12v34M10 46v4h44v-4"/><path d="M28 18v5M36 18v5"/>'),
     build(f, c2){
       T_shelf(f, f.y0 + (f.y1-f.y0-f.t)/2, 'Repisa', round2(f.D - f.t - 0.5));
       T_doors(f, f.x0, f.x1, f.y0, f.y1, 2, c2, { type:'perfil', cc:128, pos:'centro', color:'niquel' });
     } },
   { id:'exhibidor', name:'Exhibidor ranurado', desc:'Mueble bajo con puertas y panel ranurado arriba con ganchos y repisas (para almacén).',
-    def:{ W:120, H:90, D:40, t:1.8, color:'#efe9e0', color2:'#3d3128' },
+    def:{ W:120, H:90, D:40, t:1.8, color:'#f3f2ee', color2:'#40302a' },
     icon:TEMPLATE_ICON('<rect x="10" y="3" width="44" height="30"/><path d="M10 8h44M10 13h44M10 18h44M10 23h44M10 28h44"/><rect x="10" y="33" width="44" height="18"/><path d="M32 33v18M20 15v5M28 15v5M40 24h10"/>'),
     build(f, c2, v){
       T_shelf(f, f.y0 + (f.y1-f.y0-f.t)/2, 'Repisa', round2(f.D - f.t - 0.5));
@@ -5420,7 +5677,7 @@ const TEMPLATES = [
         canto:{ top:false, bottom:false, left:false, right:false }, isRanurado:true, ranura:{ sep:7.6, inserto:true }, accesorios:acc });
     } },
   { id:'mesaCentro', name:'Mesa de centro', desc:'Tablero, 2 costados y repisa baja.',
-    def:{ W:100, H:45, D:60, t:1.8, color:'#8a6a4a', color2:'#8a6a4a' },
+    def:{ W:100, H:45, D:60, t:1.8, color:'#86664c', color2:'#86664c' },
     icon:TEMPLATE_ICON('<path d="M4 22h56M8 22v24M56 22v24M8 38h48"/>'),
     custom:true,
     build(f0, c2, v){
@@ -5481,7 +5738,7 @@ function showTemplateForm(tpl){
   const box = document.getElementById('tplForm');
   const d = tpl.def;
   let color = d.color, color2 = d.color2;
-  const dots = (sel, attr)=> MATERIAL_COLORS.map(c=>`<div class="color-dot ${sel===c?'sel':''}" style="${finishSwatchCss(c)}" ${attr}="${c}" title="${finishName(c)}"></div>`).join('');
+  const dots = (sel, attr)=> colorPaletteHtml(sel, attr);
   box.innerHTML = `
     <div class="fitbox" style="margin-top:12px;">
       <div class="ts" style="font-weight:600;font-size:13px;">${tpl.name}</div>
@@ -5553,6 +5810,9 @@ function projectData(){
 function applyProjectData(data){
   if(!data || !Array.isArray(data.pieces)) throw new Error('formato');
   pieces = data.pieces.map(normalizePiece);
+  let _conv = 0;
+  pieces.forEach(p=>{ if(LEGACY_COLOR_MAP[p.color]){ p.color = LEGACY_COLOR_MAP[p.color]; _conv++; } });
+  if(_conv) setTimeout(()=> showToast(`Se cambiaron ${_conv} pieza(s) de los colores viejos al más parecido de Madeofi / Duratex.`), 400);
   const maxId = pieces.reduce((m,p)=>Math.max(m, Number(p.id)||0), 0);
   nextId = Math.max(Number(data.nextId)||0, maxId+1);
   groups = data.groups || {};
@@ -5572,6 +5832,52 @@ function applyProjectData(data){
   setMeasureMode(false);
   refreshAll();
   autoFitCamera();
+  if(pieces.some(p=>p.qty > 1 && !isHardware(p))) setTimeout(openQtyFixModal, 50);
+}
+
+// Proyectos guardados antes: "Cantidad" mayor a 1 sumaba en la lista de corte pero no se veía en el 3D
+function openQtyFixModal(){
+  const list = pieces.filter(p=>p.qty > 1 && !isHardware(p));
+  if(!list.length) return;
+  const overlay = document.getElementById('modalOverlay');
+  const extra = list.reduce((s,p)=>s + p.qty - 1, 0);
+  overlay.innerHTML = `
+    <div id="modalCard" style="width:520px;">
+      <h2>Revisa las cantidades</h2>
+      <div class="hint" style="margin-bottom:8px;">Este proyecto tiene piezas con <b>cantidad mayor a 1</b>. Antes eso sumaba piezas en la lista de corte <b>sin mostrarlas en el 3D</b>, así que pueden estar contadas de más:</div>
+      <div class="fitbox" style="max-height:200px;overflow:auto;"><ul class="ts" style="margin:0;padding-left:18px;">
+        ${list.map(p=>`<li><b>${esc(p.name)}</b> — ${p.w}×${p.h} cm · cantidad <b>${p.qty}</b> (en el 3D hay 1)</li>`).join('')}
+      </ul></div>
+      <div class="hint" style="margin-top:8px;">Son <b>${extra}</b> pieza(s) de más en la lista de corte. ¿Qué hago?</div>
+      <div class="modal-actions" style="flex-wrap:wrap;">
+        <button class="ghost" id="qfCopies" title="Crea en el 3D las piezas que faltan, al lado del mueble">Crear las ${extra} que faltan en el 3D</button>
+        <button class="primary" id="qfOne">Dejar 1 de cada una (lo que se ve)</button>
+      </div>
+    </div>`;
+  overlay.classList.add('open');
+  document.getElementById('qfOne').addEventListener('click', ()=>{
+    snapshot(); list.forEach(p=> p.qty = 1);
+    overlay.classList.remove('open'); refreshAll();
+    showToast('Listo: la lista de corte ahora cuenta solo las piezas que ves en el 3D.');
+  });
+  document.getElementById('qfCopies').addEventListener('click', ()=>{
+    overlay.classList.remove('open');
+    snapshot();
+    const b = overallBounds(); let x = b.maxX + 15;
+    list.forEach(src=>{
+      const n = src.qty - 1; src.qty = 1;
+      const pos = piecePosition(src), size = boxSize(src);
+      for(let i=1;i<=n;i++){
+        const c = JSON.parse(JSON.stringify(src));
+        c.id = uid(); c.name = src.name + ` (copia ${i})`; c.posMode='free'; c.attachTo=null; c.locked=false; c.groupId=null;
+        c.isDrawer=false; c.drawerId=null; c.drawerRole=null; c.compId=null; c.doorOpen=false;
+        c.x = round1(x); c.y = pos.y; c.z = pos.z; x += size.sx + 5;
+        pieces.push(c);
+      }
+    });
+    refreshAll(); autoFitCamera();
+    showToast('Se crearon las piezas que faltaban, a la derecha del mueble. Llévalas a su lugar.');
+  });
 }
 
 function setCloudStatus(text, kind){
@@ -6142,7 +6448,7 @@ function openRanuradoModal(){
   const canHueco = verts.length >= 2 && hors.length >= 2;
   const opt = list => list.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
   let mode = canHueco ? 'hueco' : 'pared';
-  let color = '#efe9e0';
+  let color = '#f3f2ee';
   overlay.innerHTML = `
     <div id="modalCard" style="width:480px;max-height:92vh;overflow-y:auto;">
       <h2>Tablero ranurado</h2>
@@ -6178,7 +6484,7 @@ function openRanuradoModal(){
       </div>
       <label class="canto-chip on" style="display:flex;margin-bottom:8px;"><input type="checkbox" id="rn-ins" checked> Con inserto (perfil) de aluminio en las ranuras</label>
       <div class="field"><label>Color: <b id="rn-cn" style="color:var(--text);">${finishName(color)}</b></label>
-        <div class="colors">${MATERIAL_COLORS.map(c=>`<div class="color-dot ${color===c?'sel':''}" style="${finishSwatchCss(c)}" data-rc="${c}" title="${finishName(c)}"></div>`).join('')}</div></div>
+        <div class="colors">${colorPaletteHtml(color, 'data-rc')}</div></div>
       <div class="fitbox" id="rn-prev"></div>
       <div class="modal-actions">
         <button class="ghost" id="rnCancel">Cancelar</button>
