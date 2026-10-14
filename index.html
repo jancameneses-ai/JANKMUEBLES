@@ -1414,6 +1414,7 @@ function initThree(){
   controls.minDistance = 1;
   controls.maxDistance = 4000;
   controls.screenSpacePanning = true;
+  controls.zoomSpeed = 1.8;   // pellizco con dos dedos en el celular, más rápido
 
   hemiLight = new THREE.HemisphereLight(0xffffff, 0xd8cfc2, 0.35);
   scene.add(hemiLight);
@@ -1455,6 +1456,8 @@ function initThree(){
 // Zoom con la rueda hacia donde apunta el mouse. Antes el zoom iba siempre al
 // centro de giro y, al acercarse, se frenaba y se quedaba trabado sin poder entrar.
 // Ahora te acercas al punto que señalas (una pieza, un rincón) hasta casi tocarlo.
+// sensibilidad del zoom: cada "clic" de la rueda acerca ~30% (antes ~16%)
+const ZOOM_SENS = 0.0035;
 function setupCursorZoom(){
   const ray = new THREE.Raycaster(), m = new THREE.Vector2();
   wrapEl.addEventListener('wheel', e=>{
@@ -1471,8 +1474,9 @@ function setupCursorZoom(){
     const hitDist = hit ? hit.distance : dist;
     const point = ray.ray.at(hitDist, new THREE.Vector3());
     let d = e.deltaY; if(e.deltaMode === 1) d *= 33; else if(e.deltaMode === 2) d *= 400;
+    if(e.ctrlKey) d *= 4;                         // pellizco en el touchpad (llega con valores chiquitos)
     d = Math.max(-200, Math.min(200, d));
-    let f = 1 - Math.exp(d * 0.0018);            // rueda hacia arriba = acercar, hacia abajo = alejar (como siempre)
+    let f = 1 - Math.exp(d * ZOOM_SENS);          // rueda hacia arriba = acercar, hacia abajo = alejar (como siempre)
     if(f > 0 && hit && hitDist * (1-f) < 2) f = Math.max(0, 1 - 2/hitDist); // no atravesar la pieza
     if(f < 0 && dist * (1-f) > controls.maxDistance) f = 1 - controls.maxDistance/dist;
     if(!f) return;
