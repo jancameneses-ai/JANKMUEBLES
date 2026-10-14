@@ -747,21 +747,21 @@ function computeDepthLimitInfo(p){
   };
 }
 
-// ¿Es la tapa de arriba del mueble? (horizontal, apoyada encima de algo y sin nada encima)
+// ¿Es una tapa/cubierta? (horizontal, montada ENCIMA de costados o divisiones —
+// no metida entre ellos como un entrepaño). Puede tener cosas encima (repisa,
+// biblioteca del escritorio) y aun así sobresalir al frente a propósito.
 function isTopCover(p, pos, size){
   if(p.orientation !== 'horizontal' || p.isDrawer || isHardware(p) || p.isRanurado) return false;
-  const top = pos.y + size.sy, tol = 0.01;
-  let supported = false;
+  const tol = 0.01;
   for(const o of pieces){
-    if(o.id === p.id || o.isDoor || o.isFondo || isHardware(o)) continue;
+    if(o.id === p.id || o.orientation === 'horizontal' || o.isDoor || o.isFondo || o.isDrawer || isHardware(o)) continue;
     const op = piecePosition(o), os = boxSize(o);
     const oX = Math.min(pos.x+size.sx, op.x+os.sx) - Math.max(pos.x, op.x);
     const oZ = Math.min(pos.z+size.sz, op.z+os.sz) - Math.max(pos.z, op.z);
     if(oX <= 0.3 || oZ <= 0.3) continue;
-    if(op.y >= top - tol) return false;                       // hay algo encima: no es la tapa
-    if(Math.abs((op.y + os.sy) - pos.y) <= tol) supported = true; // descansa sobre esta pieza
+    if(Math.abs((op.y + os.sy) - pos.y) <= tol) return true;  // descansa sobre el canto de arriba de un costado/división
   }
-  return supported;
+  return false;
 }
 
 // Altura del "piso" real del mueble: 0, o la altura de los rodachines si tiene
@@ -782,7 +782,7 @@ function computeRestInfo(p){
   // una pieza colgada justo debajo de otra (un amarre pegado al techo) o metida
   // exacta entre dos costados está sostenida: no tiene por qué apoyarse en algo de abajo
   const held = computeHeldInfo(p, pos, size);
-  if(held) return { held, supportName: held, expectedY: round1(pos.y), currentY: round1(pos.y), gap: 0, ok: true };
+  const heldRes = held ? { held, supportName: held, expectedY: round1(pos.y), currentY: round1(pos.y), gap: 0, ok: true } : null;
   const MAX_RANGE = 15; // cm — más allá de esto no es "su soporte", es otra pieza sin relación
   let supportName = null, supportTop = null, bestGap = Infinity;
 
@@ -804,9 +804,12 @@ function computeRestInfo(p){
     if(Math.abs(gap) < Math.abs(bestGap)){ bestGap = gap; supportName = o.name; supportTop = round1(top); }
   });
 
-  if(supportName === null) return null;
   const tol = 0.01;
-  return { supportName, expectedY: supportTop, currentY: round1(pos.y), gap: bestGap, ok: Math.abs(bestGap) <= tol };
+  // si se apoya exacto sobre algo, se dice eso; si no, vale que esté sostenida por los lados o colgada
+  if(supportName !== null && Math.abs(bestGap) <= tol) return { supportName, expectedY: supportTop, currentY: round1(pos.y), gap: bestGap, ok: true };
+  if(heldRes) return heldRes;
+  if(supportName === null) return null;
+  return { supportName, expectedY: supportTop, currentY: round1(pos.y), gap: bestGap, ok: false };
 }
 
 // ¿Está sostenida por arriba (pegada debajo de otra pieza) o por los lados (exacta entre dos costados)?
