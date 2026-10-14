@@ -732,13 +732,36 @@ function computeDepthLimitInfo(p){
     frameMaxZ=Math.max(frameMaxZ, op.z+os.sz);
   });
   const tol = 0.01; // exacto de verdad — solo sobrevive el redondeo interno de la computadora, nada perceptible
-  const outFront = Math.max(0, round1(frameMinZ - pos.z));
-  const outBack = Math.max(0, round1((pos.z+size.sz) - frameMaxZ));
+  // el frente del mueble es Z mayor (lado de la cámara) y atrás es Z menor
+  const outFront = Math.max(0, round1((pos.z+size.sz) - frameMaxZ));
+  const outBack = Math.max(0, round1(frameMinZ - pos.z));
+  // tapa/cubierta de arriba (escritorio, mesa, mueble de TV): puede sobresalir a propósito (vuelo)
+  if((outFront > 0.01 || outBack > 0.01) && isTopCover(p, pos, size)){
+    return { frameMinZ: round1(frameMinZ), frameMaxZ: round1(frameMaxZ), currentFrom: round1(pos.z), currentTo: round1(pos.z+size.sz),
+      outFront, outBack, ok: true, vuelo: true };
+  }
   return {
     frameMinZ: round1(frameMinZ), frameMaxZ: round1(frameMaxZ),
     currentFrom: round1(pos.z), currentTo: round1(pos.z+size.sz),
     outFront, outBack, ok: outFront <= tol && outBack <= tol
   };
+}
+
+// ¿Es la tapa de arriba del mueble? (horizontal, apoyada encima de algo y sin nada encima)
+function isTopCover(p, pos, size){
+  if(p.orientation !== 'horizontal' || p.isDrawer || isHardware(p) || p.isRanurado) return false;
+  const top = pos.y + size.sy, tol = 0.01;
+  let supported = false;
+  for(const o of pieces){
+    if(o.id === p.id || o.isDoor || o.isFondo || isHardware(o)) continue;
+    const op = piecePosition(o), os = boxSize(o);
+    const oX = Math.min(pos.x+size.sx, op.x+os.sx) - Math.max(pos.x, op.x);
+    const oZ = Math.min(pos.z+size.sz, op.z+os.sz) - Math.max(pos.z, op.z);
+    if(oX <= 0.3 || oZ <= 0.3) continue;
+    if(op.y >= top - tol) return false;                       // hay algo encima: no es la tapa
+    if(Math.abs((op.y + os.sy) - pos.y) <= tol) supported = true; // descansa sobre esta pieza
+  }
+  return supported;
 }
 
 // Altura del "piso" real del mueble: 0, o la altura de los rodachines si tiene
@@ -2556,6 +2579,12 @@ function buildInfoHtml(p){
   const overlaps = findOverlaps(p);
   if(overlaps.length){
     infoHtml += `<div class="ts" style="margin-top:4px;color:var(--danger);font-weight:600;">⚠ Se está encimando con: ${overlaps.map(esc).join(', ')}. Muévela o ajusta su medida.</div>`;
+  }
+  if(depthInfo && depthInfo.vuelo){
+    const parts = [];
+    if(depthInfo.outFront > 0) parts.push(`${depthInfo.outFront} cm al frente`);
+    if(depthInfo.outBack > 0) parts.push(`${depthInfo.outBack} cm atrás`);
+    infoHtml += `<div class="ts" style="margin-top:4px;color:var(--ok);">✓ Tapa de arriba: sobresale ${parts.join(' y ')} (vuelo). Está bien así.</div>`;
   }
   if(depthInfo && !depthInfo.ok){
     const dir = depthInfo.outFront > 0 ? `se pasa ${depthInfo.outFront} cm hacia el frente` : `se pasa ${depthInfo.outBack} cm hacia atrás`;
