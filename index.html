@@ -200,6 +200,20 @@
   }
   .canto-chip.on{border-color:var(--canto);background:rgba(47,111,176,.1);color:var(--canto);}
   .canto-chip input{display:none;}
+  .canto-svg{width:100%;height:auto;display:block;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;}
+  .cedge:hover line:last-of-type{stroke:#5b93cf;}
+  .canto-quick{display:flex;gap:6px;margin-top:6px;}
+  .canto-rows{margin-top:6px;border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+  .crow{display:flex;flex-direction:column;gap:4px;padding:6px 8px;border-bottom:1px solid var(--line);background:var(--panel);}
+  .crow.on{background:#f1f6fc;}
+  .crow-chk{display:flex;align-items:center;gap:6px;font-size:11.5px;cursor:pointer;}
+  .crow-chk input{width:15px;height:15px;accent-color:#2f6fb0;}
+  .crow-col{display:flex;align-items:center;gap:6px;padding-left:21px;}
+  .crow-col select,.crow-all select{flex:1;font-size:11.5px;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:#fff;}
+  .crow-col select:disabled{opacity:.45;}
+  .crow-sw{width:16px;height:16px;border-radius:4px;border:1px solid rgba(0,0,0,.2);flex:none;}
+  .crow-all{display:flex;align-items:center;gap:6px;padding:7px 8px;font-size:11px;color:var(--text-dim);background:var(--panel-2);}
+  .canto-quick button{flex:1;}
   .colors{display:flex;gap:6px;flex-wrap:wrap;}
   .colors:has(> .pal){display:block;}
   .pal{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);padding:6px;}
@@ -334,6 +348,8 @@
   table{width:100%;border-collapse:collapse;font-size:12px;}
   th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);}
   th{color:var(--text-dim);font-weight:500;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;}
+  .cantos-tags span.cc{border-color:#a8673a;color:#7d4a26;background:#fbf3ec;}
+  .cantos-tags span.cc i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:3px;vertical-align:-1px;}
   .cantos-tags span{display:inline-block;font-size:9.5px;background:rgba(47,111,176,.12);color:var(--canto);border:1px solid rgba(47,111,176,.35);border-radius:3px;padding:1px 5px;margin-right:3px;}
   #nestWrap{display:flex;flex-wrap:wrap;align-items:flex-start;gap:14px;margin-top:10px;}
   .nest-mat{flex:0 1 auto;max-width:100%;}
@@ -448,6 +464,7 @@
             <button id="measureBtn" class="tool" title="Distancia entre dos piezas"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="10" rx="1"/><path d="M6 7v3M10 7v5M14 7v3M18 7v5"/></svg><span><b>Medir</b><small>Distancia entre dos piezas</small></span></button>
             <button id="placeAtHeightBtn" class="tool" title="Colocar una pieza a cierta altura"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M8 7l4-4 4 4"/><path d="M4 21h16"/></svg><span><b>A una altura</b><small>Pon una pieza a X cm de otra</small></span></button>
             <button id="centerBtn" class="tool" title="Deja una tabla justo en el centro de otra"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6M12 16v6M2 12h6M16 12h6"/><circle cx="12" cy="12" r="2.5"/></svg><span><b>Centrar en otra tabla</b><small>Queda justo en la mitad</small></span></button>
+            <button id="autoCantoBtn" class="tool" title="Pone tapacanto en los lados que se ven de todo el mueble"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="16" height="12" rx="1"/><path d="M4 6h16" stroke="#2f6fb0" stroke-width="3"/><path d="M20 6v12" stroke="#2f6fb0" stroke-width="3"/></svg><span><b>Tapacanto automático</b><small>Pone canto en todo lo que se ve</small></span></button>
             <button id="multiSelectBtn" class="tool"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12l3 3 5-6"/></svg><span><b>Seleccionar varias</b><small>Cambiar color o medida a varias</small></span></button>
           </div>
           <div id="groupActionBar" style="display:none;gap:6px;margin:8px 0;flex-wrap:wrap;">
@@ -823,14 +840,14 @@ function computeFitInfo(p){
     }
   });
   if(!left || !right) return null;
-  const clearWidth = round1(right.pos.x - (left.pos.x+left.size.sx));
-  const expectedX = round1(left.pos.x+left.size.sx);
-  const xDiffLeft = round1(pos.x - expectedX);
-  const widthDiff = round1(size.sx - clearWidth);
+  const clearWidth = round2(right.pos.x - (left.pos.x+left.size.sx));
+  const expectedX = round2(left.pos.x+left.size.sx);
+  const xDiffLeft = round2(pos.x - expectedX);
+  const widthDiff = round2(size.sx - clearWidth);
   const fitTol = 0.01; // exacto de verdad — solo sobrevive el redondeo interno de la computadora, nada perceptible
   return {
     leftName:left.piece.name, rightName:right.piece.name, leftId:left.piece.id, rightId:right.piece.id, clearWidth,
-    currentWidth: round1(size.sx), xDiffLeft, widthDiff,
+    currentWidth: round2(size.sx), xDiffLeft, widthDiff,
     ok: Math.abs(xDiffLeft) <= fitTol && Math.abs(widthDiff) <= fitTol,
     expectedX
   };
@@ -841,10 +858,11 @@ function computeFitInfo(p){
 function findOverlaps(p){
   if(p.isDoor) return []; // las puertas van pegadas por delante a propósito — no cuenta como choque
   const pa = piecePosition(p), sa = boxSize(p);
-  const eps = 0.3;
+  const eps = 0.005; // exacto: desde 0.05 mm ya cuenta como encimada (antes se perdonaban 3 mm)
   const names = [];
   pieces.forEach(o=>{
     if(o.id===p.id || o.isDoor) return; // tampoco cuenta chocar con una puerta
+    if(isHardware(p) || isHardware(o)) return; // rodachines y tubos no son tablas
     const pb = piecePosition(o), sb = boxSize(o);
     const ox = Math.min(pa.x+sa.sx, pb.x+sb.sx) - Math.max(pa.x, pb.x);
     const oy = Math.min(pa.y+sa.sy, pb.y+sb.sy) - Math.max(pa.y, pb.y);
@@ -852,6 +870,35 @@ function findOverlaps(p){
     if(ox > eps && oy > eps && oz > eps) names.push(o.name);
   });
   return names;
+}
+
+// cuánto se mete una pieza dentro de otra (lo menor de los 3 ejes = lo que hay que correrla)
+function overlapAmount(p, name){
+  const o = pieces.find(x=>x.name===name && x.id!==p.id); if(!o) return 0;
+  const pa = piecePosition(p), sa = boxSize(p), pb = piecePosition(o), sb = boxSize(o);
+  const ox = Math.min(pa.x+sa.sx, pb.x+sb.sx) - Math.max(pa.x, pb.x);
+  const oy = Math.min(pa.y+sa.sy, pb.y+sb.sy) - Math.max(pa.y, pb.y);
+  const oz = Math.min(pa.z+sa.sz, pb.z+sb.sz) - Math.max(pa.z, pb.z);
+  return round2(Math.min(ox, oy, oz));
+}
+// ¿La pieza está suelta? (no toca exacto ninguna otra tabla ni el piso)
+function isLoose(p){
+  if(isHardware(p) || p.isDoor || p.isRanurado) return false; // el ranurado va atornillado a la pared o al hueco; la puerta cuelga de sus bisagras (deja luz a propósito)
+  const pa = piecePosition(p), sa = boxSize(p), tol = 0.01;
+  if(Math.abs(pa.y - floorLevel()) <= tol || Math.abs(pa.y) <= tol) return false;
+  for(const o of pieces){
+    if(o.id===p.id || isHardware(o)) continue;
+    const pb = piecePosition(o), sb = boxSize(o);
+    const g = [
+      Math.min(pa.x+sa.sx, pb.x+sb.sx) - Math.max(pa.x, pb.x),
+      Math.min(pa.y+sa.sy, pb.y+sb.sy) - Math.max(pa.y, pb.y),
+      Math.min(pa.z+sa.sz, pb.z+sb.sz) - Math.max(pa.z, pb.z)
+    ];
+    // se tocan: en dos ejes se cruzan y en el tercero las caras coinciden (o se meten)
+    const cross = g.filter(v=>v > tol).length, touch = g.filter(v=>v >= -tol).length;
+    if(touch === 3 && cross >= 2) return false;
+  }
+  return true;
 }
 
 // ¿Esta pieza se pasa de la profundidad del marco (adelante o atrás)? Se
@@ -873,8 +920,8 @@ function computeDepthLimitInfo(p){
   });
   const tol = 0.01; // exacto de verdad — solo sobrevive el redondeo interno de la computadora, nada perceptible
   // el frente del mueble es Z mayor (lado de la cámara) y atrás es Z menor
-  const outFront = Math.max(0, round1((pos.z+size.sz) - frameMaxZ));
-  const outBack = Math.max(0, round1(frameMinZ - pos.z));
+  const outFront = Math.max(0, round2((pos.z+size.sz) - frameMaxZ));
+  const outBack = Math.max(0, round2(frameMinZ - pos.z));
   // tapa/cubierta de arriba (escritorio, mesa, mueble de TV): puede sobresalir a propósito (vuelo)
   if((outFront > 0.01 || outBack > 0.01) && isTopCover(p, pos, size)){
     return { frameMinZ: round1(frameMinZ), frameMaxZ: round1(frameMaxZ), currentFrom: round1(pos.z), currentTo: round1(pos.z+size.sz),
@@ -928,7 +975,7 @@ function computeRestInfo(p){
 
   // candidato base: el suelo real (0, o encima de los rodachines si los hay)
   const fl = floorLevel();
-  const floorGap = round1(pos.y - fl);
+  const floorGap = round2(pos.y - fl);
   if(Math.abs(floorGap) <= MAX_RANGE){ bestGap = floorGap; supportName = fl>0 ? 'los rodachines' : 'el suelo'; supportTop = fl; }
 
   // candidato: cualquier otra pieza cuyo tope quede cerca, justo debajo (o casi)
@@ -939,7 +986,7 @@ function computeRestInfo(p){
     const overlapZ = Math.min(pos.z+size.sz, op.z+os.sz) - Math.max(pos.z, op.z);
     if(overlapX <= 0.3 || overlapZ <= 0.3) return; // no queda realmente debajo
     const top = op.y + os.sy;
-    const gap = round1(pos.y - top); // 0 = toca exacto · negativo = se mete dentro · positivo = queda flotando
+    const gap = round2(pos.y - top); // 0 = toca exacto · negativo = se mete dentro · positivo = queda flotando
     if(Math.abs(gap) > MAX_RANGE) return;
     if(Math.abs(gap) < Math.abs(bestGap)){ bestGap = gap; supportName = o.name; supportTop = round1(top); }
   });
@@ -1056,6 +1103,7 @@ function getWarningIds(){
     const depthInfo = computeDepthLimitInfo(p);
     if(depthInfo && !depthInfo.ok) s.add(p.id);
     if(findOverlaps(p).length) s.add(p.id);
+    if(isLoose(p)) s.add(p.id);
   });
   drawerWarningIds().forEach(id=>s.add(id));
   return s;
@@ -1152,6 +1200,57 @@ function cantoWorldSegments(p){
   if(p.canto.left)   segs.push([pt(0,0), pt(0,hLen)]);
   if(p.canto.right)  segs.push([pt(wLen,0), pt(wLen,hLen)]);
   return segs;
+}
+
+/* ---------- Tapacanto: qué lado de cada pieza da hacia dónde ---------- */
+// cada canto (superior/inferior/izquierdo/derecho del ancho×alto de la pieza)
+// es una cara delgada de la tabla en el mueble: este es su eje y su lado
+function cantoFaceInfo(p, k){
+  let axW, axH;
+  if(p.orientation === 'vertical-front'){ axW='x'; axH='y'; }
+  else if(p.orientation === 'vertical-side'){ axW='z'; axH='y'; }
+  else { axW='x'; axH='z'; }
+  const ax = (k==='top'||k==='bottom') ? axH : axW;
+  const sign = (k==='top'||k==='right') ? 1 : -1;
+  const len = (k==='top'||k==='bottom') ? p.w : p.h;
+  const WORD = { x:['izquierda','derecha'], y:['abajo','arriba'], z:['atrás','frente'] };
+  return { ax, sign, len, faces: WORD[ax][sign>0 ? 1 : 0] };
+}
+// ¿se ve ese canto? (no está pegado contra otra tabla, ni contra el piso, ni mirando a la pared de atrás)
+function cantoVisible(p, k){
+  const fi = cantoFaceInfo(p, k);
+  if(fi.ax === 'z' && fi.sign < 0) return false;                 // atrás: va contra la pared o el fondo
+  const pos = piecePosition(p), sz = boxSize(p);
+  const mn = { x:pos.x, y:pos.y, z:pos.z }, mx = { x:pos.x+sz.sx, y:pos.y+sz.sy, z:pos.z+sz.sz };
+  const face = fi.sign > 0 ? mx[fi.ax] : mn[fi.ax];
+  if(fi.ax === 'y' && fi.sign < 0 && face <= floorLevel() + 0.05) return false; // apoyado en el piso
+  const others = ['x','y','z'].filter(a=>a!==fi.ax);
+  const area = (mx[others[0]]-mn[others[0]]) * (mx[others[1]]-mn[others[1]]);
+  let covered = 0;
+  for(const o of pieces){
+    if(o.id===p.id || isHardware(o) || o.isDoor) continue;
+    const op = piecePosition(o), os = boxSize(o);
+    const omn = { x:op.x, y:op.y, z:op.z }, omx = { x:op.x+os.sx, y:op.y+os.sy, z:op.z+os.sz };
+    const tol = 0.05;
+    const touches = fi.sign > 0 ? (omn[fi.ax] <= face + tol && omx[fi.ax] >= face + 0.3)
+                                : (omx[fi.ax] >= face - tol && omn[fi.ax] <= face - 0.3);
+    if(!touches) continue;
+    const a = Math.max(0, Math.min(mx[others[0]], omx[others[0]]) - Math.max(mn[others[0]], omn[others[0]]));
+    const b = Math.max(0, Math.min(mx[others[1]], omx[others[1]]) - Math.max(mn[others[1]], omn[others[1]]));
+    covered += a*b;
+  }
+  return covered < area * 0.6;
+}
+// color de un tapacanto: el que le pusiste, o el mismo de la lámina
+function cantoColorOf(p, k){ return (p.cantoColor && p.cantoColor[k]) || p.color; }
+function autoCantoFor(p){
+  if(isHardware(p) || p.isFondo) return { top:false, bottom:false, left:false, right:false };
+  if(p.isDoor || p.drawerRole === 'frente') return { top:true, bottom:true, left:true, right:true };
+  // caja de la gaveta: solo el canto de arriba (es lo que se ve al abrirla); el fondo de 3 mm no lleva
+  if(p.isDrawer) return { top: p.drawerRole !== 'fondo' && p.orientation !== 'horizontal', bottom:false, left:false, right:false };
+  const out = {};
+  ['top','bottom','left','right'].forEach(k=> out[k] = cantoVisible(p, k));
+  return out;
 }
 
 /* ============================================================
@@ -1841,7 +1940,9 @@ function setupCursorZoom(){
     if(e.ctrlKey) d *= 4;                         // pellizco en el touchpad (llega con valores chiquitos)
     d = Math.max(-200, Math.min(200, d));
     let f = 1 - Math.exp(d * ZOOM_SENS);          // rueda hacia arriba = acercar, hacia abajo = alejar (como siempre)
-    if(f > 0 && hit && hitDist * (1-f) < 2) f = Math.max(0, 1 - 2/hitDist); // no atravesar la pieza
+    // de cerca, cada clic avanza al menos 3 cm (antes se iba frenando y casi no se acercaba)
+    if(f > 0 && hit && hitDist * f < 3) f = Math.min(1, 3 / hitDist);
+    if(f > 0 && hit && hitDist * (1-f) < 0.8) f = Math.max(0, 1 - 0.8/hitDist); // no atravesar la pieza
     if(f < 0 && dist * (1-f) > controls.maxDistance) f = 1 - controls.maxDistance/dist;
     if(!f) return;
     const viewDir = new THREE.Vector3().subVectors(controls.target, camera.position).normalize();
@@ -1887,6 +1988,14 @@ function cameraMoving(){
 function animate(){
   requestAnimationFrame(animate);
   const moved = controls.update();       // true si la cámara se movió (girar, zoom, inercia)
+  if(moved && camera.position.distanceTo){
+    // de cerca: el centro de giro se corre un poco adelante para que el pellizco no se trabe,
+    // y el plano de recorte se ajusta para ver la tabla a pocos centímetros sin que se "corte"
+    const d = camera.position.distanceTo(controls.target);
+    if(d < 3){ const dir = new THREE.Vector3().subVectors(controls.target, camera.position).normalize(); controls.target.copy(camera.position).addScaledVector(dir, 3); }
+    const nearWanted = Math.max(0.05, Math.min(0.5, d * 0.02));
+    if(Math.abs(camera.near - nearWanted) > 0.01){ camera.near = nearWanted; camera.updateProjectionMatrix(); }
+  }
   if(moved) cameraMoving();
   if(moved || needsRender){
     renderer.render(scene, camera);
@@ -1972,7 +2081,17 @@ function rebuild3D(){
       geo = new THREE.BoxGeometry(Math.max(size.sx,0.01), Math.max(size.sy,0.01), Math.max(size.sz,0.01));
       scaleBoxUV(geo, size.sx, size.sy, size.sz);
     }
-    const mat = makePieceMaterial(p, warn, picked, p.id===selectedId);
+    let mat = makePieceMaterial(p, warn, picked, p.id===selectedId);
+    // tapacanto de otro color: esa cara delgada de la tabla se pinta con su color
+    if(!(p.isCaster || p.isRod) && p.cantoColor && ['top','bottom','left','right'].some(k=>p.canto[k] && p.cantoColor[k] && p.cantoColor[k]!==p.color)){
+      const arr = [mat, mat, mat, mat, mat, mat], cache = {};
+      ['top','bottom','left','right'].forEach(k=>{
+        const c = p.canto[k] && p.cantoColor[k]; if(!c || c===p.color) return;
+        const fi = cantoFaceInfo(p, k), idx = { x:0, y:2, z:4 }[fi.ax] + (fi.sign > 0 ? 0 : 1);
+        arr[idx] = cache[c] || (cache[c] = makePieceMaterial(Object.assign({}, p, { color:c }), warn, picked, p.id===selectedId));
+      });
+      mat = arr;
+    }
     // tablas: se reusa un cubo de bordes y se escala (antes se calculaba uno nuevo por tabla en cada cambio)
     const sharedEdges = !(p.isCaster || p.isRod);
     const edges = sharedEdges ? getUnitEdges() : new THREE.EdgesGeometry(geo);
@@ -2949,7 +3068,10 @@ function buildInfoHtml(p){
   }
   const overlaps = findOverlaps(p);
   if(overlaps.length){
-    infoHtml += `<div class="ts" style="margin-top:4px;color:var(--danger);font-weight:600;">⚠ Se está encimando con: ${overlaps.map(esc).join(', ')}. Muévela o ajusta su medida.</div>`;
+    infoHtml += `<div class="ts" style="margin-top:4px;color:var(--danger);font-weight:600;">⚠ Se está encimando (remontada) con: ${overlaps.map(n=>`${esc(n)} <span style="font-weight:400">(se mete ${round2(overlapAmount(p,n)*10)} mm)</span>`).join(', ')}. Muévela o ajusta su medida.</div>`;
+  }
+  if(isLoose(p)){
+    infoHtml += `<div class="ts" style="margin-top:4px;color:var(--danger);font-weight:600;">⚠ Pieza suelta: no toca ninguna otra tabla ni el piso. Pégala exacto a su lugar (aunque sea a 1 mm, la app lo marca).</div>`;
   }
   if(depthInfo && depthInfo.vuelo){
     const parts = [];
@@ -2986,7 +3108,10 @@ function buildInfoHtml(p){
     if(fitInfo.ok){
       infoHtml += `<div class="ts" style="margin-top:4px;color:var(--ok);">✓ Encaja bien entre "${esc(fitInfo.leftName)}" y "${esc(fitInfo.rightName)}" (hueco libre: <b class="mono">${fitInfo.clearWidth}</b> cm).</div>`;
     } else {
-      infoHtml += `<div class="ts" style="margin-top:4px;color:var(--danger);font-weight:600;">⚠ No calza bien entre "${esc(fitInfo.leftName)}" y "${esc(fitInfo.rightName)}": el hueco libre es de <b class="mono">${fitInfo.clearWidth}</b> cm y esta pieza mide <b class="mono">${fitInfo.currentWidth}</b> cm.</div>
+      const why = [];
+      if(Math.abs(fitInfo.widthDiff) > 0.01) why.push(`el hueco libre es de <b class="mono">${fitInfo.clearWidth}</b> cm y esta pieza mide <b class="mono">${fitInfo.currentWidth}</b> cm (${fitInfo.widthDiff > 0 ? 'sobran' : 'faltan'} ${round2(Math.abs(fitInfo.widthDiff)*10)} mm)`);
+      if(Math.abs(fitInfo.xDiffLeft) > 0.01) why.push(`está corrida ${round2(Math.abs(fitInfo.xDiffLeft)*10)} mm hacia la ${fitInfo.xDiffLeft > 0 ? 'derecha' : 'izquierda'} (debe empezar en X = ${fitInfo.expectedX} cm)`);
+      infoHtml += `<div class="ts" style="margin-top:4px;color:var(--danger);font-weight:600;">⚠ No calza exacto entre "${esc(fitInfo.leftName)}" y "${esc(fitInfo.rightName)}": ${why.join(' y ') || 'revisa la medida'}.</div>
         <button class="small primary" id="f-fit" style="margin-top:6px;">Ajustar automáticamente a ${fitInfo.clearWidth} cm</button>`;
     }
   }
@@ -3048,6 +3173,45 @@ function refreshInfoBox(){
 function numOr(v, fallback){ const n = parseFloat(v); return isNaN(n) ? fallback : n; }
 
 var formTab = 'medidas';
+// filas: ¿lleva tapacanto? y ¿de qué color? (por cada lado)
+function cantoRowsHtml(p){
+  const NAME = { top:'Superior', bottom:'Inferior', left:'Izquierdo', right:'Derecho' };
+  const opts = sel => `<option value="">Igual a la lámina</option>` + Object.keys(BRAND_COLORS).map(br=>`<optgroup label="${br}">${BRAND_COLORS[br].map(c=>`<option value="${c}" ${sel===c?'selected':''}>${esc(FINISHES[c].name)}</option>`).join('')}</optgroup>`).join('');
+  return `<div class="canto-rows">${['top','bottom','left','right'].map(k=>{
+    const fi = cantoFaceInfo(p,k), on = !!p.canto[k], cc = (p.cantoColor||{})[k] || '';
+    return `<div class="crow ${on?'on':''}">
+      <label class="crow-chk"><input type="checkbox" data-crow="${k}" ${on?'checked':''}><span><b>${NAME[k]}</b> · ${fi.len} cm · ${fi.faces}</span></label>
+      <div class="crow-col"><span class="crow-sw" style="${finishSwatchCss(cc || p.color)}"></span><select data-ccol="${k}" ${on?'':'disabled'} title="Color de este tapacanto">${opts(cc)}</select></div>
+    </div>`; }).join('')}
+    <div class="crow-all"><span>Todos los que llevan, en:</span><select id="ccolAll"><option value="__">— escoger —</option>${opts('__none__').replace('<option value="">Igual a la lámina</option>','<option value="">Igual a la lámina</option>')}</select></div>
+  </div>`;
+}
+// dibujo de la pieza con sus 4 lados: en color los que llevan tapacanto
+function cantoDiagramHtml(p){
+  const W = 220, H = 150, pad = 34;
+  const r = Math.min((W-2*pad)/Math.max(p.w,1), (H-2*pad)/Math.max(p.h,1));
+  const rw = Math.max(30, p.w*r), rh = Math.max(16, p.h*r);
+  const x0 = (W-rw)/2, y0 = (H-rh)/2, x1 = x0+rw, y1 = y0+rh;
+  const fill = mixWhite(p.color, 0.35).css;
+  const E = { top:[x0,y0,x1,y0], bottom:[x0,y1,x1,y1], left:[x0,y0,x0,y1], right:[x1,y0,x1,y1] };
+  const NAME = { top:'Superior', bottom:'Inferior', left:'Izquierdo', right:'Derecho' };
+  let out = `<svg class="canto-svg" viewBox="0 0 ${W} ${H}"><rect x="${x0}" y="${y0}" width="${rw}" height="${rh}" fill="${fill}" stroke="#bbb" stroke-width="1"/>`;
+  ['top','bottom','left','right'].forEach(k=>{
+    const [a,b,c,d] = E[k], on = !!p.canto[k], fi = cantoFaceInfo(p, k);
+    const vis = cantoVisible(p, k);
+    // los textos de los lados van parados (así no se salen del cuadro)
+    const lx = k==='left' ? x0-9 : k==='right' ? x1+15 : (x0+x1)/2;
+    const ly = k==='top' ? y0-8 : k==='bottom' ? y1+15 : (y0+y1)/2;
+    const anchor = 'middle';
+    const rot = (k==='left'||k==='right') ? ` transform="rotate(-90 ${lx} ${ly})"` : '';
+    out += `<g data-cedge="${k}" class="cedge ${on?'on':''}" style="cursor:pointer"><title>${NAME[k]} · ${fi.len} cm · da hacia ${fi.faces}${vis?' (se ve)':' (queda tapado)'} — clic para ${on?'quitar':'poner'}</title>
+      <line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="transparent" stroke-width="16"/>
+      ${on ? `<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="#2f6fb0" stroke-width="9" stroke-linecap="round"/>` : ''}
+      <line x1="${a}" y1="${b}" x2="${c}" y2="${d}" stroke="${on ? cantoColorOf(p,k) : '#cfc8bd'}" stroke-width="${on?5:3}" stroke-linecap="round" ${on?'':'stroke-dasharray="4 4"'}/>
+      <text x="${lx}" y="${ly}"${rot} font-size="9.5" text-anchor="${anchor}" fill="${on?'#2f6fb0':'#8a8378'}" font-weight="${on?700:400}">${fi.len} · ${fi.faces}</text></g>`;
+  });
+  return out + `</svg>`;
+}
 function renderForm(){
   const panel = document.getElementById('formPanel');
   if(multiSelectMode){
@@ -3118,12 +3282,13 @@ function renderForm(){
         </div>
       </div>
       <div class="field">
-        <label>Cantos (tapacanto)</label>
-        <div class="canto-grid">
-          <label class="canto-chip ${p.canto.top?'on':''}"><input type="checkbox" data-canto="top" ${p.canto.top?'checked':''}> Superior</label>
-          <label class="canto-chip ${p.canto.bottom?'on':''}"><input type="checkbox" data-canto="bottom" ${p.canto.bottom?'checked':''}> Inferior</label>
-          <label class="canto-chip ${p.canto.left?'on':''}"><input type="checkbox" data-canto="left" ${p.canto.left?'checked':''}> Izquierdo</label>
-          <label class="canto-chip ${p.canto.right?'on':''}"><input type="checkbox" data-canto="right" ${p.canto.right?'checked':''}> Derecho</label>
+        <label>Tapacanto — toca un lado para ponerlo o quitarlo</label>
+        ${cantoDiagramHtml(p)}
+        ${cantoRowsHtml(p)}
+        <div class="canto-quick">
+          <button type="button" class="small primary" data-cq="auto" title="Pone tapacanto solo en los lados que se ven (no los pegados a otra tabla, ni atrás, ni contra el piso)">Automático</button>
+          <button type="button" class="small ghost" data-cq="all">Todos</button>
+          <button type="button" class="small ghost" data-cq="none">Ninguno</button>
         </div>
       </div>
     </div>
@@ -3252,7 +3417,27 @@ function renderForm(){
   const toggleDoorBtn = panel.querySelector('#f-toggledoor');
   if(toggleDoorBtn) toggleDoorBtn.addEventListener('click', ()=>{ toggleDoor(p.id); renderForm(); });
   panel.querySelectorAll('[data-color]').forEach(d=>d.addEventListener('click', ()=>{ snapshot(); p.color=d.dataset.color; refreshAll(); }));
-  panel.querySelectorAll('[data-canto]').forEach(chk=>chk.addEventListener('change', e=>{ snapshot(); p.canto[e.target.dataset.canto]=e.target.checked; refreshAll(); }));
+  panel.querySelectorAll('[data-cedge]').forEach(el=>el.addEventListener('click', ()=>{ snapshot(); const k = el.dataset.cedge; p.canto[k] = !p.canto[k]; syncSelectedComponents && syncSelectedComponents(); refreshAll(); }));
+  panel.querySelectorAll('[data-crow]').forEach(chk=>chk.addEventListener('change', ()=>{ snapshot(); p.canto[chk.dataset.crow] = chk.checked; syncSelectedComponents(); refreshAll(); }));
+  panel.querySelectorAll('[data-ccol]').forEach(sel=>sel.addEventListener('change', ()=>{
+    snapshot(); p.cantoColor = Object.assign({}, p.cantoColor||{});
+    if(sel.value) p.cantoColor[sel.dataset.ccol] = sel.value; else delete p.cantoColor[sel.dataset.ccol];
+    syncSelectedComponents(); refreshAll();
+  }));
+  const ccAll = panel.querySelector('#ccolAll');
+  if(ccAll) ccAll.addEventListener('change', ()=>{
+    if(ccAll.value === '__') return;
+    snapshot(); p.cantoColor = Object.assign({}, p.cantoColor||{});
+    ['top','bottom','left','right'].forEach(k=>{ if(p.canto[k]){ if(ccAll.value) p.cantoColor[k] = ccAll.value; else delete p.cantoColor[k]; } });
+    syncSelectedComponents(); refreshAll();
+  });
+  panel.querySelectorAll('[data-cq]').forEach(b=>b.addEventListener('click', ()=>{
+    snapshot();
+    const m = b.dataset.cq;
+    p.canto = m==='auto' ? autoCantoFor(p) : { top:m==='all', bottom:m==='all', left:m==='all', right:m==='all' };
+    refreshAll();
+    if(m==='auto'){ const n = Object.values(p.canto).filter(Boolean).length; showToast(n ? `Tapacanto en ${n} lado(s): los que se ven.` : 'Esta pieza no lleva tapacanto: todos sus lados quedan tapados.'); }
+  }));
   panel.querySelectorAll('[data-pm]').forEach(b=>b.addEventListener('click', ()=>{
     if(p.posMode === b.dataset.pm) return;
     snapshot();
@@ -3319,7 +3504,8 @@ function cutGroups(){
     const key = cutKeyOf(p);
     let g = map.get(key);
     if(!g){
-      g = { key, w:round2(p.w), h:round2(p.h), cw:cutW, ch:cutH, t:p.t, color:p.color, sides, ranurado:!!p.isRanurado, qty:0, names:[] };
+      const sideColors = {}; sides.forEach(k=> sideColors[k] = cantoColorOf(p,k));
+      g = { key, w:round2(p.w), h:round2(p.h), cw:cutW, ch:cutH, t:p.t, color:p.color, sides, sideColors, ranurado:!!p.isRanurado, qty:0, names:[] };
       map.set(key, g);
     }
     g.qty += (p.qty || 1);
@@ -3330,9 +3516,17 @@ function cutGroups(){
   list.forEach(g=>{
     const cm = g.sides.reduce((s,k)=> s + ((k==='top'||k==='bottom') ? g.w : g.h), 0);
     g.cantoM = round2(cm * g.qty / 100);
+    g.cantoByColor = {};
+    g.sides.forEach(k=>{ const c = g.sideColors[k]; g.cantoByColor[c] = round2((g.cantoByColor[c]||0) + ((k==='top'||k==='bottom') ? g.w : g.h) * g.qty / 100); });
   });
   list.sort((a,b)=> (a.ranurado - b.ranurado) || finishName(a.color).localeCompare(finishName(b.color)) || (b.t - a.t) || (b.cw - a.cw) || (b.ch - a.ch));
   return list;
+}
+// metros de tapacanto por color (para comprar cada rollo)
+function cantoMetersByColor(list){
+  const t = {};
+  list.forEach(g=> Object.entries(g.cantoByColor||{}).forEach(([c,m])=>{ t[c] = round2((t[c]||0) + m); }));
+  return Object.entries(t).map(([c,m])=>({ c, m })).sort((a,b)=>b.m-a.m);
 }
 function cantoText(cL, cC){
   const parts = [];
@@ -3356,13 +3550,14 @@ function renderCutGroups(){
       <td class="mono">${g.t}</td>
       <td>${esc(finishName(g.color))}${g.ranurado ? ' · <b>ranurado</b>' : ''}</td>
       <td class="mono" style="font-weight:700;font-size:13px;">${g.qty}</td>
-      <td class="cantos-tags">${g.sides.length ? g.sides.map(k=>`<span>${CANTO_LBL[k]}</span>`).join('') : '<span style="opacity:.4;background:transparent;border-color:var(--line);color:var(--text-dim)">sin canto</span>'}</td>
+      <td class="cantos-tags">${g.sides.length ? g.sides.map(k=> g.sideColors[k]!==g.color ? `<span class="cc" title="Tapacanto ${esc(finishName(g.sideColors[k]))}"><i style="${finishSwatchCss(g.sideColors[k])}"></i>${CANTO_LBL[k]} · ${esc(FINISHES[g.sideColors[k]] ? FINISHES[g.sideColors[k]].name : '')}</span>` : `<span>${CANTO_LBL[k]}</span>`).join('') : '<span style="opacity:.4;background:transparent;border-color:var(--line);color:var(--text-dim)">sin canto</span>'}</td>
       <td class="mono">${g.cantoM || ''}</td>
       <td style="font-size:11px;color:var(--text-dim);max-width:320px;" title="${esc(g.names.join(', '))}">${esc(g.names.length > 3 ? g.names.slice(0,3).join(', ') + ` y ${g.names.length-3} más` : g.names.join(', '))}</td>
     </tr>`).join('');
   const totalPieces = list.reduce((s,g)=>s+g.qty, 0);
   const totalCanto = round1(list.reduce((s,g)=>s+g.cantoM, 0));
-  document.getElementById('cutGroupSummary').textContent = `${list.length} cortes distintos · ${totalPieces} piezas en total · tapacanto: ${totalCanto} m`;
+  const byC = cantoMetersByColor(list);
+  document.getElementById('cutGroupSummary').innerHTML = `${list.length} cortes distintos · ${list.reduce((a,g)=>a+g.qty,0)} piezas en total · <b>tapacanto: ${totalCanto} m</b>${byC.length ? ' (' + byC.map(x=>`${esc(finishName(x.c))}: ${x.m} m`).join(' · ') + ')' : ''}`;
 }
 function setCutView(v){
   cutView = v;
@@ -3465,7 +3660,7 @@ let lastNest = null;
 function cutKeyOf(p){
   const { cutW, cutH } = cutSizeFor(p);
   const sides = ['top','bottom','left','right'].filter(k=>p.canto[k]);
-  return [round2(p.w), round2(p.h), cutW, cutH, p.t, p.color, sides.join(','), p.isRanurado ? 'R' : ''].join('|');
+  return [round2(p.w), round2(p.h), cutW, cutH, p.t, p.color, sides.map(k=>k+':'+cantoColorOf(p,k)).join(','), p.isRanurado ? 'R' : ''].join('|');
 }
 
 function packGuillotine(items, SH, kerf, veta, sortFn, choose, split){
@@ -3694,7 +3889,7 @@ function printCutPlan(){
   const groupsList = cutGroups();
   const name = (typeof cloudProjectName !== 'undefined' && cloudProjectName) ? cloudProjectName : 'Proyecto';
   const fecha = new Date().toLocaleDateString('es-CO');
-  const rows = groupsList.map((g,i)=>`<tr><td>${i+1}</td><td>${g.cw}</td><td>${g.ch}</td><td>${g.t}</td><td>${esc(finishName(g.color))}${g.ranurado?' (ranurado)':''}</td><td><b>${g.qty}</b></td><td>${g.sides.length ? g.sides.map(k=>CANTO_LBL[k]).join(', ') : '—'}</td><td>${esc(g.names.join(', '))}</td></tr>`).join('');
+  const rows = groupsList.map((g,i)=>`<tr><td>${i+1}</td><td>${g.cw}</td><td>${g.ch}</td><td>${g.t}</td><td>${esc(finishName(g.color))}${g.ranurado?' (ranurado)':''}</td><td><b>${g.qty}</b></td><td>${g.sides.length ? g.sides.map(k=>CANTO_LBL[k] + (g.sideColors[k]!==g.color ? ' (' + esc(finishName(g.sideColors[k])) + ')' : '')).join(', ') : '—'}</td><td>${esc(g.names.join(', '))}</td></tr>`).join('');
   let pages = '';
   lastNest.mats.forEach(m=>{
     m.sheets.forEach((sh, idx)=>{
@@ -3716,6 +3911,7 @@ function printCutPlan(){
   </style></head><body>
   <header><img src="${typeof LOGO_FULL!=='undefined'?LOGO_FULL:''}" alt=""><div><h1>Plan de corte — ${esc(name)}</h1><div class="sub">${fecha} · medidas en cm · sierra ${kerfMM} mm · canto ${cantoThicknessMM} mm${nestVeta?' · respetando veta':''}</div></div></header>
   <div class="tot">${esc(totalTxt)}</div>
+  <div class="tot"><b>Tapacanto por color:</b> ${cantoMetersByColor(groupsList).map(x=>`${esc(finishName(x.c))}: ${x.m} m`).join(' · ') || 'no lleva'}</div>
   <table><thead><tr><th>#</th><th>Ancho corte</th><th>Alto corte</th><th>Esp.</th><th>Material</th><th>Cant.</th><th>Canto</th><th>Piezas</th></tr></thead><tbody>${rows}</tbody></table>
   ${pages}
   <script>setTimeout(function(){ window.print(); }, 400);<\/script>
@@ -3735,7 +3931,68 @@ function renderCutlistIfOpen(){
   const bb = document.getElementById('bottomBar');
   if(bb && bb.open) renderCutlist(); else cutlistDirty = true;
 }
+// Todas las medidas y posiciones con máximo 1 decimal (como se corta en el taller).
+// Se redondean los BORDES de cada tabla (no la medida suelta): así dos tablas que se
+// tocan siguen tocándose exacto después de redondear, sin huecos ni encimadas.
+const r10 = v => Math.round(v*10 + (v >= 0 ? 1e-9 : -1e-9))/10;
+function snapPiecesToGrid(){
+  const list = pieces.filter(p=>!isHardware(p));
+  const boxes = new Map(list.map(p=>{ const pos = piecePosition(p), sz = boxSize(p); return [p.id, { mn:{x:pos.x,y:pos.y,z:pos.z}, mx:{x:pos.x+sz.sx,y:pos.y+sz.sy,z:pos.z+sz.sz} }]; }));
+  const fl = floorLevel();
+  // ¿ese borde de la tabla está pegado a otra tabla (o al piso)?
+  const touches = (p, a, side)=>{
+    const B = boxes.get(p.id), v = side > 0 ? B.mx[a] : B.mn[a];
+    if(a==='y' && side < 0 && Math.abs(v - fl) < 0.005) return true;
+    const oth = ['x','y','z'].filter(k=>k!==a);
+    for(const o of list){
+      if(o.id===p.id) continue;
+      const O = boxes.get(o.id);
+      const f = side > 0 ? O.mn[a] : O.mx[a];
+      if(Math.abs(f - v) > 0.005) continue;
+      if(oth.every(k=> Math.min(B.mx[k], O.mx[k]) - Math.max(B.mn[k], O.mn[k]) > 0.005)) return true;
+    }
+    return false;
+  };
+  list.forEach(p=>{
+    const ax = p.orientation==='vertical-front' ? {w:'x',h:'y',t:'z'} : p.orientation==='vertical-side' ? {w:'z',h:'y',t:'x'} : {w:'x',h:'z',t:'y'};
+    const free = p.posMode === 'free' || !p.attachTo;
+    const B = boxes.get(p.id), nmn = {}, nmx = {};
+    [['w',p.w],['h',p.h],['t',p.t]].forEach(([k,len])=>{
+      const a = ax[k];
+      if(k==='t'){ nmn[a] = r10(B.mn[a]); nmx[a] = nmn[a] + p.t; return; } // el espesor se respeta (1.5, 1.8, 0.3…)
+      const tMin = touches(p, a, -1), tMax = touches(p, a, 1), L = r10(len);
+      if(tMin && tMax){ nmn[a] = r10(B.mn[a]); nmx[a] = r10(B.mx[a]); }       // pegada por los dos lados: se respetan los dos
+      else if(tMax && !tMin){ nmx[a] = r10(B.mx[a]); nmn[a] = nmx[a] - L; }   // pegada solo por este lado
+      else { nmn[a] = r10(B.mn[a]); nmx[a] = nmn[a] + L; }                     // pegada por el otro lado o suelta (frentes con luz)
+    });
+    // laterales de gaveta: se redondea hacia adentro de la caja, así el riel nunca queda con menos de 12.7 mm
+    if(p.isDrawer && p.drawerRole === 'lat-izq' && ax.t==='x'){ nmn.x = Math.ceil(B.mn.x*10 - 1e-6)/10; nmx.x = nmn.x + p.t; }
+    if(p.isDrawer && p.drawerRole === 'lat-der' && ax.t==='x'){ nmx.x = Math.floor(B.mx.x*10 + 1e-6)/10; nmn.x = nmx.x - p.t; }
+    const nw = r10(nmx[ax.w] - nmn[ax.w]), nh = r10(nmx[ax.h] - nmn[ax.h]);
+    if(nw > 0) p.w = nw;
+    if(nh > 0) p.h = nh;
+    if(free){ p.x = r10(nmn.x); p.y = r10(nmn.y); p.z = r10(nmn.z); }
+    else { p.offsetA = r10(p.offsetA||0); p.offsetB = r10(p.offsetB||0); }
+  });
+}
+// las vistas previas de las herramientas (gavetas, entrepaños, ranurado…) también con 1 decimal,
+// igual a como queda la pieza creada y como sale en la lista de corte
+(function(){
+  const ov = document.getElementById('modalOverlay');
+  if(!ov || !window.MutationObserver) return;
+  const fix = root=>{
+    root.querySelectorAll('[id$="-preview"], #rn-prev').forEach(box=>{
+      const w = document.createTreeWalker(box, NodeFilter.SHOW_TEXT);
+      let n; while((n = w.nextNode())){
+        const t = n.nodeValue.replace(/(\d+\.\d{2,})(?!\d)(?!\s*mm)/g, m=> String(r10(parseFloat(m))));
+        if(t !== n.nodeValue) n.nodeValue = t;
+      }
+    });
+  };
+  new MutationObserver(()=> fix(ov)).observe(ov, { childList:true, subtree:true, characterData:true });
+})();
 function refreshAll(){
+  snapPiecesToGrid();
   syncSelectedComponents();
   renderPieceList();
   renderForm();
@@ -3780,6 +4037,7 @@ function normalizePiece(p){
   nextId--; // newPiece consumió un id que no se usa
   const out = Object.assign({}, base, p);
   out.canto = Object.assign({ top:false, bottom:false, left:false, right:false }, p.canto||{});
+  out.cantoColor = Object.assign({}, p.cantoColor||{}); // color de cada tapacanto (vacío = igual a la lámina)
   ['w','h','t','x','y','z','offsetA','offsetB'].forEach(k=>{ out[k] = Number(out[k]); if(isNaN(out[k])) out[k] = base[k]; });
   out.qty = Math.max(1, parseInt(out.qty)||1);
   out.doorOpen = false;
@@ -3808,7 +4066,7 @@ function exportCsv(){
   csv += 'Ancho final,Alto final,Ancho de corte,Alto de corte,Espesor,Material,Cantidad,Canto,Canto (m),Piezas\n';
   const cantoFull = { top:'Superior', bottom:'Inferior', left:'Izquierdo', right:'Derecho' };
   cutGroups().forEach(g=>{
-    csv += `${g.w},${g.h},${g.cw},${g.ch},${g.t},${q(finishName(g.color) + (g.ranurado ? ' (ranurado)' : ''))},${g.qty},${q(g.sides.map(k=>cantoFull[k]).join(' + ') || 'ninguno')},${g.cantoM},${q(g.names.join(', '))}\n`;
+    csv += `${g.w},${g.h},${g.cw},${g.ch},${g.t},${q(finishName(g.color) + (g.ranurado ? ' (ranurado)' : ''))},${g.qty},${q(g.sides.map(k=>cantoFull[k] + (g.sideColors[k]!==g.color ? ' (' + finishName(g.sideColors[k]) + ')' : '')).join(' + ') || 'ninguno')},${g.cantoM},${q(g.names.join(', '))}\n`;
   });
   csv += '\nDETALLE PIEZA POR PIEZA\n';
   csv += 'Pieza,Ancho final,Alto final,Ancho de corte,Alto de corte,Espesor,Cantidad,Canto,Orientacion\n';
@@ -5191,9 +5449,12 @@ function fixDrawer(drawerId){
   if(!d.latL || !d.latR) return;
   const nL = drawerNeighbor(d.latL, 'left'), nR = drawerNeighbor(d.latR, 'right');
   if(!nL || !nR) return;
-  const clear = d.latL.rielClear || RIEL_CLEAR_DEFAULT;
+  let clear = d.latL.rielClear || RIEL_CLEAR_DEFAULT;
   const t = d.latL.t;
-  const boxW = round2(nR.edge - nL.edge - 2*clear);
+  const huecoW = round2(nR.edge - nL.edge);
+  const boxW = Math.floor((huecoW - 2*Math.min(clear, 1.3))*10 + 1e-6)/10; // 1 decimal
+  clear = round2((huecoW - boxW)/2);
+  d.list.forEach(q=>{ q.rielClear = clear; });
   if(boxW <= 2*t + 2){ alert('El hueco es demasiado angosto para esta gaveta.'); return; }
   snapshot();
   const free = p => { if(!p) return; const pos = piecePosition(p); p.posMode='free'; p.attachTo=null; p.x=pos.x; p.y=pos.y; p.z=pos.z; };
@@ -5353,7 +5614,7 @@ function openDrawerModal(){
     const frontZ = round2(Math.min(lp.z+ls.sz, rp.z+rs.sz)); // frente = Z mayor
     const backZ = round2(Math.max(lp.z, rp.z));
     const n = Math.max(1, Math.min(8, parseInt($('gv-n').value)||1));
-    const clear = round2((parseFloat($('gv-clear').value)||12.7)/10);
+    let clear = round2((parseFloat($('gv-clear').value)||12.7)/10);
     const t = parseFloat($('gv-t').value) || 1.5;
     const back = Math.max(0, parseFloat($('gv-back').value)||0);
     const luz = round2(Math.max(0, parseFloat($('gv-luz').value)||0)/10);
@@ -5362,7 +5623,9 @@ function openDrawerModal(){
     const D = round2(frontZ - backZ - (faceMode==='fuera' ? 0 : faceT) - back);
     const riel = RIEL_LENGTHS.filter(l=>l<=D+0.01).pop();
     if(!riel) return { error:`Muy poco fondo: quedan ${D} cm libres y el riel más corto mide 25 cm.` , W, H, D };
-    const boxW = round2(W - 2*clear);
+    // la caja con 1 decimal (hacia abajo), y la holgura que de verdad queda a cada lado (p. ej. 13 mm)
+    const boxW = Math.floor((W - 2*clear)*10 + 1e-6)/10;
+    clear = round2((W - boxW)/2);
     if(boxW <= 2*t + 5) return { error:`El hueco es muy angosto (${W} cm): la caja quedaría de ${boxW} cm.`, W, H, D };
     const slotH = round2(H / n);
     const maxBoxH = Math.floor((slotH - DRAWER_GAP_BOTTOM - DRAWER_GAP_TOP)*2)/2;
@@ -5487,6 +5750,7 @@ function syncComponents(srcId){
     if(p.id===src.id || p.compId!==src.compId) return;
     COMP_FIELDS.forEach(k=>{ p[k] = src[k]; });
     p.canto = Object.assign({}, src.canto);
+    p.cantoColor = Object.assign({}, src.cantoColor||{});
   });
 }
 function syncSelectedComponents(){
@@ -5699,15 +5963,16 @@ function T_rod(f, xa, xb, y){
 }
 // plan de gavetas igual al de la ventana "Gavetas", pero sin ventana
 function makeDrawerPlan(o){
-  const t = o.t || 1.5, clear = 1.27, back = 1, luz = 0.3, faceT = t;
+  const t = o.t || 1.5, back = 1, luz = 0.3, faceT = t;
   const W = round2(o.x1 - o.x0), H = round2(o.y1 - o.y0);
+  const boxW1 = Math.floor((W - 2*1.27)*10 + 1e-6)/10, clear = round2((W - boxW1)/2); // caja con 1 decimal
   const fuera = !!o.sides;
   const D = round2(o.frontZ - o.backZ - (fuera ? 0 : faceT) - back);
   const riel = RIEL_LENGTHS.filter(l=>l<=D+0.01).pop();
   const slotH = round2(H / o.n);
   const maxBoxH = Math.floor((slotH - DRAWER_GAP_BOTTOM - DRAWER_GAP_TOP)*2)/2;
   if(!riel || maxBoxH < DRAWER_MIN_BOX_H) throw new Error('las gavetas no caben');
-  const out = { x0:o.x0, y0:o.y0, W, H, D, frontZ:o.frontZ, n:o.n, clear, t, luz, faceT, riel, boxW:round2(W-2*clear), slotH, boxH:Math.min(maxBoxH, 24) };
+  const out = { x0:o.x0, y0:o.y0, W, H, D, frontZ:o.frontZ, n:o.n, clear, t, luz, faceT, riel, boxW:boxW1, slotH, boxH:Math.min(maxBoxH, 24) };
   if(fuera){
     // tablas alrededor del hueco (mismo espesor del mueble)
     const tb = o.boardT || t;
@@ -6796,6 +7061,40 @@ document.getElementById('multiSelectBtn').addEventListener('click', ()=>{
   rebuild3D();
 });
 document.getElementById('cancelMultiBtn').addEventListener('click', ()=> exitMultiSelect());
+document.getElementById('autoCantoBtn').addEventListener('click', openAutoCantoModal);
+function openAutoCantoModal(){
+  const overlay = document.getElementById('modalOverlay');
+  const list = pieces.filter(p=>!isHardware(p));
+  if(!list.length){ alert('Primero arma el mueble.'); return; }
+  const NAME = { top:'Sup', bottom:'Inf', left:'Izq', right:'Der' };
+  const prop = list.map(p=>({ p, c:autoCantoFor(p) }));
+  const changed = prop.filter(x=>['top','bottom','left','right'].some(k=>!!x.p.canto[k] !== !!x.c[k]));
+  const metros = round2(prop.reduce((s,x)=> s + ['top','bottom','left','right'].reduce((t,k)=> t + (x.c[k] ? cantoFaceInfo(x.p,k).len : 0), 0) * (x.p.qty||1), 0) / 100);
+  const desc = (p,c)=>{ const on = ['top','bottom','left','right'].filter(k=>c[k]); return on.length ? on.map(k=>`${NAME[k]} (${cantoFaceInfo(p,k).faces})`).join(', ') : '<span style="color:var(--text-dim)">sin canto</span>'; };
+  overlay.innerHTML = `
+    <div id="modalCard" style="width:600px;max-height:86vh;overflow-y:auto;">
+      <h2>Tapacanto automático</h2>
+      <div class="hint" style="margin-bottom:8px;">Pongo tapacanto en los lados que <b>se ven</b>. No va en los lados pegados a otra tabla, ni en los de atrás (contra la pared o el fondo), ni en los que van contra el piso. Puertas y frentes de gaveta llevan canto en los 4 lados.</div>
+      <div class="fitbox"><b>${changed.length}</b> de ${list.length} piezas cambian · en total serían <b>${metros} m</b> de tapacanto.</div>
+      <table style="font-size:11.5px;"><thead><tr><th>Pieza</th><th>Ahora</th><th>Quedaría</th></tr></thead><tbody>
+        ${prop.map(x=>`<tr${changed.includes(x)?' style="background:#fbf3ec"':''}><td>${esc(x.p.name)}</td><td>${desc(x.p,x.p.canto)}</td><td><b>${desc(x.p,x.c)}</b></td></tr>`).join('')}
+      </tbody></table>
+      <div class="hint" style="margin-top:8px;">Después puedes cambiar cualquier lado tocando la pieza → pestaña <b>Material</b>.</div>
+      <div class="modal-actions">
+        <button class="ghost" id="acCancel">Cancelar</button>
+        <button class="primary" id="acApply">Aplicar a ${changed.length} pieza(s)</button>
+      </div>
+    </div>`;
+  overlay.classList.add('open');
+  document.getElementById('acCancel').addEventListener('click', ()=> overlay.classList.remove('open'));
+  document.getElementById('acApply').addEventListener('click', ()=>{
+    snapshot();
+    prop.forEach(x=>{ x.p.canto = Object.assign({}, x.c); });
+    overlay.classList.remove('open');
+    refreshAll();
+    showToast(`Listo: tapacanto puesto en lo que se ve (${metros} m). Revísalo en la Lista de corte.`);
+  });
+}
 document.getElementById('doGroupBtn').addEventListener('click', createGroupFromSelection);
 document.getElementById('doSpreadBtn').addEventListener('click', openSpreadModal);
 
@@ -6843,14 +7142,17 @@ function panCameraVertical(delta){
   camera.position.y += delta;
   controls.target.y += delta;
 }
-document.getElementById('viewUp').addEventListener('click', ()=>panCameraVertical(40));
-document.getElementById('viewDown').addEventListener('click', ()=>panCameraVertical(-40));
+document.getElementById('viewUp').addEventListener('click', ()=>panCameraVertical(40*camStepScale()));
+document.getElementById('viewDown').addEventListener('click', ()=>panCameraVertical(-40*camStepScale()));
 
+// de cerca los botones mueven poquito, de lejos mueven más (antes siempre 14-18 cm)
+function camStepScale(){ return Math.max(0.08, Math.min(1.5, camera.position.distanceTo(controls.target) / 250)); }
 function stepView(dir){
-  panCameraVertical(dir*18);
+  const k = camStepScale();
+  panCameraVertical(dir*18*k);
   const offset = new THREE.Vector3().subVectors(camera.position, controls.target);
   let dist = offset.length();
-  dist = Math.max(controls.minDistance+5, Math.min(controls.maxDistance-5, dist - dir*14));
+  dist = Math.max(controls.minDistance+2, Math.min(controls.maxDistance-5, dist - dir*14*k));
   offset.setLength(dist);
   camera.position.copy(controls.target).add(offset);
 }
@@ -6874,7 +7176,7 @@ function stepSideways(dir){
   if(forward.lengthSq() < 0.0001) forward.set(0,0,1);
   forward.normalize();
   const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0,1,0)).normalize();
-  const offset = right.multiplyScalar(dir*16);
+  const offset = right.multiplyScalar(dir*16*camStepScale());
   camera.position.add(offset);
   controls.target.add(offset);
 }
