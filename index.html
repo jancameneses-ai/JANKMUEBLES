@@ -395,6 +395,31 @@
   .clip-chip button span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .clip-chip button:hover{background:var(--wood-dim);}
   .clip-chip #clipClear{padding:6px 10px;border-left:1px solid rgba(255,255,255,.3);font-weight:400;}
+  .qt{border:1px solid #e6dccf;border-radius:14px;background:linear-gradient(180deg,#fffdf9,#faf5ee);padding:14px 16px;margin-bottom:14px;}
+  .qt-hd{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;margin-bottom:10px;}
+  .qt-hd small{font-weight:400;color:var(--text-dim);font-size:11.5px;}
+  .qt-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;}
+  .qt-tile{background:#fff;border:1px solid #ece4d8;border-radius:10px;padding:9px 11px;}
+  .qt-tile b{display:block;font-size:22px;font-family:Arial,Helvetica,sans-serif;color:var(--text);line-height:1.1;}
+  .qt-tile span{font-size:11.5px;color:var(--text-dim);}
+  .qt-tile.hl{border-color:#e2c3a5;background:#fff8f1;} .qt-tile.hl b{color:var(--wood-dim);}
+  .qt-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;font-size:12px;}
+  .qt-chips span{display:inline-flex;align-items:center;gap:5px;background:#fff;border:1px solid #ece4d8;border-radius:999px;padding:3px 9px;}
+  .qt-chips i{width:12px;height:12px;border-radius:3px;display:inline-block;border:1px solid rgba(0,0,0,.15);}
+  .qt-price{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:12px;align-items:end;}
+  .qt-price label{font-size:11.5px;color:var(--text-dim);display:block;margin-bottom:3px;}
+  .qt-price input,.qt-price select{width:100%;}
+  .qt-sheets{margin-top:12px;background:#fff;border:1px solid #ece4d8;border-radius:10px;padding:8px 10px;}
+  .qt-sub{font-size:12px;font-weight:600;margin-bottom:6px;} .qt-sub small{font-weight:400;color:var(--text-dim);}
+  .qt-sheet-row{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:12.5px;border-top:1px dashed #efe7dc;}
+  .qt-sheet-row:first-of-type{border-top:none;}
+  .qt-sheet-row .nm{flex:1;display:flex;align-items:center;gap:6px;min-width:0;}
+  .qt-sheet-row .nm i{width:12px;height:12px;border-radius:3px;display:inline-block;border:1px solid rgba(0,0,0,.15);flex:none;}
+  .qt-sheet-row .n{color:var(--text-dim);white-space:nowrap;}
+  .qt-sheet-row input{width:120px;padding:4px 7px;font-size:12.5px;}
+  .qt-calc{margin-top:10px;font-size:12.5px;border-top:1px dashed #e2d6c6;padding-top:8px;}
+  .qt-calc div{display:flex;justify-content:space-between;gap:10px;padding:2px 0;}
+  .qt-calc .tot{font-weight:700;font-size:15px;color:var(--wood-dim);border-top:1px solid #e2d6c6;margin-top:4px;padding-top:6px;}
   #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#2a2622;color:#fff;padding:10px 18px;border-radius:22px;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:80;}
   #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
   #toast.err{background:var(--danger);}
@@ -483,6 +508,11 @@
   .nest-opt{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text);cursor:pointer;}
   .nest-mat{border:1px solid var(--line);border-radius:var(--radius);padding:10px;background:var(--panel-2);}
   .nest-mat-title{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px;margin-bottom:8px;}
+  .sheet-ed{margin-left:auto;display:inline-flex;align-items:center;gap:4px;font-weight:500;font-size:12px;color:var(--text-dim);background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 6px 3px 10px;}
+  .sheet-ed input{width:58px;padding:2px 5px;font-size:12px;text-align:center;}
+  .sheet-ed.custom{border-color:var(--wood);color:var(--wood-dim);background:#fff8f1;}
+  .sheet-ed button{border:none;background:none;cursor:pointer;color:var(--wood);font-size:13px;padding:0 4px;}
+  .nest-mat-title{flex-wrap:wrap;}
   .nest-mat-title .sw{width:16px;height:16px;border-radius:4px;border:1px solid rgba(0,0,0,.25);flex:none;}
   .nest-sheets{display:flex;gap:14px;flex-wrap:wrap;}
   .nest-card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px;width:380px;max-width:100%;}
@@ -742,6 +772,8 @@
       <div style="display:flex;justify-content:flex-end;margin-bottom:6px;">
         <button class="small ghost" id="bottomCloseBtn">✕ Cerrar</button>
       </div>
+
+      <div id="quoteBox"></div>
 
       <div class="fitbox" style="margin-bottom:12px;">
         <div class="ts" style="font-weight:600;margin-bottom:6px;">Antes de mandar a cortar, revisa esto:</div>
@@ -1441,7 +1473,17 @@ function computeFondoInfo(p){
 
 // ids de piezas con algún problema: no calzan en su hueco, se salieron del
 // marco (fondo), no tocan bien su soporte, o se están encimando con otra
+// RENDIMIENTO: revisar los avisos recorre todas las piezas contra todas (lento con muchas).
+// Seleccionar una pieza no cambia el mueble, así que si nada cambió se reusa el resultado.
+let _warnCache = { sig:null, ids:null };
 function getWarningIds(){
+  const sig = JSON.stringify(pieces);
+  if(_warnCache.sig === sig) return _warnCache.ids;
+  const ids = computeWarningIds();
+  _warnCache = { sig, ids };
+  return ids;
+}
+function computeWarningIds(){
   const s = new Set();
   pieces.forEach(p=>{
     const info = computeFitInfo(p);
@@ -1890,11 +1932,14 @@ function getFinishTexture(hex){
   return tex;
 }
 // muestra pequeña para los botones de color
+// RENDIMIENTO: la imagen de cada acabado se registra UNA vez como variable CSS; los cuadritos
+// solo la nombran (antes cada cuadrito llevaba la imagen completa → el panel pesaba ~640 KB por clic)
 function finishSwatchCss(hex){
-  if(!_texPreview[hex]){
+  if(_texPreview[hex] === undefined){
     try{ _texPreview[hex] = drawFinishCanvas(hex, 64).toDataURL(); }catch(e){ _texPreview[hex] = ''; }
+    if(_texPreview[hex]) document.documentElement.style.setProperty('--fsw-' + String(hex).replace(/[^0-9a-z]/gi,''), `url(${_texPreview[hex]})`);
   }
-  return _texPreview[hex] ? `background:${hex} url(${_texPreview[hex]}) center/cover;` : `background:${hex};`;
+  return _texPreview[hex] ? `background:${hex} var(--fsw-${String(hex).replace(/[^0-9a-z]/gi,'')}) center/cover;` : `background:${hex};`;
 }
 
 // coordenadas de textura en centímetros reales, con la veta a lo largo del lado más largo de cada cara
@@ -2330,6 +2375,7 @@ function toggleViewOpt(k){
 }
 
 
+let _pinnedCount = 0;
 function initThree(){
   wrapEl = document.getElementById('canvas3d-wrap');
   scene = new THREE.Scene();
@@ -2339,6 +2385,19 @@ function initThree(){
   renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true, logarithmicDepthBuffer:true });
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.shadowMap.autoUpdate = false;
+  // RENDIMIENTO: cada vez que el 3D se rearma, los materiales viejos se borran y three.js
+  // botaba también los "programas" (shaders) de la tarjeta de video → al siguiente cuadro
+  // tenía que compilarlos otra vez (eso era el "pique" de 0.1–0.5 s al hacer clic).
+  // Aquí cada programa compilado queda fijo y se reutiliza siempre.
+  const _render = renderer.render.bind(renderer);
+  renderer.render = (sc, cam)=>{
+    _render(sc, cam);
+    const progs = renderer.info.programs;
+    if(progs && progs.length !== _pinnedCount){
+      progs.forEach(pr=>{ if(!pr.__pinned){ pr.__pinned = true; pr.usedTimes++; } });
+      _pinnedCount = progs.length;
+    }
+  };
   renderer.toneMappingExposure = 0.92;
   resizeRenderer();
   wrapEl.appendChild(renderer.domElement);
@@ -2460,8 +2519,10 @@ function setupCursorZoom(){
 function resizeRenderer(){
   const w = wrapEl.clientWidth, h = wrapEl.clientHeight;
   if(!w || !h) return; // panel oculto o sin tamaño todavía — evita cámara con aspecto inválido
-  renderer.setSize(w,h);
-  renderer.setPixelRatio(_lowRes ? 1 : fullPixelRatio());
+  const pr = _lowRes ? 1 : fullPixelRatio();
+  const cur = renderer.getSize(new THREE.Vector2());
+  if(cur.x === w && cur.y === h && renderer.getPixelRatio() === pr) return; // mismo tamaño: no rehacer el lienzo
+  renderer.setDrawingBufferSize(w, h, pr); // tamaño y nitidez de una sola vez (antes se rehacía 2 veces)
   markDirty();
   camera.aspect = w/h;
   camera.updateProjectionMatrix();
@@ -4238,6 +4299,10 @@ function packGuillotine(items, SH, kerf, veta, sortFn, choose, split){
     else if(split === 'v') horiz = false;
     else if(split === 'sas') horiz = (f.w - pw) <= (f.h - ph);
     else horiz = (f.w - pw) > (f.h - ph);
+    // cortes de sierra para sacar esta pieza del pedazo libre (si sobra algo a un lado)
+    const cutRight = (f.w - pw) > EPS, cutBelow = (f.h - ph) > EPS;
+    sh.cuts = (sh.cuts||0) + (cutRight?1:0) + (cutBelow?1:0);
+    sh.cutLen = (sh.cutLen||0) + (horiz ? (cutBelow ? f.w : 0) + (cutRight ? ph : 0) : (cutRight ? f.h : 0) + (cutBelow ? pw : 0));
     const out = [];
     if(horiz){
       if(bh > EPS) out.push({ x:f.x, y:f.y+ph+kerf, w:f.w, h:bh });
@@ -4279,7 +4344,7 @@ function optimizeSheets(items, SH, kerf, veta){
   const hit = _nestCache.get(sig);
   if(hit){
     // devolver copias con las piezas actuales (nombre/número pueden haber cambiado)
-    return hit.map(sh=>({ used:sh.used, free:[], placed: sh.placed.map(pl=>({ x:pl.x, y:pl.y, w:pl.w, h:pl.h, it:pl.it })) }));
+    return hit.map(sh=>({ used:sh.used, cuts:sh.cuts||0, cutLen:sh.cutLen||0, free:[], placed: sh.placed.map(pl=>({ x:pl.x, y:pl.y, w:pl.w, h:pl.h, it:pl.it })) }));
   }
   const res = optimizeSheetsRaw(items, SH, kerf, veta);
   if(_nestCache.size > 40) _nestCache.clear();
@@ -4367,6 +4432,37 @@ function sheetSvg(sh, SH, big){
   return out + `</svg>`;
 }
 
+/* ---------- medida de la lámina por material (casi todas son 183×244, pero hay excepciones) ---------- */
+let sheetSizes = {};
+try{ sheetSizes = JSON.parse(localStorage.getItem('jank_sheet_sizes') || '{}') || {}; }catch(e){}
+function sheetFor(key){
+  const def = key.startsWith('R|') ? SHEET_RANURADO : SHEET;
+  const o = sheetSizes[key];
+  return (o && o.w > 0 && o.h > 0) ? { w:o.w, h:o.h } : def;
+}
+function sheetSizeEditor(key){
+  const S = sheetFor(key), custom = !!sheetSizes[key];
+  return `<span class="sheet-ed${custom ? ' custom' : ''}" title="Medida de la lámina de este color y espesor (se recuerda para los próximos muebles)">Lámina
+    <input type="number" step="0.5" min="20" data-shk="${esc(key)}" data-shd="w" value="${S.w}"> ×
+    <input type="number" step="0.5" min="20" data-shk="${esc(key)}" data-shd="h" value="${S.h}"> cm
+    ${custom ? `<button type="button" data-shreset="${esc(key)}" title="Volver a la medida normal">↺</button>` : ''}</span>`;
+}
+function wireSheetEditors(root){
+  root.querySelectorAll('input[data-shk]').forEach(inp=>inp.addEventListener('change', ()=>{
+    const key = inp.dataset.shk, cur = sheetFor(key), v = parseFloat(inp.value);
+    if(!(v >= 20 && v <= 600)){ inp.value = cur[inp.dataset.shd]; showToast('Escribe una medida entre 20 y 600 cm.', true); return; }
+    const nw = inp.dataset.shd === 'w' ? v : cur.w, nh = inp.dataset.shd === 'h' ? v : cur.h;
+    const def = key.startsWith('R|') ? SHEET_RANURADO : SHEET;
+    if(nw === def.w && nh === def.h) delete sheetSizes[key]; else sheetSizes[key] = { w:nw, h:nh };
+    try{ localStorage.setItem('jank_sheet_sizes', JSON.stringify(sheetSizes)); }catch(e){}
+    nestSheets();
+  }));
+  root.querySelectorAll('[data-shreset]').forEach(b=>b.addEventListener('click', ()=>{
+    delete sheetSizes[b.dataset.shreset];
+    try{ localStorage.setItem('jank_sheet_sizes', JSON.stringify(sheetSizes)); }catch(e){}
+    nestSheets();
+  }));
+}
 function nestSheets(){
   const wrap = document.getElementById('nestWrap');
   wrap.innerHTML = '';
@@ -4375,20 +4471,22 @@ function nestSheets(){
   if(vetaBox) vetaBox.checked = nestVeta;
   lastNest = null;
   const cuttable = pieces.filter(p=>!isHardware(p) && p.w>0 && p.h>0);
-  if(!cuttable.length) return;
+  if(!cuttable.length){ renderQuote(); return; }
 
   // número de cada pieza = su número en la lista agrupada (#), para ubicarla en el dibujo
   const numOf = new Map(); cutGroups().forEach((g,i)=> numOf.set(g.key, i+1));
   const kerfCM = kerfMM / 10;
   const byKey = {};
   const tooBig = [];
+  const tooBigKeys = new Set();
   cuttable.forEach(p=>{
     const { cutW, cutH } = cutSizeFor(p);
-    const SH = p.isRanurado ? SHEET_RANURADO : SHEET;
+    const key0 = (p.isRanurado ? 'R|' : 'M|') + p.t + '|' + p.color;
+    const SH = sheetFor(key0);
     const fits = nestVeta
       ? (Math.min(cutW,cutH) <= Math.min(SH.w,SH.h) && Math.max(cutW,cutH) <= Math.max(SH.w,SH.h))
       : ((cutW<=SH.w && cutH<=SH.h) || (cutH<=SH.w && cutW<=SH.h));
-    if(!fits){ tooBig.push(p.name); return; }
+    if(!fits){ tooBig.push(p.name); tooBigKeys.add(key0); return; }
     // cada color/acabado es una lámina distinta, y el ranurado se compra en su propia lámina
     const key = (p.isRanurado ? 'R|' : 'M|') + p.t + '|' + p.color;
     for(let i=0;i<(p.qty||1);i++){
@@ -4400,7 +4498,7 @@ function nestSheets(){
   const sheetCount = {};
   const mats = [];
   Object.keys(byKey).forEach(key=>{
-    const [kind, t, kcolor] = key.split('|'), isR = kind==='R', SH = isR ? SHEET_RANURADO : SHEET;
+    const [kind, t, kcolor] = key.split('|'), isR = kind==='R', SH = sheetFor(key);
     const sheets = optimizeSheets(byKey[key], SH, kerfCM, nestVeta);
     if(isR) totalRan += sheets.length; else totalSheets += sheets.length;
     sheetCount[key] = sheets.length;
@@ -4414,8 +4512,9 @@ function nestSheets(){
     const box = document.createElement('div');
     box.className = 'nest-mat';
     box.innerHTML = `<div class="nest-mat-title"><span class="sw" style="${finishSwatchCss(m.color)}"></span>
-      ${esc(finishName(m.color))} · ${m.t} cm${m.isR ? ' · <b>ranurado</b>' : ''} — ${m.sheets.length} lámina${m.sheets.length>1?'s':''} de ${m.SH.w}×${m.SH.h}
-      <span class="hint" style="margin:0;font-weight:400;">· ${m.count} piezas · aprovechamiento ${Math.round(usedAll/areaAll*100)}%</span></div>
+      ${esc(finishName(m.color))} · ${m.t} cm${m.isR ? ' · <b>ranurado</b>' : ''} — ${m.sheets.length} lámina${m.sheets.length>1?'s':''}
+      <span class="hint" style="margin:0;font-weight:400;">· ${m.count} piezas · aprovechamiento ${Math.round(usedAll/areaAll*100)}%</span>
+      ${sheetSizeEditor(m.key)}</div>
       <div class="nest-sheets"></div>`;
     const row = box.querySelector('.nest-sheets');
     m.sheets.forEach((sh, idx)=>{
@@ -4433,12 +4532,91 @@ function nestSheets(){
 
   // cuántas láminas de cada color/espesor
   const perKind = {};
-  Object.keys(byKey).forEach(k=>{ const [kind,t,c] = k.split('|'); if(kind==='M'){ const lbl = `${finishName(c)} ${t} cm`; perKind[lbl] = (perKind[lbl]||0) + (sheetCount[k]||0); } });
+  Object.keys(byKey).forEach(k=>{ const [kind,t,c] = k.split('|'); if(kind==='M'){ const S = sheetFor(k), std = S.w===SHEET.w && S.h===SHEET.h; const lbl = `${finishName(c)} ${t} cm${std ? '' : ` (lámina de ${S.w}×${S.h})`}`; perKind[lbl] = (perKind[lbl]||0) + (sheetCount[k]||0); } });
   const detail = Object.keys(perKind).map(k=>`${perKind[k]} de ${k}`).join(' · ');
-  let summary = `Total: ${totalSheets} lámina(s) de ${SHEET.w}×${SHEET.h} cm necesarias${detail ? ` (${detail})` : ''} — acomodo optimizado con ${descontarCanto ? 'la medida de corte (descontando el canto)' : 'las mismas medidas del 3D'}, dejando ${kerfMM} mm de sierra entre pieza y pieza${nestVeta ? ', respetando la veta' : ''}. Los números (#) son los de la lista agrupada.`;
-  if(totalRan) summary += ` Además: ${totalRan} lámina(s) RANURADA(S) de ${SHEET_RANURADO.w}×${SHEET_RANURADO.h} cm.`;
-  if(tooBig.length) summary += ` ⚠ No caben en una lámina entera (hay que empalmar o pedir lámina más grande): ${tooBig.join(', ')}.`;
+  let summary = `Total: ${totalSheets} lámina(s) necesarias${detail ? ` (${detail})` : ''} — acomodo optimizado con ${descontarCanto ? 'la medida de corte (descontando el canto)' : 'las mismas medidas del 3D'}, dejando ${kerfMM} mm de sierra entre pieza y pieza${nestVeta ? ', respetando la veta' : ''}. Los números (#) son los de la lista agrupada.`;
+  if(totalRan) summary += ` Además: ${totalRan} lámina(s) RANURADA(S).`;
+  if(tooBig.length) summary += ` ⚠ No caben en su lámina (hay que empalmar o pedir lámina más grande): ${tooBig.join(', ')}.`;
   document.getElementById('nestSummary').textContent = summary;
+  tooBigKeys.forEach(k=>{ if(byKey[k]) return; const [kind,t,c] = k.split('|');
+    const box = document.createElement('div'); box.className = 'nest-mat';
+    box.innerHTML = `<div class="nest-mat-title"><span class="sw" style="${finishSwatchCss(c)}"></span>${esc(finishName(c))} · ${t} cm — ninguna pieza cabe en la lámina ${sheetSizeEditor(k)}</div>`;
+    wrap.appendChild(box); });
+  wireSheetEditors(wrap);
+  renderQuote();
+}
+
+/* ---------- Resumen para cotizar: piezas, cortes de sierra, metros de tapacanto ---------- */
+let quoteCfg = { modo:'sierra', vCorte:0, vCanto:0, vLamina:0 };
+try{ Object.assign(quoteCfg, JSON.parse(localStorage.getItem('jank_quote') || '{}')); }catch(e){}
+const money = v => '$' + Math.round(v||0).toLocaleString('es-CO');
+// precio de cada lámina según su color y espesor (cada una vale distinto)
+let sheetPrices = {};
+try{ sheetPrices = JSON.parse(localStorage.getItem('jank_sheet_prices') || '{}') || {}; }catch(e){}
+function quoteData(){
+  const groupsList = cutGroups();
+  const piezas = groupsList.reduce((a,g)=>a+g.qty, 0);
+  const canto = round1(groupsList.reduce((a,g)=>a+g.cantoM, 0));
+  const cantoByColor = cantoMetersByColor(groupsList);
+  let laminas = 0, ranuradas = 0, sierra = 0, cutLen = 0; const porLamina = [];
+  if(lastNest) lastNest.mats.forEach(m=>{
+    m.sheets.forEach(sh=>{ sierra += sh.cuts||0; cutLen += sh.cutLen||0; });
+    if(m.isR) ranuradas += m.sheets.length; else laminas += m.sheets.length;
+    porLamina.push({ key:m.key, color:m.color, t:m.t, isR:m.isR, n:m.sheets.length, precio:+sheetPrices[m.key]||0 });
+  });
+  const cortes = quoteCfg.modo === 'pieza' ? piezas : sierra;
+  const costo = { cortes: cortes * (+quoteCfg.vCorte||0), canto: canto * (+quoteCfg.vCanto||0), laminas: porLamina.reduce((a,x)=> a + x.n * x.precio, 0) };
+  costo.total = costo.cortes + costo.canto + costo.laminas;
+  return { piezas, canto, cantoByColor, laminas, ranuradas, sierra, cutM: round1(cutLen/100), porLamina, cortes, costo };
+}
+function renderQuote(){
+  const box = document.getElementById('quoteBox'); if(!box) return;
+  if(!pieces.some(p=>!isHardware(p))){ box.innerHTML = ''; return; }
+  const q = quoteData();
+  const sw = c => `<i style="${finishSwatchCss(c)}"></i>`;
+  box.innerHTML = `<div class="qt">
+    <div class="qt-hd">🧾 Resumen para cotizar el corte <small>· todo el mueble</small></div>
+    <div class="qt-tiles">
+      <div class="qt-tile"><b>${q.laminas}${q.ranuradas ? ' + ' + q.ranuradas : ''}</b><span>lámina${q.laminas===1?'':'s'}${q.ranuradas ? ' + ranurada' + (q.ranuradas>1?'s':'') : ''}</span></div>
+      <div class="qt-tile"><b>${q.piezas}</b><span>piezas en total</span></div>
+      <div class="qt-tile hl"><b>${q.sierra}</b><span>cortes de sierra (${q.cutM} m de corte)</span></div>
+      <div class="qt-tile hl"><b>${q.canto} m</b><span>de tapacanto</span></div>
+    </div>
+    <div class="qt-chips">${q.cantoByColor.map(x=>`<span>${sw(x.c)}Canto ${esc(finishName(x.c))}: <b>${x.m} m</b></span>`).join('')}${q.porLamina.map(x=>`<span>${sw(x.color)}${x.n} lámina${x.n>1?'s':''} ${esc(finishName(x.color))} ${x.t} cm${x.isR?' ranurada':''}</span>`).join('')}</div>
+    <div class="qt-price">
+      <div><label>Te cobran el corte</label><select id="qt-modo"><option value="sierra"${quoteCfg.modo==='sierra'?' selected':''}>Por cada corte de sierra</option><option value="pieza"${quoteCfg.modo==='pieza'?' selected':''}>Por cada pieza</option></select></div>
+      <div><label>Valor de cada corte ($)</label><input type="number" min="0" step="50" id="qt-vCorte" value="${+quoteCfg.vCorte||''}" placeholder="0"></div>
+      <div><label>Valor metro de tapacanto ($)</label><input type="number" min="0" step="50" id="qt-vCanto" value="${+quoteCfg.vCanto||''}" placeholder="0"></div>
+    </div>
+    <div class="qt-sheets">
+      <div class="qt-sub">Precio de cada lámina <small>(opcional · se recuerda para los próximos muebles)</small></div>
+      ${q.porLamina.map(x=>`<div class="qt-sheet-row"><span class="nm">${sw(x.color)}${esc(finishName(x.color))} · ${x.t} cm${x.isR ? ' · ranurada' : ''}</span><span class="n">${x.n} lámina${x.n>1?'s':''} ×</span>
+        <input type="number" min="0" step="1000" data-sprice="${esc(x.key)}" value="${x.precio||''}" placeholder="$ precio"></div>`).join('')}
+    </div>
+    <div class="qt-calc" id="qt-calc"></div>
+    <div class="hint" style="margin:8px 0 0;">Los cortes de sierra salen del acomodo de las láminas de abajo (cada vez que el disco separa un pedazo). El tapacanto es el largo exacto de los lados marcados; el taller suele sumar unos cm por lado al pegarlo.</div>
+  </div>`;
+  const calc = ()=>{
+    const q2 = quoteData(), el = document.getElementById('qt-calc'); if(!el) return;
+    const rows = [];
+    rows.push(`<div><span>${q2.cortes} ${quoteCfg.modo==='pieza' ? 'piezas' : 'cortes'} × ${money(quoteCfg.vCorte)}</span><b>${money(q2.costo.cortes)}</b></div>`);
+    rows.push(`<div><span>${q2.canto} m de tapacanto × ${money(quoteCfg.vCanto)}</span><b>${money(q2.costo.canto)}</b></div>`);
+    q2.porLamina.filter(x=>x.precio).forEach(x=> rows.push(`<div><span>${x.n} lámina${x.n>1?'s':''} ${esc(finishName(x.color))} ${x.t} cm × ${money(x.precio)}</span><b>${money(x.n*x.precio)}</b></div>`));
+    const sinPrecio = q2.porLamina.filter(x=>!x.precio).length;
+    if(sinPrecio && q2.porLamina.some(x=>x.precio)) rows.push(`<div style="color:var(--text-dim);font-size:11.5px;"><span>${sinPrecio} tipo(s) de lámina sin precio — no se suman</span><span></span></div>`);
+    rows.push(`<div class="tot"><span>Total aproximado</span><span>${money(q2.costo.total)}</span></div>`);
+    el.innerHTML = rows.join('');
+  };
+  const save = ()=>{ try{ localStorage.setItem('jank_quote', JSON.stringify(quoteCfg)); }catch(e){} calc(); };
+  box.querySelector('#qt-modo').addEventListener('change', e=>{ quoteCfg.modo = e.target.value; save(); });
+  ['vCorte','vCanto'].forEach(k=> box.querySelector('#qt-'+k).addEventListener('input', e=>{ quoteCfg[k] = parseFloat(e.target.value) || 0; save(); }));
+  box.querySelectorAll('[data-sprice]').forEach(inp=> inp.addEventListener('input', ()=>{
+    const v = parseFloat(inp.value) || 0;
+    if(v) sheetPrices[inp.dataset.sprice] = v; else delete sheetPrices[inp.dataset.sprice];
+    try{ localStorage.setItem('jank_sheet_prices', JSON.stringify(sheetPrices)); }catch(e){}
+    calc();
+  }));
+  calc();
 }
 
 // plan de corte para imprimir o guardar en PDF (una lámina por hoja)
@@ -4471,6 +4649,7 @@ function printCutPlan(){
   <header><img src="${typeof LOGO_FULL!=='undefined'?LOGO_FULL:''}" alt=""><div><h1>Plan de corte — ${esc(name)}</h1><div class="sub">${fecha} · medidas en cm · sierra ${kerfMM} mm${descontarCanto ? ' · descontando canto de ' + cantoThicknessMM + ' mm' : ' · medidas iguales al diseño'}${nestVeta?' · respetando veta':''}</div></div></header>
   <div class="tot">${esc(totalTxt)}</div>
   <div class="tot"><b>Tapacanto por color:</b> ${cantoMetersByColor(groupsList).map(x=>`${esc(finishName(x.c))}: ${x.m} m`).join(' · ') || 'no lleva'}</div>
+  ${(()=>{ const q = quoteData(); return `<div class="tot"><b>Para cotizar:</b> ${q.piezas} piezas · ${q.sierra} cortes de sierra (${q.cutM} m) · ${q.canto} m de tapacanto · ${q.laminas} lámina(s)${q.ranuradas ? ' + ' + q.ranuradas + ' ranurada(s)' : ''}${q.costo.total ? ` · <b>total aprox. ${money(q.costo.total)}</b>` : ''}</div>`; })()}
   <table><thead><tr><th>#</th><th>${descontarCanto ? 'Ancho corte' : 'Ancho'}</th><th>${descontarCanto ? 'Alto corte' : 'Alto'}</th><th>Esp.</th><th>Material</th><th>Cant.</th><th>Canto</th><th>Piezas</th></tr></thead><tbody>${rows}</tbody></table>
   ${pages}
   <script>setTimeout(function(){ window.print(); }, 400);<\/script>
@@ -4651,6 +4830,12 @@ function exportCsv(){
       csv += p.isRod ? `${q(p.name)},Tubo de ${p.w} cm,Diametro ${p.h} cm,,,,${p.qty},,\n` : `${q(p.name)},Rodachin,Diametro ${p.w} cm,Alto ${p.h} cm,,,${p.qty},,\n`;
     });
   }
+  if(cutlistDirty || !lastNest) renderCutlist();
+  const qd = quoteData();
+  csv += `\nRESUMEN PARA COTIZAR\nPiezas,${qd.piezas}\nCortes de sierra,${qd.sierra}\nMetros de corte,${qd.cutM}\nTapacanto (m),${qd.canto}\n`;
+  qd.cantoByColor.forEach(x=>{ csv += `${q('Tapacanto ' + finishName(x.c))},${x.m}\n`; });
+  csv += `Laminas,${qd.laminas}${qd.ranuradas ? '\nLaminas ranuradas,' + qd.ranuradas : ''}\n`;
+  if(qd.costo.total) csv += `Total aproximado,${Math.round(qd.costo.total)}\n`;
   // el "\uFEFF" al inicio hace que Excel muestre bien las tildes y la ñ
   const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
   const url = URL.createObjectURL(blob);
@@ -7201,7 +7386,7 @@ function makeThumb(){
     const dir = new THREE.Vector3(0.55, 0.38, 1).normalize();
     cam.position.copy(c).addScaledVector(dir, dist); cam.near = Math.max(0.5, dist - r*2); cam.far = dist + r*4;
     cam.lookAt(c); cam.updateProjectionMatrix();
-    renderer.shadowMap.needsUpdate = true;
+    if(need) renderer.shadowMap.needsUpdate = true;
     renderer.render(scene, cam);
     const out = document.createElement('canvas'); out.width = 320; out.height = 240;
     const g = out.getContext('2d');
@@ -7566,7 +7751,8 @@ function saveToCloud(force, withThumb){
     data: JSON.stringify(projectData())
   };
   // la foto del 3D para la tarjeta del inicio (como mucho una vez por minuto)
-  if(withThumb || Date.now() - _lastThumbAt > 60000){ const th = makeThumb(); if(th){ rec.thumb = th; _lastThumbAt = Date.now(); } }
+  const thumbCheap = selectedId == null && !renderOpts.cotas && !(typeof multiSelectMode !== 'undefined' && multiSelectMode) && !dragState;
+  if(withThumb || ((Date.now() - _lastThumbAt > 180000 || !_lastThumbAt) && thumbCheap)){ const th = makeThumb(); if(th){ rec.thumb = th; _lastThumbAt = Date.now(); } }
   return projectsRef().child(cloudProjectId).update(rec).then(()=>{ setCloudStatus('Guardado ✓', 'ok'); updateAccountUI(); })
     .catch(()=> setCloudStatus('Sin guardar — revisa internet', 'err'));
 }
