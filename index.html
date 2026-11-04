@@ -155,6 +155,9 @@
   #rpFoot:empty{display:none;}
   #rpFoot button{padding:7px 6px;font-size:11.5px;background:var(--panel);}
   #rpFoot .del{color:var(--danger);}
+  .rot-bar{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:5px;background:var(--panel-2);border-radius:8px;padding:6px;}
+  .rot-bar span{grid-column:1/-1;font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text-dim);padding-left:2px;}
+  .rot-bar button{display:inline-flex;align-items:center;justify-content:center;gap:4px;padding:6px 4px !important;font-size:11px !important;white-space:nowrap;}
   .rp-head .side-label{margin:0;padding:0;border:none;}
   .side-scroll{overflow-y:auto;flex:1;padding:10px 12px;}
   .create-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;}
@@ -417,6 +420,7 @@
   .qt-sheet-row .nm i{width:12px;height:12px;border-radius:3px;display:inline-block;border:1px solid rgba(0,0,0,.15);flex:none;}
   .qt-sheet-row .n{color:var(--text-dim);white-space:nowrap;}
   .qt-lam button{font-size:11.5px;padding:5px 10px;}
+  .qt-glass{background:#f2fbfa;border-color:#cfe9e6;}
   .qt-umbral{font-size:12px;color:var(--text);background:#fff8f1;border:1px solid #f0dcc6;border-radius:8px;padding:6px 10px;margin-bottom:6px;}
   .qt-umbral input{width:58px;padding:2px 5px;font-size:12px;text-align:center;margin:0 2px;}
   .qt-force input{width:auto !important;margin:0;padding:0;}
@@ -984,6 +988,9 @@ window.addEventListener('keydown', (e)=>{
     else if(k === 'v'){ if(pasteClipboard()) e.preventDefault(); }
     else if(k === 'a'){ e.preventDefault(); selectAllPieces(); }
   }
+  if(!typing && !modalOpen && !e.ctrlKey && !e.metaKey && !e.altKey && k === 'r' && (selectedId || (multiSelectMode && multiSelected.size))){
+    e.preventDefault(); rotateSelection('y');
+  }
   if(!typing && !modalOpen && (e.key === 'Delete') && selectedId && !multiSelectMode){
     const p = pieces.find(x=>x.id===selectedId); if(p && confirm(`¿Eliminar "${p.name}"?`)) deletePiece(p.id);
   }
@@ -1025,6 +1032,76 @@ function updateClipChip(){
   if(n) document.getElementById('clipTxt').textContent = `Pegar ${n} pieza${n>1?'s':''}${clipboardFrom ? ' de “' + clipboardFrom + '”' : ''}`;
 }
 window.addEventListener('storage', e=>{ if(e.key === 'jank_clip'){ clipboardT = 0; clipboardPieces = null; updateClipChip(); } });
+
+/* ---------- GIRAR 90° (pieza sola, grupo o varias) en el mismo sitio ----------
+   Todo gira como un bloque alrededor de su centro y se queda sobre el piso donde estaba.
+   Las tablas siguen derechas (de frente, de lado o acostadas) y cada tapacanto se queda
+   en el mismo borde físico de la tabla. */
+const ROT_AXIS = {
+  // cómo se mueve cada eje del mundo al girar 90°: eje → [eje nuevo, signo]
+  y: { x:['z', 1], z:['x',-1], y:['y', 1] },   // en planta (como un trompo)
+  x: { z:['y', 1], y:['z',-1], x:['x', 1] },   // hacia adelante
+  z: { y:['x',-1], x:['y', 1], z:['z', 1] }    // de lado
+};
+const ROT_NAME = { y:'en planta', x:'hacia adelante', z:'de lado' };
+function rotateSelection(axis){
+  const list = selectionForCopy();
+  if(!list.length){ showToast('Selecciona primero la pieza o las piezas que quieres girar.', true); return false; }
+  if(list.some(p=>p.locked)){ showToast('Hay piezas bloqueadas en lo que seleccionaste. Desbloquéalas para girar.', true); return false; }
+  if(list.some(p=>p.isDoor || p.isDrawer)){ showToast('Las puertas y gavetas tienen que mirar al frente para abrir: quítalas de la selección para girar el resto.', true); return false; }
+  if(list.some(p=>isHardware(p) || p.isRanurado)){ showToast('Colgaderos, rodachines y tableros ranurados no se pueden girar con esta opción.', true); return false; }
+  snapshot();
+  const R = ROT_AXIS[axis];
+  const boxes = list.map(p=>{ const pos = piecePosition(p), s = boxSize(p);
+    return { p, mn:{ x:pos.x, y:pos.y, z:pos.z }, mx:{ x:pos.x+s.sx, y:pos.y+s.sy, z:pos.z+s.sz } }; });
+  const mn0 = { x:Math.min(...boxes.map(b=>b.mn.x)), y:Math.min(...boxes.map(b=>b.mn.y)), z:Math.min(...boxes.map(b=>b.mn.z)) };
+  const mx0 = { x:Math.max(...boxes.map(b=>b.mx.x)), y:Math.max(...boxes.map(b=>b.mx.y)), z:Math.max(...boxes.map(b=>b.mx.z)) };
+  // centro redondeado a 1 mm: así todas las tablas caen exactas en la cuadrícula y siguen tocándose
+  const C = { x:r10((mn0.x+mx0.x)/2), y:r10((mn0.y+mx0.y)/2), z:r10((mn0.z+mx0.z)/2) };
+  const rotPt = pt=>{ const out = {}; ['x','y','z'].forEach(a=>{ const [na, sg] = R[a]; out[na] = C[na] + sg*(pt[a] - C[a]); }); return out; };
+  const LOCAL = { 'vertical-front':{ w:'x', h:'y', t:'z' }, 'vertical-side':{ w:'z', h:'y', t:'x' }, 'horizontal':{ w:'x', h:'z', t:'y' } };
+  const ORI_OF_T = { z:'vertical-front', x:'vertical-side', y:'horizontal' };
+  const res = boxes.map(b=>{
+    const p = b.p, a = rotPt(b.mn), c = rotPt(b.mx);
+    const nmn = { x:Math.min(a.x,c.x), y:Math.min(a.y,c.y), z:Math.min(a.z,c.z) };
+    const loc = LOCAL[p.orientation] || LOCAL['vertical-front'];
+    const wAx = R[loc.w][0], hAx = R[loc.h][0], tAx = R[loc.t][0];
+    const ori = ORI_OF_T[tAx], need = LOCAL[ori];
+    const swap = need.w !== wAx;   // el largo quedó donde va el alto → se intercambian
+    // tapacantos: cada lado se queda pegado al mismo borde físico
+    const oldFaces = {}; ['top','bottom','left','right'].forEach(k=>{ const fi = cantoFaceInfo(p, k); const [na, sg] = R[fi.ax]; oldFaces[k] = { ax:na, sign:fi.sign*sg }; });
+    return { p, nmn, ori, swap, oldFaces, hAx };
+  });
+  // el bloque se queda donde estaba: mismo centro en planta y misma altura de apoyo
+  const nmnY = Math.min(...res.map(r=>r.nmn.y));
+  const shift = { x:0, y: mn0.y - nmnY, z:0 };
+  res.forEach(r=>{
+    const p = r.p, canto = Object.assign({}, p.canto), cc = Object.assign({}, p.cantoColor || {});
+    p.orientation = r.ori;
+    if(r.swap){ const t = p.w; p.w = p.h; p.h = t; }
+    p.posMode = 'free'; p.attachTo = null;
+    p.x = r10(r.nmn.x + shift.x); p.y = r10(r.nmn.y + shift.y); p.z = r10(r.nmn.z + shift.z);
+    const nc = { top:false, bottom:false, left:false, right:false }, ncc = {};
+    ['top','bottom','left','right'].forEach(k=>{
+      const f = r.oldFaces[k];
+      const k2 = ['top','bottom','left','right'].find(j=>{ const fi = cantoFaceInfo(p, j); return fi.ax === f.ax && fi.sign === f.sign; });
+      if(k2){ nc[k2] = !!canto[k]; if(cc[k]) ncc[k2] = cc[k]; }
+    });
+    p.canto = nc; p.cantoColor = ncc;
+  });
+  refreshAll();
+  const n = list.length;
+  showToast(`${n > 1 ? `Giraste ${n} piezas` : `Giraste "${list[0].name}"`} 90° ${ROT_NAME[axis]}. Otra vez = 180°, cuatro veces = vuelve a como estaba. Ctrl+Z deshace.`);
+  return true;
+}
+function rotateBarHtml(){
+  return `<div class="rot-bar"><span>Girar 90°</span>
+    <button data-rot="y" title="Gira en planta, como un trompo (atajo: R)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>En planta</button>
+    <button data-rot="x" title="Acuesta o para la pieza hacia adelante"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v12h12"/><path d="M15 13l3 3-3 3"/></svg>Adelante</button>
+    <button data-rot="z" title="Gira hacia un lado (como una rueda vista de frente)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="4" width="10" height="16" rx="1" transform="rotate(30 12 12)"/></svg>De lado</button></div>`;
+}
+function wireRotateBar(root){ root.querySelectorAll('[data-rot]').forEach(b=>b.addEventListener('click', ()=> rotateSelection(b.dataset.rot))); }
+
 function selectionForCopy(){
   let ids = new Set(multiSelectMode && multiSelected.size ? [...multiSelected] : (selectedId ? [selectedId] : []));
   if(!ids.size) return [];
@@ -1273,8 +1350,19 @@ function overlapAmount(p, name){
   return round2(Math.min(ox, oy, oz));
 }
 // ¿La pieza está suelta? (no toca exacto ninguna otra tabla ni el piso)
+// ¿hay una tabla justo debajo a esa distancia? (para el vidrio que va sobre separadores)
+function supportBelowAt(p, gap){
+  const pa = piecePosition(p), sa = boxSize(p);
+  return pieces.find(o=>{
+    if(o.id===p.id || isHardware(o)) return false;
+    const op = piecePosition(o), os = boxSize(o);
+    const oX = Math.min(pa.x+sa.sx, op.x+os.sx) - Math.max(pa.x, op.x), oZ = Math.min(pa.z+sa.sz, op.z+os.sz) - Math.max(pa.z, op.z);
+    return oX > 0.3 && oZ > 0.3 && Math.abs((op.y + os.sy) - (pa.y - gap)) <= 0.01;
+  }) || null;
+}
 function isLoose(p){
   if(isHardware(p) || p.isDoor || p.isRanurado) return false; // el ranurado va atornillado a la pared o al hueco; la puerta cuelga de sus bisagras (deja luz a propósito)
+  if(p.isGlass && p.separador > 0 && supportBelowAt(p, p.separador)) return false; // vidrio sobre separadores
   const pa = piecePosition(p), sa = boxSize(p), tol = 0.01;
   if(Math.abs(pa.y - floorLevel()) <= tol || Math.abs(pa.y) <= tol) return false;
   for(const o of pieces){
@@ -1313,6 +1401,19 @@ function computeDepthLimitInfo(p){
   // el frente del mueble es Z mayor (lado de la cámara) y atrás es Z menor
   const outFront = Math.max(0, round2((pos.z+size.sz) - frameMaxZ));
   const outBack = Math.max(0, round2(frameMinZ - pos.z));
+  // tabla de frente que CIERRA el mueble por delante o por detrás (por ejemplo un costado de un
+  // mueble girado): sobresale justo su grosor y las demás tablas le llegan exacto → está bien
+  if(p.orientation === 'vertical-front' && (outFront > tol || outBack > tol)){
+    const closes = others.some(o=>{
+      const op = piecePosition(o), os = boxSize(o);
+      const oX = Math.min(pos.x+size.sx, op.x+os.sx) - Math.max(pos.x, op.x);
+      const oY = Math.min(pos.y+size.sy, op.y+os.sy) - Math.max(pos.y, op.y);
+      if(oX <= 0.3 || oY <= 0.3) return false;
+      return outFront > tol ? Math.abs((op.z+os.sz) - pos.z) <= tol : Math.abs(op.z - (pos.z+size.sz)) <= tol;
+    });
+    const justT = Math.abs(Math.max(outFront, outBack) - size.sz) <= tol;
+    if(closes && justT) return { frameMinZ: round1(frameMinZ), frameMaxZ: round1(frameMaxZ), currentFrom: round1(pos.z), currentTo: round1(pos.z+size.sz), outFront, outBack, ok: true };
+  }
   // tapa/cubierta de arriba (escritorio, mesa, mueble de TV): puede sobresalir a propósito (vuelo)
   if((outFront > 0.01 || outBack > 0.01) && isTopCover(p, pos, size)){
     return { frameMinZ: round1(frameMinZ), frameMaxZ: round1(frameMaxZ), currentFrom: round1(pos.z), currentTo: round1(pos.z+size.sz),
@@ -1383,6 +1484,10 @@ function computeRestInfo(p){
   });
 
   const tol = 0.01;
+  if(p.isGlass && p.separador > 0){
+    const sup = supportBelowAt(p, p.separador);
+    if(sup){ const held = `"${sup.name}" (va sobre ${4*(p.qty||1)} separadores de ${p.separador} cm)`; return { held, supportName: held, expectedY: round1(pos.y), currentY: round1(pos.y), gap: 0, ok: true }; }
+  }
   // si se apoya exacto sobre algo, se dice eso; si no, vale que esté sostenida por los lados o colgada
   if(supportName !== null && Math.abs(bestGap) <= tol) return { supportName, expectedY: supportTop, currentY: round1(pos.y), gap: bestGap, ok: true };
   if(heldRes) return heldRes;
@@ -1394,7 +1499,7 @@ function computeRestInfo(p){
 function computeHeldInfo(p, pos, size){
   const tol = 0.01, minOv = 0.3;
   const ov = (a0,a1,b0,b1)=> Math.min(a1,b1) - Math.max(a0,b0);
-  let above = null, left = null, right = null;
+  let above = null, left = null, right = null, back = null, front = null;
   pieces.forEach(o=>{
     if(o.id===p.id || o.isDoor || o.isFondo || o.isDrawer || isHardware(o)) return;
     const op = piecePosition(o), os = boxSize(o);
@@ -1406,8 +1511,14 @@ function computeHeldInfo(p, pos, size){
       if(!left && Math.abs((op.x+os.sx) - pos.x) <= tol) left = o.name;
       if(!right && Math.abs(op.x - (pos.x+size.sx)) <= tol) right = o.name;
     }
+    // también entre una tabla de atrás y una de adelante (por ejemplo un mueble girado)
+    if(oX > minOv && oY > minOv){
+      if(!back && Math.abs((op.z+os.sz) - pos.z) <= tol) back = o.name;
+      if(!front && Math.abs(op.z - (pos.z+size.sz)) <= tol) front = o.name;
+    }
   });
   if(left && right) return `"${left}" y "${right}" (va exacta entre los dos)`;
+  if(back && front) return `"${back}" y "${front}" (va exacta entre los dos)`;
   if(above) return `"${above}" (va pegada por debajo)`;
   return null;
 }
@@ -1416,7 +1527,7 @@ function computeHeldInfo(p, pos, size){
 // altura exacta (Y, el centro del espesor de la tabla) y, a esa altura, las
 // posiciones de profundidad (Z) donde va cada tornillo.
 function computeScrewPoints(p){
-  if(p.orientation !== 'horizontal' || isHardware(p)) return null;
+  if(p.orientation !== 'horizontal' || isHardware(p) || p.isGlass) return null; // el vidrio no se atornilla
   const pos = piecePosition(p), size = boxSize(p);
   if(size.sz < 6) return null; // muy angosta de profundidad para repartir tornillos con sentido
   const fitInfo = computeFitInfo(p);
@@ -1468,11 +1579,13 @@ function computeFondoInfo(p){
   const exact = (p.material === 'TRIPLE' || p.material === 'MDF');
   const expectedW = exact ? p.frameAncho : round1(p.frameAncho - 2*p.frameEsp);
   const expectedH = exact ? p.frameAlto : round1(p.frameAlto - 2*p.frameEsp);
-  const size = boxSize(p);
   const tol = 0.01;
+  // se compara con la medida de la tabla (no con hacia dónde mira): así sigue bien aunque el mueble se gire
+  const w = p.w, h = p.h;
+  const same = (a,b)=> Math.abs(a-b) <= tol;
   return {
-    expectedW, expectedH, currentW: round1(size.sx), currentH: round1(size.sy),
-    ok: Math.abs(size.sx-expectedW) <= tol && Math.abs(size.sy-expectedH) <= tol
+    expectedW, expectedH, currentW: round1(w), currentH: round1(h),
+    ok: (same(w,expectedW) && same(h,expectedH)) || (same(w,expectedH) && same(h,expectedW))
   };
 }
 
@@ -1971,7 +2084,19 @@ try{
 }catch(e){}
 function saveViewOpts(){ try{ localStorage.setItem('jank_view', JSON.stringify(renderOpts)); }catch(e){} }
 
+const _glassMats = {};
+function makeGlassMaterial(warn, picked, sel){
+  const key = [warn?1:0, picked?1:0, sel?1:0, renderOpts.realista?1:0].join('');
+  if(_glassMats[key]) return _glassMats[key];
+  const m = new THREE.MeshStandardMaterial({ color: warn ? '#ff9a90' : '#cfe9e6', transparent:true, opacity: renderOpts.realista ? 0.28 : 0.35,
+    roughness:0.04, metalness:0.15, envMapIntensity:1.4, depthWrite:false });
+  m.emissive.set(picked ? 0x1c3a5c : (sel ? 0x3a2210 : 0x000000));
+  m.__keep = true; _glassMats[key] = m; return m;
+}
+let _chromeMat = null;
+function chromeMat(){ return _chromeMat || (_chromeMat = Object.assign(new THREE.MeshStandardMaterial({ color:'#d9dde1', metalness:0.9, roughness:0.2 }), { __keep:true })); }
 function makePieceMaterial(p, warn, picked, sel){
+  if(p.isGlass) return makeGlassMaterial(warn, picked, sel);
   let m;
   if(p.isRod) m = new THREE.MeshStandardMaterial({ color:'#c9ced2', metalness:0.85, roughness:0.25 });
   else if(p.isCaster) m = new THREE.MeshStandardMaterial({ color:'#2b2b2e', roughness:0.6 });
@@ -2690,7 +2815,7 @@ function rebuild3D(){
     let mat = makePieceMaterial(p, warn, picked, p.id===selectedId);
     // cantos de la tabla: con tapacanto de otro color → ese color; SIN tapacanto → se ve el
     // aglomerado RH crudo (verdoso), para que de una se note qué lado va sin canto
-    const isBoard = !(p.isCaster || p.isRod || p.isFondo || p.isRanurado) && p.t >= 0.9;
+    const isBoard = !(p.isCaster || p.isRod || p.isFondo || p.isRanurado || p.isGlass) && p.t >= 0.9;
     const sides4 = ['top','bottom','left','right'];
     if(isBoard && sides4.some(k=> !p.canto[k] || (p.cantoColor && p.cantoColor[k] && p.cantoColor[k]!==p.color))){
       const arr = [mat, mat, mat, mat, mat, mat], cache = {};
@@ -2722,7 +2847,7 @@ function rebuild3D(){
       const mesh = new THREE.Mesh(geo, mat);
       mesh.position.set(localX, 0, 0);
       mesh.userData.pieceId = p.id;
-      mesh.castShadow = mesh.receiveShadow = !renderOpts.xray;
+      mesh.castShadow = mesh.receiveShadow = !renderOpts.xray && !p.isGlass;
       pivot.add(mesh);
 
       if(showEdges){
@@ -2740,7 +2865,7 @@ function rebuild3D(){
       const mesh = new THREE.Mesh(geo, mat);
       mesh.position.set(pos.x + size.sx/2, pos.y + size.sy/2, pos.z + size.sz/2);
       mesh.userData.pieceId = p.id;
-      mesh.castShadow = mesh.receiveShadow = !renderOpts.xray;
+      mesh.castShadow = mesh.receiveShadow = !renderOpts.xray && !p.isGlass;
       meshGroup.add(mesh);
 
       if(showEdges){
@@ -2773,6 +2898,16 @@ function rebuild3D(){
     const railOwner = d.latL ? d.latL.id : null;
     rails.fixed.forEach(m=>{ m.userData.ownerId = railOwner; meshGroup.add(m); });   // la parte fija se queda en el mueble
     rails.moving.forEach(m=>{ m.userData.ownerId = railOwner; meshGroup.add(m); tagDrawer(m, did); }); // la parte móvil sale con la caja
+  });
+  // vidrios levantados: 4 separadores metálicos debajo
+  pieces.forEach(p=>{
+    if(!p.isGlass || !(p.separador > 0)) return;
+    const pos = piecePosition(p), sz = boxSize(p), hS = p.separador, r = 1.1;
+    const ix = Math.min(6, sz.sx/4), iz = Math.min(6, sz.sz/4);
+    const geo = new THREE.CylinderGeometry(r, r, hS, 16);
+    [[pos.x+ix, pos.z+iz],[pos.x+sz.sx-ix, pos.z+iz],[pos.x+ix, pos.z+sz.sz-iz],[pos.x+sz.sx-ix, pos.z+sz.sz-iz]].forEach(([x,z])=>{
+      const m = new THREE.Mesh(geo, chromeMat()); m.position.set(x, pos.y - hS/2, z); m.castShadow = true; m.userData.ownerId = p.id; meshGroup.add(m);
+    });
   });
   // tableros ranurados: ranuras, perfiles y accesorios
   pieces.forEach(p=>{
@@ -3882,7 +4017,9 @@ function renderForm(){
   const panel = document.getElementById('formPanel');
   if(multiSelectMode){
     document.getElementById('app').classList.remove('no-sel');
-    document.getElementById('rpFoot').innerHTML = '';
+    const ft = document.getElementById('rpFoot');
+    ft.innerHTML = multiSelected.size ? rotateBarHtml() : '';
+    wireRotateBar(ft);
     renderBulkForm();
     return;
   }
@@ -3903,8 +4040,8 @@ function renderForm(){
   const moreLbl = p.isDrawer ? 'Gaveta' : (p.isDoor ? 'Puerta' : (p.isRanurado ? 'Ranurado' : 'Más'));
   const sz = boxSize(p);
   panel.innerHTML = `
-    <div class="pc-head"><span class="sw" style="${finishSwatchCss(p.color)}"></span>
-      <div style="min-width:0;"><b>${esc(p.name)}</b><small>${p.w} × ${p.h} × ${p.t} cm · ${esc(finishName(p.color))}</small></div></div>
+    <div class="pc-head"><span class="sw" style="${p.isGlass ? 'background:linear-gradient(135deg,#e8f6f4,#b9dcd8);' : finishSwatchCss(p.color)}"></span>
+      <div style="min-width:0;"><b>${esc(p.name)}</b><small>${p.w} × ${p.h} × ${p.t} cm · ${p.isGlass ? `Vidrio ${round1(p.t*10)} mm` : esc(finishName(p.color))}</small></div></div>
     <div id="f-info">${buildInfoHtml(p)}</div>
     <div class="ftabs">
       <button type="button" data-ft="medidas">Medidas</button>
@@ -3941,13 +4078,19 @@ function renderForm(){
     </div>
 
     <div class="ftab" data-ftab="material">
-      <div class="field">
+      ${p.isDoor || p.isDrawer || p.isFondo || p.isRanurado || isHardware(p) ? '' : `<div class="field glass-box">
+        <label class="canto-chip ${p.isGlass?'on':''}" style="display:flex;"><input type="checkbox" id="f-glass" ${p.isGlass?'checked':''}> 🔷 Es vidrio <small style="font-weight:400;opacity:.8;">&nbsp;(se encarga en la vidriería)</small></label>
+        ${p.isGlass ? `<div class="row2" style="margin-top:8px;"><div class="field"><label>Espesor (mm)</label><input type="number" step="1" min="3" max="19" id="f-gt" value="${round1(p.t*10)}"></div>
+          <div class="field"><label>Separadores (cm)</label><input type="number" step="0.5" min="0" max="15" id="f-sep" value="${p.separador||0}"></div></div>
+          <div class="hint">Separadores 0 = el vidrio va apoyado directo. Más de 0 = va levantado sobre 4 separadores metálicos (la app los dibuja y los cuenta).</div>` : ''}
+      </div>`}
+      ${p.isGlass ? '' : `<div class="field">
         <label>Color / material: <b style="color:var(--text);">${esc(finishName(p.color))}</b></label>
         <div class="colors">
           ${colorPaletteHtml(p.color, 'data-color')}
         </div>
-      </div>
-      <div class="field">
+      </div>`}
+      <div class="field" style="${p.isGlass ? 'display:none;' : ''}">
         <label>Tapacanto — toca un lado para ponerlo o quitarlo</label>
         ${cantoDiagramHtml(p)}
         ${cantoRowsHtml(p)}
@@ -4035,7 +4178,9 @@ function renderForm(){
     <button id="f-dup" title="Copia suelta al lado">⧉ Duplicar</button>
     <button id="f-lock">${p.locked ? ICON_LOCK+' Bloqueada' : ICON_UNLOCK+' Bloquear'}</button>
     <button id="f-comp" title="Copia que cambia junto con esta: medidas, color, canto">◆ ${p.compId ? 'Otra vinculada' : 'Componente'}</button>
-    <button id="f-del" class="del" title="Borrar esta pieza">✕ Eliminar</button>`;
+    <button id="f-del" class="del" title="Borrar esta pieza">✕ Eliminar</button>
+    ${p.isDoor || p.isDrawer || isHardware(p) || p.isRanurado ? '' : rotateBarHtml()}`;
+  wireRotateBar(foot);
   bindInfoButtons(p);
   if(p.isDrawer && p.drawerId) renderDrawerSection(p);
   else if(p.isDoor) renderDoorHandleSection(p);
@@ -4097,6 +4242,18 @@ function renderForm(){
     ['top','bottom','left','right'].forEach(k=>{ if(p.canto[k]){ if(ccAll.value) p.cantoColor[k] = ccAll.value; else delete p.cantoColor[k]; } });
     syncSelectedComponents(); refreshAll();
   });
+  const glChk = panel.querySelector('#f-glass');
+  if(glChk) glChk.addEventListener('change', ()=>{
+    snapshot();
+    p.isGlass = glChk.checked;
+    if(p.isGlass){ if(p.t > 1.2) p.t = 0.6; p.canto = { top:false, bottom:false, left:false, right:false }; p.cantoColor = {}; if(p.separador == null) p.separador = 0; }
+    else { delete p.separador; if(p.t < 1.2) p.t = 1.5; }
+    refreshAll();
+  });
+  const gtInp = panel.querySelector('#f-gt');
+  if(gtInp){ gtInp.addEventListener('focus', snapshot); gtInp.addEventListener('change', ()=>{ const v = parseFloat(gtInp.value); if(v >= 3 && v <= 19){ p.t = round2(v/10); refreshAll(); } }); }
+  const sepInp = panel.querySelector('#f-sep');
+  if(sepInp){ sepInp.addEventListener('focus', snapshot); sepInp.addEventListener('change', ()=>{ const v = parseFloat(sepInp.value); if(v >= 0 && v <= 15){ p.separador = v; refreshAll(); } }); }
   panel.querySelectorAll('[data-cq]').forEach(b=>b.addEventListener('click', ()=>{
     snapshot();
     const m = b.dataset.cq;
@@ -4164,7 +4321,7 @@ function renderForm(){
 const CANTO_LBL = { top:'Sup', bottom:'Inf', left:'Izq', right:'Der' };
 function cutGroups(){
   const map = new Map();
-  pieces.filter(p=>!isHardware(p) && p.w>0 && p.h>0).forEach(p=>{
+  pieces.filter(p=>!isHardware(p) && !p.isGlass && p.w>0 && p.h>0).forEach(p=>{
     const { cutW, cutH } = cutSizeFor(p);
     const sides = ['top','bottom','left','right'].filter(k=>p.canto[k]);
     const key = cutKeyOf(p);
@@ -4521,7 +4678,7 @@ function nestSheets(){
   const vetaBox = document.getElementById('nestVeta');
   if(vetaBox) vetaBox.checked = nestVeta;
   lastNest = null;
-  const cuttable = pieces.filter(p=>!isHardware(p) && p.w>0 && p.h>0);
+  const cuttable = pieces.filter(p=>!isHardware(p) && !p.isGlass && p.w>0 && p.h>0);
   if(!cuttable.length){ renderQuote(); return; }
 
   // número de cada pieza = su número en la lista agrupada (#), para ubicarla en el dibujo
@@ -4597,6 +4754,19 @@ function nestSheets(){
   renderQuote();
 }
 
+/* ---------- vidrios: se encargan en la vidriería (no salen de la lámina) ---------- */
+function glassList(){
+  const map = new Map();
+  pieces.filter(p=>p.isGlass && p.w>0 && p.h>0).forEach(p=>{
+    const a = Math.max(p.w,p.h), b = Math.min(p.w,p.h), key = a+'x'+b+'x'+p.t;
+    const g = map.get(key) || { w:a, h:b, t:p.t, qty:0, names:[] };
+    g.qty += (p.qty||1); g.names.push(p.name); map.set(key, g);
+  });
+  const list = [...map.values()];
+  const m2 = round2(list.reduce((s,g)=> s + g.w*g.h*g.qty/10000, 0));
+  const sep = pieces.filter(p=>p.isGlass && p.separador > 0).reduce((s,p)=> s + 4*(p.qty||1), 0);
+  return { list, m2, sep };
+}
 /* ---------- Resumen para cotizar: piezas, cortes de sierra, metros de tapacanto ---------- */
 let quoteCfg = { modo:'sierra', vCorte:0, vCanto:0, vLamina:0, modoLam:'completa', umbral:60 };
 let quoteForce = {}; // láminas que el depósito vende completas en ESTE mueble (marcadas a mano)
@@ -4635,8 +4805,10 @@ function quoteData(){
     x.costo = (x.completas + x.parcial) * x.precio;
   });
   const costo = { cortes: cortes * (+quoteCfg.vCorte||0), canto: canto * (+quoteCfg.vCanto||0), laminas: porLamina.reduce((a,x)=> a + x.costo, 0) };
-  costo.total = costo.cortes + costo.canto + costo.laminas;
-  return { piezas, canto, cantoByColor, laminas, ranuradas, sierra, cutM: round1(cutLen/100), porLamina, cortes, costo };
+  const gl = glassList();
+  costo.vidrio = gl.m2 * (+quoteCfg.vVidrio||0);
+  costo.total = costo.cortes + costo.canto + costo.laminas + costo.vidrio;
+  return { vidrio:gl, piezas, canto, cantoByColor, laminas, ranuradas, sierra, cutM: round1(cutLen/100), porLamina, cortes, costo };
 }
 // cómo se cobra cada color de lámina (para mostrar al lado del precio)
 function lamTxt(x){
@@ -4650,6 +4822,11 @@ function renderQuote(){
   const box = document.getElementById('quoteBox'); if(!box) return;
   if(!pieces.some(p=>!isHardware(p))){ box.innerHTML = ''; return; }
   const q = quoteData();
+  const glassHtml = q.vidrio.list.length ? `<div class="qt-sheets qt-glass">
+      <div class="qt-sub">🔷 Vidrios — se encargan en la vidriería <small>(no salen de la lámina ni llevan tapacanto)</small></div>
+      ${q.vidrio.list.map(g=>`<div class="qt-sheet-row"><span class="nm"><b>${g.qty} ×</b>&nbsp;${g.w} × ${g.h} cm · ${round1(g.t*10)} mm</span><span class="n">${esc(g.names.slice(0,3).join(', '))}${g.names.length>3?'…':''}</span></div>`).join('')}
+      <div class="qt-sheet-row"><span class="nm">Total: <b>${q.vidrio.m2} m²</b>${q.vidrio.sep ? ` · <b>${q.vidrio.sep} separadores</b> metálicos` : ''}</span><span class="n">valor m² ($)</span><input type="number" min="0" step="1000" id="qt-vVidrio" value="${+quoteCfg.vVidrio||''}" placeholder="$ m²"></div>
+    </div>` : '';
   const sw = c => `<i style="${finishSwatchCss(c)}"></i>`;
   box.innerHTML = `<div class="qt">
     <div class="qt-hd">🧾 Resumen para cotizar el corte <small>· todo el mueble</small></div>
@@ -4677,6 +4854,7 @@ function renderQuote(){
         <span class="n" data-lamn="${esc(x.key)}">${lamTxt(x)}</span>
         <input type="number" min="0" step="1000" data-sprice="${esc(x.key)}" value="${x.precio||''}" placeholder="$ precio"></div>`).join('')}
     </div>
+    ${glassHtml}
     <div class="qt-calc" id="qt-calc"></div>
     <div class="hint" style="margin:8px 0 0;">Los cortes de sierra salen del acomodo de las láminas de abajo (cada vez que el disco separa un pedazo). El tapacanto es el largo exacto de los lados marcados; el taller suele sumar unos cm por lado al pegarlo.</div>
   </div>`;
@@ -4695,12 +4873,13 @@ function renderQuote(){
     document.querySelectorAll('[data-lamn]').forEach(el=>{ const x = q2.porLamina.find(y=>y.key===el.dataset.lamn); if(x) el.textContent = lamTxt(x); });
     const sinPrecio = q2.porLamina.filter(x=>!x.precio).length;
     if(sinPrecio && q2.porLamina.some(x=>x.precio)) rows.push(`<div style="color:var(--text-dim);font-size:11.5px;"><span>${sinPrecio} tipo(s) de lámina sin precio — no se suman</span><span></span></div>`);
+    if(q2.vidrio.m2 && +quoteCfg.vVidrio) rows.push(`<div><span>${q2.vidrio.m2} m² de vidrio × ${money(quoteCfg.vVidrio)}</span><b>${money(q2.costo.vidrio)}</b></div>`);
     rows.push(`<div class="tot"><span>Total aproximado</span><span>${money(q2.costo.total)}</span></div>`);
     el.innerHTML = rows.join('');
   };
   const save = ()=>{ try{ localStorage.setItem('jank_quote', JSON.stringify(quoteCfg)); }catch(e){} calc(); };
   box.querySelector('#qt-modo').addEventListener('change', e=>{ quoteCfg.modo = e.target.value; save(); });
-  ['vCorte','vCanto'].forEach(k=> box.querySelector('#qt-'+k).addEventListener('input', e=>{ quoteCfg[k] = parseFloat(e.target.value) || 0; save(); }));
+  ['vCorte','vCanto','vVidrio'].forEach(k=>{ const el = box.querySelector('#qt-'+k); if(el) el.addEventListener('input', e=>{ quoteCfg[k] = parseFloat(e.target.value) || 0; save(); }); });
   box.querySelectorAll('[data-modolam]').forEach(b=> b.addEventListener('click', ()=>{
     quoteCfg.modoLam = b.dataset.modolam;
     try{ localStorage.setItem('jank_quote', JSON.stringify(quoteCfg)); }catch(e){}
@@ -4752,7 +4931,7 @@ function printCutPlan(){
   <header><img src="${typeof LOGO_FULL!=='undefined'?LOGO_FULL:''}" alt=""><div><h1>Plan de corte — ${esc(name)}</h1><div class="sub">${fecha} · medidas en cm · sierra ${kerfMM} mm${descontarCanto ? ' · descontando canto de ' + cantoThicknessMM + ' mm' : ' · medidas iguales al diseño'}${nestVeta?' · respetando veta':''}</div></div></header>
   <div class="tot">${esc(totalTxt)}</div>
   <div class="tot"><b>Tapacanto por color:</b> ${cantoMetersByColor(groupsList).map(x=>`${esc(finishName(x.c))}: ${x.m} m`).join(' · ') || 'no lleva'}</div>
-  ${(()=>{ const q = quoteData(); return `<div class="tot"><b>Para cotizar:</b> ${q.piezas} piezas · ${q.sierra} cortes de sierra (${q.cutM} m) · ${q.canto} m de tapacanto · ${q.laminas} lámina(s)${q.ranuradas ? ' + ' + q.ranuradas + ' ranurada(s)' : ''}${q.costo.total ? ` · <b>total aprox. ${money(q.costo.total)}</b>` : ''}</div>`; })()}
+  ${(()=>{ const q = quoteData(); return `<div class="tot"><b>Para cotizar:</b> ${q.piezas} piezas · ${q.sierra} cortes de sierra (${q.cutM} m) · ${q.canto} m de tapacanto · ${q.laminas} lámina(s)${q.ranuradas ? ' + ' + q.ranuradas + ' ranurada(s)' : ''}${q.costo.total ? ` · <b>total aprox. ${money(q.costo.total)}</b>` : ''}</div>${q.vidrio.list.length ? `<div class="tot"><b>Vidrios (vidriería):</b> ${q.vidrio.list.map(g=>`${g.qty} × ${g.w}×${g.h} cm (${round1(g.t*10)} mm)`).join(' · ')} — ${q.vidrio.m2} m²${q.vidrio.sep ? ` · ${q.vidrio.sep} separadores` : ''}</div>` : ''}`; })()}
   <table><thead><tr><th>#</th><th>${descontarCanto ? 'Ancho corte' : 'Ancho'}</th><th>${descontarCanto ? 'Alto corte' : 'Alto'}</th><th>Esp.</th><th>Material</th><th>Cant.</th><th>Canto</th><th>Piezas</th></tr></thead><tbody>${rows}</tbody></table>
   ${pages}
   <script>setTimeout(function(){ window.print(); }, 400);<\/script>
@@ -4938,6 +5117,7 @@ function exportCsv(){
   csv += `\nRESUMEN PARA COTIZAR\nPiezas,${qd.piezas}\nCortes de sierra,${qd.sierra}\nMetros de corte,${qd.cutM}\nTapacanto (m),${qd.canto}\n`;
   qd.cantoByColor.forEach(x=>{ csv += `${q('Tapacanto ' + finishName(x.c))},${x.m}\n`; });
   csv += `Laminas,${qd.laminas}${qd.ranuradas ? '\nLaminas ranuradas,' + qd.ranuradas : ''}\n`;
+  if(qd.vidrio.list.length){ csv += `\nVIDRIOS (vidrieria)\nCantidad,Largo,Ancho,Espesor (mm),Piezas\n`; qd.vidrio.list.forEach(g=>{ csv += `${g.qty},${g.w},${g.h},${round1(g.t*10)},${q(g.names.join(', '))}\n`; }); csv += `Total m2,${qd.vidrio.m2}\nSeparadores,${qd.vidrio.sep}\n`; }
   if(qd.costo.laminas) csv += `Laminas cobradas,${quoteCfg.modoLam === 'area' ? 'solo lo que usan las piezas' : 'completas'},${Math.round(qd.costo.laminas)}\n`;
   if(qd.costo.total) csv += `Total aproximado,${Math.round(qd.costo.total)}\n`;
   // el "\uFEFF" al inicio hace que Excel muestre bien las tildes y la ñ
@@ -6545,7 +6725,8 @@ function createDrawers(pl, opts){
   let firstId = null;
   for(let i=0;i<pl.n;i++){
     const num = nDrawers + i + 1;
-    const did = 'd' + Date.now().toString(36) + i;
+    // id único aunque se creen varias gaveteras en el mismo instante (antes se repetía y una gaveta perdía su manija)
+    let did; do { did = 'd' + Date.now().toString(36) + i + Math.random().toString(36).slice(2,6); } while(pieces.some(q=>q.drawerId===did));
     const gid = 'g' + (nextGroupId++);
     groups[gid] = { active:true };
     const slotY = round2(pl.y0 + i*pl.slotH);
