@@ -446,7 +446,7 @@
   .help-body li{margin-bottom:4px;}
   #measureGroup button{border:none;background:transparent;padding:6px 9px;font-size:12px;white-space:nowrap;}
   #measureGroup button.primary{border-radius:6px;}
-  #canvas3d-wrap{flex:1;position:relative;min-height:0;background:linear-gradient(180deg, #f7f4ef 0%, #ece6dc 55%, #e4ddd1 100%);}
+  #canvas3d-wrap{flex:1;position:relative;min-height:0;min-width:0;overflow:hidden;container-type:inline-size;background:linear-gradient(180deg, #e9ebee 0%, #dfe2e6 55%, #d3d6db 100%);}
   #canvas3d-wrap canvas{display:block;width:100%;height:100%;touch-action:none;}
   /* ayuda: solo aparece cuando estás en un modo especial (medir / seleccionar varias) */
   .badge3d{display:none;position:absolute;top:58px;left:50%;transform:translateX(-50%);z-index:5;
@@ -542,6 +542,55 @@
   #modalCard h2{margin:0 0 14px;font-size:15px;font-weight:600;}
   .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;}
 
+
+  /* ===== interfaz ordenada ===== */
+  #viewToolbar{flex-wrap:nowrap;gap:6px;}
+  .float-card{background:rgba(255,255,255,.97);border:1px solid #e3ded7;border-radius:10px;box-shadow:0 1px 2px rgba(30,25,20,.06),0 4px 14px rgba(30,25,20,.08);}
+  #moveModes button,#viewOpts button,#measureGroup button,#lookCard button,#shareCard button{height:30px;padding:0 10px;border-radius:7px;font-size:12px;}
+  #moveModes button:hover,#viewOpts button:hover,#measureGroup button:hover,#shareCard button:hover{background:#f3eee8;}
+  #viewOpts{margin-left:auto;}
+  #shareCard{display:flex;padding:3px;gap:2px;}
+  #shareCard button{border:none;background:transparent;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
+  #camDock{gap:6px;}
+  #camDock .float-card{border-radius:10px;}
+  #camControls{grid-template-columns:32px 32px 32px;grid-template-rows:32px 32px 32px;gap:3px;}
+  #camControls button{width:32px;height:32px;font-size:12px;box-shadow:0 2px 6px rgba(0,0,0,.12);}
+  #camDock{opacity:.9;transition:opacity .15s;} #camDock:hover{opacity:1;}
+  #selInfo{background:rgba(255,255,255,.92);border:1px solid #e3ded7;color:#5a524a;font-weight:600;}
+  /* 3D angosto (panel abierto): solo íconos para que todo quepa en una fila */
+  @container (max-width:1120px){
+    #moveModes .mm-label, #measure3dBtn .ms-txt, #lookOnlyBtn .lo-txt, #lookCard .mm-txt, #shareCard .sh-txt{display:none;}
+    #measure3dBtn svg{margin-right:0 !important;}
+    #moveModes button{padding:0 8px;}
+  }
+  @container (max-width:880px){
+    #moveModes .mm-txt{display:none;} #moveModes button svg{margin-right:0 !important;}
+  }
+  @container (max-width:640px){ #viewToolbar{flex-wrap:wrap;} }
+  /* panel derecho más limpio */
+  .rp-head{padding:12px 14px 10px;}
+  #f-info .fitbox{font-size:12px;}
+  #f-info{max-height:150px;overflow:auto;margin-bottom:10px;border-radius:8px;}
+  .ftabs{margin-top:0;}
+  /* ===== formato para pedir el corte (como se escribe a mano) ===== */
+  .co-help{font-size:12px;color:var(--text-dim);margin:2px 0 10px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;}
+  .co-help .ex{font-family:ui-monospace,Menlo,monospace;font-weight:700;color:var(--text);}
+  .co-mat{border:1px solid var(--line);border-radius:10px;margin-bottom:12px;overflow:hidden;background:#fff;max-width:560px;}
+  .co-mat-h{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;background:var(--panel-2);font-size:12.5px;border-bottom:1px solid var(--line);}
+  .co-mat-h b{font-size:13px;}
+  table.co-tbl{width:100%;border-collapse:collapse;}
+  table.co-tbl td{padding:9px 12px;border-bottom:1px solid #f0ece6;vertical-align:middle;}
+  table.co-tbl tr:last-child td{border-bottom:none;}
+  table.co-tbl td.n{width:26px;color:var(--text-dim);font-size:11px;}
+  table.co-tbl td.m{font-family:ui-monospace,Menlo,monospace;font-size:19px;font-weight:700;white-space:nowrap;letter-spacing:.3px;}
+  table.co-tbl td.q{font-family:ui-monospace,Menlo,monospace;font-size:19px;font-weight:800;color:var(--wood);white-space:nowrap;}
+  table.co-tbl td.nm{font-size:11px;color:var(--text-dim);}
+  .co-x{color:var(--text-dim);font-weight:400;margin:0 6px;}
+  .co-num{display:inline-block;padding-bottom:3px;}
+  .co-num.l1{border-bottom:2px solid currentColor;}
+  .co-num.l2{border-bottom:6px double currentColor;padding-bottom:2px;}
+  .co-cc{display:inline-block;font-size:10.5px;font-weight:600;background:#f3eee8;border-radius:6px;padding:2px 6px;margin-left:6px;vertical-align:middle;font-family:inherit;}
+  .co-actions{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px;}
   ::selection{background:var(--wood);color:#fff;}
 
   @media (max-width:1200px){
@@ -806,6 +855,7 @@
         <div class="seg" style="width:auto;">
           <button type="button" data-cv="agrupada" class="on">Agrupada (para la sierra)</button>
           <button type="button" data-cv="detalle">Pieza por pieza</button>
+          <button type="button" data-cv="pedido">Formato para pedir</button>
         </div>
         <span class="hint" id="cutGroupSummary" style="margin:0;"></span>
       </div>
@@ -824,6 +874,7 @@
         </tr></thead>
         <tbody id="cutlistBody"></tbody>
       </table>
+      <div id="cutOrderWrap" style="display:none;"></div>
       <div id="hardwareWrap"></div>
       <div class="nest-head">
         <div class="ts" style="font-weight:700;">Acomodo en láminas (optimizado)</div>
@@ -953,7 +1004,11 @@ function applyState(json){
   groups = state.groups || {};
   nextGroupId = state.nextGroupId || 1;
 }
+// pasos "vacíos" (tocar un campo sin cambiar nada) no cuentan: Ctrl+Z deshace el cambio real de una vez
+const _stKey = s=> s.replace(/,"t":\d+\}$/, '}');
+function _skipSame(stack){ const cur = _stKey(curStateJSON()); while(stack.length && _stKey(stack[stack.length-1]) === cur) stack.pop(); }
 function undo(silent){
+  _skipSame(undoStack);
   if(!undoStack.length) return;
   if(typeof scheduleAutosave === 'function') scheduleAutosave();
   redoStack.push(curStateJSON());
@@ -961,6 +1016,7 @@ function undo(silent){
   if(!silent) refreshAll();
 }
 function redo(silent){
+  _skipSame(redoStack);
   if(!redoStack.length) return;
   if(typeof scheduleAutosave === 'function') scheduleAutosave();
   undoStack.push(curStateJSON());
@@ -1771,7 +1827,7 @@ function autoCantoFor(p){
    THREE.JS
 ============================================================ */
 let scene, camera, renderer, controls, wrapEl;
-let envTexture = null, sunLight = null, hemiLight = null, floorMesh = null, gridHelper = null;
+let envTexture = null, sunLight = null, hemiLight = null, floorMesh = null, gridHelper = null, fillLight = null;
 let meshGroup;
 let doorPivots = {}; // pieceId -> THREE.Group (el eje/pivote de cada puerta, para animar)
 
@@ -2106,7 +2162,7 @@ function makePieceMaterial(p, warn, picked, sel){
     const bump = tex && !renderOpts.xray && (type === 'wood' || type === 'textile' || type === 'stone') ? getFinishBump(p.color) : null;
     m = new THREE.MeshStandardMaterial({ map:tex, color: tex ? 0xffffff : p.color,
       roughness: type==='metal' ? 0.35 : (type==='stone' ? 0.4 : 0.5), metalness: type==='metal' ? 0.45 : 0,
-      envMapIntensity: type==='metal' ? 1.0 : 0.7, bumpMap: bump, bumpScale: bump ? (type==='textile' ? 0.02 : 0.008) : 1,
+      envMapIntensity: type==='metal' ? 1.0 : (isLightColor(p.color) ? 0.35 : 0.7), // blancos: menos brillo de ambiente, se notan las caras bumpMap: bump, bumpScale: bump ? (type==='textile' ? 0.02 : 0.008) : 1,
       // las líneas de borde quedan limpias encima de la tabla (sin rayitas que parpadean de cerca)
       polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
     if(warn) m.color.set(tex ? '#ff7a6e' : '#d0473a');
@@ -2158,6 +2214,7 @@ function makeAgloMaterial(warn, picked, sel){
   return m;
 }
 
+function isLightColor(c){ const m = /^#?([0-9a-f]{6})$/i.exec(c||''); if(!m) return false; const n = parseInt(m[1],16); const r=(n>>16)&255, g=(n>>8)&255, b=n&255; return (0.299*r + 0.587*g + 0.114*b) > 175; }
 function applyRendererMode(){
   if(!renderer) return;
   const real = renderOpts.realista;
@@ -2165,8 +2222,9 @@ function applyRendererMode(){
   renderer.toneMapping = real ? THREE.ACESFilmicToneMapping : THREE.NoToneMapping;
   renderer.shadowMap.enabled = real;
   scene.environment = real ? envTexture : null;
-  if(sunLight) sunLight.intensity = real ? 1.6 : 0.9;
-  if(hemiLight) hemiLight.intensity = real ? 0.2 : 0.8;
+  if(sunLight) sunLight.intensity = real ? 1.45 : 0.9;
+  if(hemiLight) hemiLight.intensity = real ? 0.28 : 0.8;
+  if(fillLight) fillLight.intensity = real ? 0.32 : 0.25;
   if(floorMesh) floorMesh.visible = real;
   markShadow();
 }
@@ -2391,7 +2449,8 @@ function takePhoto(){
   let url = null;
   try{ url = renderer.domElement.toDataURL('image/png'); }catch(e){}
   renderer.setPixelRatio(prevRatio);
-  renderer.setSize(w, h);
+  renderer.setSize(w, h, false); // false: no fijar ancho en px (tapaba el panel derecho)
+  renderer.domElement.style.width = renderer.domElement.style.height = '';
   selectedId = prevSel; if(gridHelper) gridHelper.visible = prevGrid; renderOpts.cotas = prevCotas;
   rebuild3D();
   if(!url){ alert('No se pudo tomar la foto en este navegador.'); return; }
@@ -2569,7 +2628,7 @@ function initThree(){
       _pinnedCount = progs.length;
     }
   };
-  renderer.toneMappingExposure = 0.92;
+  renderer.toneMappingExposure = 0.84;
   resizeRenderer();
   wrapEl.appendChild(renderer.domElement);
   // luz de ambiente de "cuarto" (reflejos suaves, como una foto de estudio)
@@ -2585,7 +2644,7 @@ function initThree(){
   controls.enableDamping = true;
   controls.dampingFactor = 0.14;   // la vista frena rápido al soltar (antes seguía resbalando)
   controls.rotateSpeed = 0.6;      // girar más suave y controlado
-  controls.panSpeed = 0.8;
+  controls.panSpeed = 1;          // con el centro bajo el mouse, lo que arrastras va pegado al mouse
   controls.minDistance = 1;
   controls.maxDistance = 4000;
   controls.screenSpacePanning = true;
@@ -2600,17 +2659,21 @@ function initThree(){
   sunLight.shadow.bias = -0.0004;
   sunLight.shadow.normalBias = 0.03;
   scene.add(sunLight); scene.add(sunLight.target);
+  // luz de relleno desde el otro lado: cada cara de la tabla queda de un tono distinto (se ven los blancos)
+  fillLight = new THREE.DirectionalLight(0xdfe6ff, 0.32);
+  fillLight.position.set(-200, 120, -60);
+  scene.add(fillLight);
 
   // piso que recibe la sombra del mueble
-  floorMesh = new THREE.Mesh(new THREE.PlaneGeometry(6000, 6000), new THREE.MeshStandardMaterial({ color:'#e8e2d8', roughness:1 }));
+  floorMesh = new THREE.Mesh(new THREE.PlaneGeometry(6000, 6000), new THREE.MeshStandardMaterial({ color:'#80868e', roughness:1, envMapIntensity:0.25 }));
   floorMesh.rotation.x = -Math.PI/2;
   floorMesh.position.y = -0.05;
   floorMesh.receiveShadow = true;
   scene.add(floorMesh);
-  scene.fog = new THREE.Fog('#ece6dc', 900, 4500);
+  scene.fog = new THREE.Fog('#d3d6da', 900, 4500);
 
-  gridHelper = new THREE.GridHelper(400, 40, 0xb79d7c, 0xd6c6ae);
-  gridHelper.material.transparent = true; gridHelper.material.opacity = 0.45;
+  gridHelper = new THREE.GridHelper(500, 10, 0x9aa0a8, 0xa9aeb5); // cuadros de 50 cm
+  gridHelper.material.transparent = true; gridHelper.material.opacity = 0.55;
   gridHelper.position.y = 0.02;
   scene.add(gridHelper);
   applyRendererMode();
@@ -2625,6 +2688,7 @@ function initThree(){
     new ResizeObserver(()=>{ resizeRenderer(); render2D(); }).observe(wrapEl);
   }
   setupCursorZoom();
+  setupPivotUnderCursor();
   animate();
 }
 
@@ -2641,6 +2705,30 @@ function stepZoomAnim(){
   controls.target.lerpVectors(zoomAnim.fromTgt, zoomAnim.toTgt, e);
   if(k >= 1) zoomAnim = null;
   return true;
+}
+// GIRAR Y DESPLAZAR CÓMODO DE CERCA: al hacer clic sobre el mueble, el centro de giro se pone
+// a la misma profundidad de lo que hay bajo el mouse (sobre la línea de vista, así la imagen
+// no salta). Al girar, lo que miras se queda en pantalla; al arrastrar, el mueble va pegado al
+// mouse. De cerca el giro es más suave.
+function setupPivotUnderCursor(){
+  const ray = new THREE.Raycaster(), m = new THREE.Vector2();
+  wrapEl.addEventListener('pointerdown', e=>{
+    if(e.target !== renderer.domElement || touring || !controls.enabled) return;
+    if(zoomAnim){ camera.position.copy(zoomAnim.toCam); controls.target.copy(zoomAnim.toTgt); zoomAnim = null; }
+    const rect = renderer.domElement.getBoundingClientRect();
+    m.set(((e.clientX-rect.left)/rect.width)*2-1, -((e.clientY-rect.top)/rect.height)*2+1);
+    ray.setFromCamera(m, camera);
+    const meshes = [];
+    meshGroup.children.forEach(o=>{ if(o.visible && !o.userData.isDim && !o.userData.isGuide) o.traverse(c=>{ if(c.isMesh && c.visible) meshes.push(c); }); });
+    const hit = ray.intersectObjects(meshes, false)[0];
+    if(hit){
+      const viewDir = camera.getWorldDirection(new THREE.Vector3());
+      const depth = hit.point.clone().sub(camera.position).dot(viewDir);
+      if(depth > 1){ controls.target.copy(camera.position).addScaledVector(viewDir, depth); controls.update(); }
+    }
+    const dNow = camera.position.distanceTo(controls.target);
+    controls.rotateSpeed = 0.6 * Math.max(0.5, Math.min(1, dNow / 60));
+  }, { capture:true });
 }
 function setupCursorZoom(){
   const ray = new THREE.Raycaster(), m = new THREE.Vector2();
@@ -2688,6 +2776,8 @@ function setupCursorZoom(){
 }
 
 function resizeRenderer(){
+  // el lienzo SIEMPRE sigue al contenedor (si quedaba con un ancho fijo, dejaba una franja vacía o tapaba el panel)
+  if(renderer.domElement.style.width || renderer.domElement.style.height) renderer.domElement.style.width = renderer.domElement.style.height = '';
   const w = wrapEl.clientWidth, h = wrapEl.clientHeight;
   if(!w || !h) return; // panel oculto o sin tamaño todavía — evita cámara con aspecto inválido
   const pr = _lowRes ? 1 : fullPixelRatio();
@@ -2832,8 +2922,9 @@ function rebuild3D(){
     const edges = sharedEdges ? getUnitEdges() : new THREE.EdgesGeometry(geo);
     const edgeScale = l=>{ if(sharedEdges) l.scale.set(Math.max(size.sx,0.01), Math.max(size.sy,0.01), Math.max(size.sz,0.01)); return l; };
     const strongLine = warn || picked || p.id===selectedId;
-    const lineMat = new THREE.LineBasicMaterial({ color: warn ? 0x7a1c12 : (picked ? 0x2f6fb0 : (p.id===selectedId ? 0xa35a2e : 0x2a2622)),
-      transparent: !strongLine, opacity: strongLine ? 1 : (renderOpts.realista ? 0.45 : 1) });
+    const _light = isLightColor(p.color);
+    const lineMat = new THREE.LineBasicMaterial({ color: warn ? 0x7a1c12 : (picked ? 0x2f6fb0 : (p.id===selectedId ? 0xa35a2e : (_light ? 0x3a3632 : 0x2a2622))),
+      transparent: !strongLine, opacity: strongLine ? 1 : (renderOpts.realista ? (_light ? 1 : 0.45) : 1) });
     const showEdges = renderOpts.bordes || strongLine;
 
     if(p.isDoor){
@@ -4042,13 +4133,13 @@ function renderForm(){
   panel.innerHTML = `
     <div class="pc-head"><span class="sw" style="${p.isGlass ? 'background:linear-gradient(135deg,#e8f6f4,#b9dcd8);' : finishSwatchCss(p.color)}"></span>
       <div style="min-width:0;"><b>${esc(p.name)}</b><small>${p.w} × ${p.h} × ${p.t} cm · ${p.isGlass ? `Vidrio ${round1(p.t*10)} mm` : esc(finishName(p.color))}</small></div></div>
-    <div id="f-info">${buildInfoHtml(p)}</div>
     <div class="ftabs">
       <button type="button" data-ft="medidas">Medidas</button>
       <button type="button" data-ft="material">Material</button>
       <button type="button" data-ft="posicion">Posición</button>
       <button type="button" data-ft="mas">${moreLbl}</button>
     </div>
+    <div id="f-info">${buildInfoHtml(p)}</div>
 
     <div class="ftab" data-ftab="medidas">
       <div class="field">
@@ -4377,10 +4468,146 @@ function renderCutGroups(){
       <td class="mono">${g.cantoM || ''}</td>
       <td style="font-size:11px;color:var(--text-dim);max-width:320px;" title="${esc(g.names.join(', '))}">${esc(g.names.length > 3 ? g.names.slice(0,3).join(', ') + ` y ${g.names.length-3} más` : g.names.join(', '))}</td>
     </tr>`).join('');
+  renderCutOrder();
   const totalPieces = list.reduce((s,g)=>s+g.qty, 0);
   const totalCanto = round1(list.reduce((s,g)=>s+g.cantoM, 0));
   const byC = cantoMetersByColor(list);
   document.getElementById('cutGroupSummary').innerHTML = `${list.length} cortes distintos · ${list.reduce((a,g)=>a+g.qty,0)} piezas en total · <b>tapacanto: ${totalCanto} m</b>${byC.length ? ' (' + byC.map(x=>`${esc(finishName(x.c))}: ${x.m} m`).join(' · ') + ')' : ''}`;
+}
+// ===== FORMATO PARA PEDIR: "ancho x alto = cantidad", rayitas debajo = lados con tapacanto =====
+// arriba/abajo de la pieza miden el ANCHO → rayitas debajo del ancho; izquierda/derecha miden el ALTO → debajo del alto
+function cutOrderData(){
+  const mats = new Map();
+  cutGroups().forEach(g=>{
+    const nW = g.sides.filter(k=>k==='top'||k==='bottom').length;
+    const nH = g.sides.filter(k=>k==='left'||k==='right').length;
+    const otherCC = [...new Set(g.sides.map(k=>g.sideColors[k]).filter(c=>c!==g.color))];
+    const mk = [g.color, g.t, g.ranurado ? 'R' : ''].join('|');
+    let m = mats.get(mk);
+    if(!m){ m = { color:g.color, t:g.t, ranurado:g.ranurado, rows:new Map(), cantoM:0 }; mats.set(mk, m); }
+    const rk = [g.cw, g.ch, nW, nH, otherCC.join(',')].join('|');
+    let r = m.rows.get(rk);
+    if(!r){ r = { w:g.cw, h:g.ch, nW, nH, otherCC, qty:0, names:[] }; m.rows.set(rk, r); }
+    r.qty += g.qty; r.names.push(...g.names);
+    m.cantoM = round2(m.cantoM + g.cantoM);
+  });
+  return [...mats.values()].map(m=>({ ...m, rows:[...m.rows.values()] }));
+}
+function renderCutOrder(){
+  const wrap = document.getElementById('cutOrderWrap'); if(!wrap) return;
+  const data = cutOrderData();
+  if(!data.length){ wrap.innerHTML = '<div class="hint">Todavía no hay piezas para cortar.</div>'; return; }
+  const num = (v,n)=>`<span class="co-num${n===1?' l1':(n>=2?' l2':'')}">${v}</span>`;
+  wrap.innerHTML = `
+    <div class="co-help"><span>Así se le pasa al que corta: <b>ancho × alto = cantidad</b>.</span>
+      <span><span class="ex">${num('42',1)}</span> = 1 lado con tapacanto</span>
+      <span><span class="ex">${num('80',2)}</span> = los 2 lados</span>
+      <span>sin raya = sin tapacanto</span></div>
+    <div class="co-actions">
+      <button class="small" id="coCopy" title="Copia la lista con las rayitas para pegarla en WhatsApp">Copiar para WhatsApp</button>
+      <button class="small" id="coImg" title="Descarga la lista como imagen (PNG) para mandarla por WhatsApp">Descargar imagen</button>
+      <button class="small ghost" id="coPrint" title="Abre el formato listo para imprimir o guardar en PDF">Imprimir / PDF</button>
+    </div>
+    ${data.map(m=>{
+      const tot = m.rows.reduce((s,r)=>s+r.qty,0);
+      return `<div class="co-mat"><div class="co-mat-h"><span><b>${esc(finishName(m.color))}</b> · ${round2(m.t*10)} mm${m.ranurado?' · ranurado':''}</span><span>${tot} piezas · tapacanto ${m.cantoM} m</span></div>
+      <table class="co-tbl"><tbody>${m.rows.map((r,i)=>`<tr>
+        <td class="n">${i+1}</td>
+        <td class="m">${num(r.w, r.nW)}<span class="co-x">×</span>${num(r.h, r.nH)}${r.otherCC.length ? r.otherCC.map(c=>`<span class="co-cc" title="Tapacanto de otro color">canto ${esc(finishName(c))}</span>`).join('') : ''}</td>
+        <td class="q">= ${r.qty}</td>
+        <td class="nm" title="${esc(r.names.join(', '))}">${esc(r.names.length > 2 ? r.names.slice(0,2).join(', ') + ` y ${r.names.length-2} más` : r.names.join(', '))}</td>
+      </tr>`).join('')}</tbody></table></div>`;
+    }).join('')}`;
+  document.getElementById('coCopy').addEventListener('click', copyCutOrder);
+  document.getElementById('coPrint').addEventListener('click', printCutOrder);
+  document.getElementById('coImg').addEventListener('click', downloadCutOrderImage);
+}
+// texto para WhatsApp: la raya va pegada a cada número (̲ = una raya, ̳ = dos rayas)
+function cutOrderText(){
+  const ul = (v,n)=> n ? String(v).split('').map(ch=> ch + (n>=2 ? '̳' : '̲')).join('') : String(v);
+  const name = (typeof cloudProjectName !== 'undefined' && cloudProjectName) ? cloudProjectName : 'Pedido de corte';
+  let t = `*${name}*\n`;
+  cutOrderData().forEach(m=>{
+    t += `\n*${finishName(m.color)} ${round2(m.t*10)} mm${m.ranurado?' ranurado':''}*\n`;
+    m.rows.forEach(r=>{ t += `${ul(r.w, r.nW)} x ${ul(r.h, r.nH)} = ${r.qty}${r.otherCC.length ? '  (canto ' + r.otherCC.map(finishName).join(', ') + ')' : ''}\n`; });
+    t += `Tapacanto: ${m.cantoM} m\n`;
+  });
+  t += `\n_Raya debajo = lado con tapacanto (doble = los 2 lados)_`;
+  return t;
+}
+function copyCutOrder(){
+  const t = cutOrderText();
+  const ok = ()=> showToast('Lista copiada: pégala en WhatsApp.');
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok).catch(()=>fallback());
+  else fallback();
+  function fallback(){ const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); ok(); }catch(e){ alert(t); } ta.remove(); }
+}
+// imagen PNG de la lista (se dibuja directo, sin librerías)
+function cutOrderCanvas(){
+  const data = cutOrderData(); if(!data.length) return null;
+  const name = (typeof cloudProjectName !== 'undefined' && cloudProjectName) ? cloudProjectName : 'Pedido de corte';
+  const S = 2, W = 620, rowH = 46, PAD = 28;
+  let H = PAD + 34 + 22 + 10;
+  data.forEach(m=>{ H += 44 + m.rows.length*rowH + 30; });
+  H += 50;
+  const c = document.createElement('canvas'); c.width = W*S; c.height = H*S;
+  const g = c.getContext('2d'); g.scale(S,S);
+  g.fillStyle = '#ffffff'; g.fillRect(0,0,W,H);
+  const mono = '"Courier New", ui-monospace, monospace', sans = 'Arial, Helvetica, sans-serif';
+  let y = PAD;
+  g.fillStyle = '#222'; g.font = `bold 22px ${sans}`; g.textBaseline = 'top'; g.fillText(name, PAD, y); y += 30;
+  g.fillStyle = '#888'; g.font = `13px ${sans}`; g.fillText('Pedido de corte · ' + new Date().toLocaleDateString('es-CO'), PAD, y); y += 30;
+  const under = (x, w, yy, n)=>{ if(!n) return; g.fillStyle = '#111'; g.fillRect(x, yy, w, 2); if(n >= 2) g.fillRect(x, yy + 5, w, 2); };
+  data.forEach(m=>{
+    g.fillStyle = '#f4efe8'; g.fillRect(PAD-8, y, W-2*PAD+16, 34);
+    g.fillStyle = '#222'; g.font = `bold 15px ${sans}`; g.textBaseline = 'middle';
+    g.fillText(`${finishName(m.color)} · ${round2(m.t*10)} mm${m.ranurado?' · ranurado':''}`, PAD, y+17);
+    g.fillStyle = '#666'; g.font = `13px ${sans}`; g.textAlign = 'right';
+    g.fillText(`${m.rows.reduce((s,r)=>s+r.qty,0)} piezas · tapacanto ${m.cantoM} m`, W-PAD, y+17); g.textAlign = 'left';
+    y += 44;
+    m.rows.forEach((r,i)=>{
+      const cy = y + rowH/2 - 4;
+      g.fillStyle = '#999'; g.font = `12px ${sans}`; g.fillText(String(i+1), PAD, cy);
+      g.font = `bold 24px ${mono}`; g.fillStyle = '#111';
+      let x = PAD + 30;
+      const tw = String(r.w); const w1 = g.measureText(tw).width; g.fillText(tw, x, cy); under(x, w1, cy + 15, r.nW); x += w1;
+      g.fillStyle = '#999'; g.font = `20px ${sans}`; g.fillText(' x ', x, cy); x += g.measureText(' x ').width;
+      g.fillStyle = '#111'; g.font = `bold 24px ${mono}`;
+      const th = String(r.h); const w2 = g.measureText(th).width; g.fillText(th, x, cy); under(x, w2, cy + 15, r.nH);
+      g.fillStyle = '#a35a2e'; g.fillText('= ' + r.qty, PAD + 290, cy);
+      if(r.otherCC.length){ g.fillStyle = '#777'; g.font = `12px ${sans}`; g.fillText('canto ' + r.otherCC.map(finishName).join(', '), PAD + 380, cy); }
+      g.fillStyle = '#eee'; g.fillRect(PAD, y + rowH - 1, W-2*PAD, 1);
+      y += rowH;
+    });
+    y += 30;
+  });
+  g.fillStyle = '#666'; g.font = `12px ${sans}`; g.textBaseline = 'top';
+  g.fillText('Raya debajo = ese lado lleva tapacanto · doble raya = los 2 lados · sin raya = sin tapacanto', PAD, y);
+  return c;
+}
+function downloadCutOrderImage(){
+  const c = cutOrderCanvas(); if(!c) return;
+  const name = ((typeof cloudProjectName !== 'undefined' && cloudProjectName) ? cloudProjectName : 'pedido-de-corte').replace(/[^\w\-áéíóúñÁÉÍÓÚÑ ]+/g,'').trim().replace(/\s+/g,'-') || 'pedido-de-corte';
+  const a = document.createElement('a'); a.href = c.toDataURL('image/png'); a.download = name + '-corte.png';
+  document.body.appendChild(a); a.click(); a.remove();
+  showToast('Imagen descargada.');
+}
+function printCutOrder(){
+  const data = cutOrderData(); if(!data.length) return;
+  const name = (typeof cloudProjectName !== 'undefined' && cloudProjectName) ? cloudProjectName : 'Pedido de corte';
+  const num = (v,n)=>`<span class="u${n>=2?2:(n||0)}">${v}</span>`;
+  const html = `<!doctype html><html><head><meta charset="utf-8"><title>${esc(name)} · pedido de corte</title><style>
+    body{font-family:Arial,Helvetica,sans-serif;margin:28px;color:#222;} h1{font-size:20px;margin:0 0 4px;} .f{color:#777;font-size:12px;margin-bottom:16px;}
+    h2{font-size:15px;margin:18px 0 6px;border-bottom:1px solid #ccc;padding-bottom:4px;} table{border-collapse:collapse;}
+    td{padding:7px 14px 7px 0;font-family:"Courier New",monospace;font-size:22px;font-weight:bold;} td.n{font-size:12px;color:#888;font-family:Arial;font-weight:normal;}
+    .u1{border-bottom:2px solid #000;} .u2{border-bottom:6px double #000;} .x{color:#888;font-weight:normal;margin:0 8px;} .t{font-size:13px;color:#444;margin-top:6px;}
+    .ley{margin-top:22px;font-size:12px;color:#555;} button{margin-top:14px;} @media print{button{display:none;}}
+  </style></head><body><h1>${esc(name)}</h1><div class="f">Pedido de corte · ${new Date().toLocaleDateString('es-CO')}</div>
+  ${data.map(m=>`<h2>${esc(finishName(m.color))} · ${round2(m.t*10)} mm${m.ranurado?' · ranurado':''}</h2><table>${m.rows.map((r,i)=>`<tr><td class="n">${i+1}</td><td>${num(r.w,r.nW)}<span class="x">x</span>${num(r.h,r.nH)}</td><td>= ${r.qty}</td><td class="n">${r.otherCC.length ? 'canto ' + esc(r.otherCC.map(finishName).join(', ')) : ''}</td></tr>`).join('')}</table><div class="t">Tapacanto: <b>${m.cantoM} m</b> · ${m.rows.reduce((s,r)=>s+r.qty,0)} piezas</div>`).join('')}
+  <div class="ley">Raya debajo de la medida = ese lado lleva tapacanto · doble raya = los 2 lados · sin raya = sin tapacanto.</div>
+  <button onclick="print()">Imprimir</button></body></html>`;
+  const w = window.open('', '_blank'); if(!w){ alert('Permite las ventanas emergentes para imprimir.'); return; }
+  w.document.write(html); w.document.close();
 }
 function setCutView(v){
   cutView = v;
@@ -4388,6 +4615,7 @@ function setCutView(v){
   document.querySelectorAll('[data-cv]').forEach(b=>b.classList.toggle('on', b.dataset.cv===v));
   document.getElementById('cutGroupTable').style.display = v==='agrupada' ? '' : 'none';
   document.getElementById('cutDetailTable').style.display = v==='detalle' ? '' : 'none';
+  const ow = document.getElementById('cutOrderWrap'); if(ow) ow.style.display = v==='pedido' ? '' : 'none';
 }
 
 function renderCutlist(){
@@ -6596,6 +6824,9 @@ function openDrawerModal(){
         <div class="hint" style="margin-top:-4px;margin-bottom:8px;">Se elige solo: tapa completos los costados, el piso y el techo del mueble, y la mitad de una división o repisa compartida (para no chocar con la gaveta o puerta vecina).</div>
       </div>
       <div class="hint" style="margin-top:-4px;margin-bottom:8px;">"Espacio atrás" deja lugar para el fondo del mueble.</div>
+      <div class="field"><label>Fondo de la gaveta</label><select id="gv-base">
+        <option value="mdf">MDF / triplex de 3 mm (aparte)</option>
+        <option value="rh">RH de la misma lámina (más firme)</option></select></div>
       <div class="fitbox" id="gv-preview"></div>
       <div class="modal-actions">
         <button class="ghost" id="gvCancel">Cancelar</button>
@@ -6707,9 +6938,12 @@ function openDrawerModal(){
   updatePreview();
 
   $('gvCancel').addEventListener('click', ()=> overlay.classList.remove('open'));
+  try{ $('gv-base').value = localStorage.getItem('jank_gv_base') || 'mdf'; }catch(e){}
+  $('gv-base').addEventListener('change', ()=>{ try{ localStorage.setItem('jank_gv_base', $('gv-base').value); }catch(e){} });
   $('gvCreate').addEventListener('click', ()=>{
     const p = plan();
     if(p.error) return;
+    p.baseRH = $('gv-base').value === 'rh';
     createDrawers(p);
     overlay.classList.remove('open');
   });
@@ -6721,7 +6955,9 @@ function createDrawers(pl, opts){
   const faces = [];
   const nDrawers = new Set(pieces.filter(p=>p.isDrawer).map(p=>p.drawerId)).size;
   const boxColor = MATERIAL_COLORS[1], faceColor = MATERIAL_COLORS[2];
-  const baseT = 0.3; // fondo de la gaveta (MDF / triplex delgado)
+  // fondo de la gaveta: MDF / triplex delgado (0.3) o en RH de la misma lámina (mismo espesor de la caja).
+  // La caja mide lo mismo de alto: si el fondo es más grueso, los laterales se hacen más bajitos.
+  const baseRH = !!pl.baseRH, baseT = baseRH ? (pl.t || 1.5) : 0.3;
   let firstId = null;
   for(let i=0;i<pl.n;i++){
     const num = nDrawers + i + 1;
@@ -6748,7 +6984,7 @@ function createDrawers(pl, opts){
     mk({ name:`Gaveta ${num} · trasera`, drawerRole:'trasera', orientation:'vertical-front', w:round2(pl.boxW-2*pl.t), h:sideH, t:pl.t,
          x:round2(bx+pl.t), y:round2(boxY+baseT), z:bz, color:boxColor, canto:{top:true,bottom:false,left:false,right:false} });
     mk({ name:`Gaveta ${num} · fondo`, drawerRole:'fondo', orientation:'horizontal', w:pl.boxW, h:pl.riel, t:baseT,
-         x:bx, y:boxY, z:bz, color:MATERIAL_COLORS[3], canto:{top:false,bottom:false,left:false,right:false} });
+         x:bx, y:boxY, z:bz, color: baseRH ? boxColor : MATERIAL_COLORS[3], canto:{top:false,bottom:false,left:false,right:false} });
     let fw, fh, fx, fy, fz;
     if(fuera){
       // por fuera: ancho del marco; los frentes apilados se reparten el alto con la luz entre ellos
@@ -7017,10 +7253,15 @@ function makeDrawerPlan(o){
   }
   return out;
 }
-function T_drawers(f, x0, x1, y0, y1, n, color, handle, sides){
+function T_drawers(f, x0, x1, y0, y1, n, color, handle, sides, baseRH){
   sides = sides || { l:'full', r:'full', b:'full', t:'full' };
-  const faces = createDrawers(makeDrawerPlan({ x0, x1, y0, y1, frontZ:f.D, backZ:0, n, t:f.t, boardT:f.t, sides }), { silent:true });
+  const plan = makeDrawerPlan({ x0, x1, y0, y1, frontZ:f.D, backZ:0, n, t:f.t, boardT:f.t, sides });
+  plan.baseRH = !!baseRH;
+  const faces = createDrawers(plan, { silent:true });
   faces.forEach(fc=>{ fc.color = color; fc.handle = Object.assign({}, handle); });
+  // la caja de la gaveta sale del mismo color del mueble (antes salía blanca y eso gastaba otra lámina)
+  const ids = new Set(faces.map(fc=>fc.drawerId));
+  pieces.forEach(q=>{ if(q.isDrawer && ids.has(q.drawerId) && q.drawerRole !== 'frente' && (q.drawerRole !== 'fondo' || q.t >= 1)) q.color = f.color; });
   return faces;
 }
 
@@ -8805,6 +9046,19 @@ document.getElementById('clipClear').addEventListener('click', clearClip);
 updateClipChip();
 showHome('inicio');
 try{ if(!localStorage.getItem('jank_help_seen')){ localStorage.setItem('jank_help_seen','1'); setTimeout(openHelp, 400); } }catch(e){}
+</script>
+
+<script>
+(function(){
+  const vo = document.getElementById('viewOpts'), tb = document.getElementById('viewToolbar');
+  const card = document.createElement('div'); card.id = 'shareCard'; card.className = 'float-card';
+  ['vt-foto','vt-video'].forEach(id=>{ const b = document.getElementById(id); if(!b) return;
+    [...b.childNodes].forEach(n=>{ if(n.nodeType===3 && n.textContent.trim()){ const sp=document.createElement('span'); sp.className='sh-txt'; sp.textContent=n.textContent.trim(); b.replaceChild(sp,n); } });
+    card.appendChild(b); });
+  vo.after(card);
+  const wrapTxt = (id, cls)=>{ const b = document.getElementById(id); if(!b) return; [...b.childNodes].forEach(n=>{ if(n.nodeType===3 && n.textContent.trim()){ const sp=document.createElement('span'); sp.className=cls; sp.textContent=n.textContent.trim(); b.replaceChild(sp,n); } }); };
+  wrapTxt('measure3dBtn','ms-txt'); wrapTxt('lookOnlyBtn','lo-txt');
+})();
 </script>
 </body>
 </html>
