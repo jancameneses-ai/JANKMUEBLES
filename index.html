@@ -591,6 +591,85 @@
   .co-num.l2{border-bottom:6px double currentColor;padding-bottom:2px;}
   .co-cc{display:inline-block;font-size:10.5px;font-weight:600;background:#f3eee8;border-radius:6px;padding:2px 6px;margin-left:6px;vertical-align:middle;font-family:inherit;}
   .co-actions{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px;}
+
+  /* ===== Lista de corte en pestañas ===== */
+  .lc-top{position:sticky;top:-1px;z-index:3;background:var(--panel);display:flex;align-items:center;gap:10px;padding:2px 0 10px;margin-bottom:10px;border-bottom:1px solid var(--line);flex-wrap:wrap;}
+  .lc-tabs{display:flex;gap:4px;background:#f1ece5;padding:4px;border-radius:12px;}
+  .lc-tabs button{border:none;background:transparent;padding:8px 14px;border-radius:9px;font-weight:700;font-size:13px;color:#6b6259;display:flex;align-items:center;gap:6px;cursor:pointer;}
+  .lc-tabs button .ic{font-size:14px;}
+  .lc-tabs button:hover{background:#fff8f0;color:var(--text);}
+  .lc-tabs button.on{background:var(--wood);color:#fff;box-shadow:0 2px 6px rgba(163,90,46,.35);}
+  .lc-sum{flex:1;font-size:12px;color:var(--text-dim);min-width:160px;}
+  .lc-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
+  .lc-adj{position:relative;}
+  .lc-adj summary{cursor:pointer;font-size:12.5px;font-weight:600;color:#6b6259;padding:6px 10px;border:1px solid var(--line);border-radius:8px;list-style:none;background:#fff;}
+  .lc-adj summary::-webkit-details-marker{display:none;}
+  .lc-adj-body{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;padding:10px;margin-top:6px;border:1px solid var(--line);border-radius:10px;background:#fff;}
+  .lc-adj-body .field{margin:0;width:110px;}
+  .lc-tips{margin-top:12px;font-size:12px;color:var(--text-dim);}
+  .lc-note{font-size:12px;color:var(--text-dim);}
+  .pv-step{display:flex;align-items:center;gap:8px;font-weight:800;font-size:14px;margin:16px 0 8px;color:var(--text);}
+  .pv-step:first-child{margin-top:2px;}
+  .pv-n{width:24px;height:24px;border-radius:50%;background:var(--wood);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:12.5px;}
+  /* herrajes */
+  table.hw-tbl{width:100%;max-width:640px;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+  table.hw-tbl td{padding:8px 10px;border-bottom:1px solid #f0ece6;font-size:13px;}
+  table.hw-tbl td.q{font-weight:800;font-size:15px;width:56px;text-align:center;}
+  table.hw-tbl td.pr input{width:110px;}
+  table.hw-tbl td.st{text-align:right;font-weight:700;width:110px;}
+  table.hw-tbl tr.tot td{background:#faf6f1;font-weight:800;}
+  /* precio de venta */
+  .sale{max-width:640px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:12px;}
+  .sale-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .sale-grid .field{margin:0;}
+  .sale-sum{margin-top:12px;border-top:1px dashed var(--line);padding-top:10px;font-size:13px;}
+  .sale-sum div{display:flex;justify-content:space-between;padding:2px 0;}
+  .sale-big{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding:12px 14px;border-radius:10px;background:#fbf3ea;}
+  .sale-big b{font-size:26px;color:var(--wood);}
+  .sale-big span{font-weight:700;}
+  .sale-gan{font-size:12px;color:#2f7d4f;font-weight:700;}
+  .sale-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+  .btn-big{padding:10px 16px !important;font-size:13.5px !important;font-weight:700 !important;border-radius:10px !important;}
+  .sale-biz{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+  .sale-biz .field{margin:0;}
+  /* firmeza */
+  .firm-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid #e9d6a8;background:#fff8e6;color:#8a5a00;font-weight:700;font-size:12px;border-radius:999px;padding:5px 11px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+  .firm-chip.ok{border-color:#cfe6d6;background:#f0faf3;color:#2f7d4f;cursor:default;}
+  .firm-pop{position:absolute;left:0;bottom:44px;width:330px;max-width:calc(100vw - 40px);background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(30,25,20,.18);padding:10px;z-index:20;}
+  .firm-pop h4{margin:0 0 8px;font-size:13px;}
+  .firm-item{display:block;width:100%;text-align:left;border:1px solid #f0e6d2;background:#fffdf8;border-radius:9px;padding:8px 10px;margin-bottom:6px;cursor:pointer;font-size:12.5px;line-height:1.35;}
+  .firm-item:hover{border-color:var(--wood);}
+  .firm-item b{display:block;color:#8a5a00;margin-bottom:2px;}
+  .firm-item span{color:#4d463f;}
+  .firm-item i{display:block;font-style:normal;color:#2f7d4f;font-weight:600;margin-top:3px;}
+  /* mis muebles */
+  .my-sec{margin-bottom:14px;}
+  .my-sec h3{font-size:13px;margin:0 0 8px;color:var(--text);}
+  .tpl-card .my-del{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;border:none;background:rgba(255,255,255,.9);color:#a33;font-weight:800;cursor:pointer;line-height:22px;padding:0;font-size:12px;}
+  .tpl-card{position:relative;}
+  .tpl-card.mine{border-color:#e7cdb3;}
+
+  /* ===== bisagras y rieles ===== */
+  table.hg-tbl{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:12.5px;}
+  table.hg-tbl th{text-align:left;font-size:11px;color:var(--text-dim);font-weight:700;padding:7px 9px;background:#faf6f1;border-bottom:1px solid var(--line);}
+  table.hg-tbl td{padding:7px 9px;border-bottom:1px solid #f0ece6;vertical-align:top;}
+  .hg-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;font-size:13.5px;}
+  .hg-seg button{font-size:11.5px;padding:6px 4px;}
+  .rl-opts{display:grid;grid-template-columns:1fr;gap:6px;margin-top:6px;}
+  .rl-card{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff;}
+  .rl-card.on{border-color:var(--wood);box-shadow:0 0 0 2px rgba(163,90,46,.15);}
+  .rl-card.off{opacity:.6;}
+  .rl-k{font-size:10.5px;font-weight:800;color:var(--wood);text-transform:uppercase;letter-spacing:.4px;}
+  .rl-n{font-weight:700;font-size:12.5px;margin:2px 0;}
+  .rl-d{font-size:11.5px;color:#4d463f;line-height:1.4;}
+  .rl-w{font-size:11.5px;color:#2f7d4f;margin:4px 0 6px;}
+  .rl-row{display:block;width:100%;text-align:left;border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 8px;margin-top:4px;font-size:11.5px;cursor:pointer;}
+  .rl-row:hover{border-color:var(--wood);}
+  .rl-row.off{cursor:default;opacity:.65;}
+  .rc-miss{color:#b06a00;font-weight:700;}
+  .rc-form{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 10px;}
+  .rc-form .field{margin:0;}
+  .rc-form .wide{grid-column:1/-1;}
   ::selection{background:var(--wood);color:#fff;}
 
   @media (max-width:1200px){
@@ -652,6 +731,9 @@
           <button id="btnLoad"><b>Abrir proyecto</b><small>Un archivo .json guardado antes</small></button>
           <input type="file" id="fileInput" accept=".json" style="display:none">
           <button id="btnSave"><b>Guardar proyecto</b><small>Descarga el archivo a tu equipo</small></button>
+          <button id="btnSaveMine"><b>⭐ Guardar en Mis muebles</b><small>Para usarlo otra vez en otra medida o color</small></button>
+          <button id="btnRailCat"><b>⚙ Catálogo de rieles</b><small>Referencias, precios y medidas de Madecentro</small></button>
+          <div style="padding:8px 12px 4px;font-size:11px;color:var(--text-dim);border-top:1px solid var(--line);margin-top:4px;">Versión 64 · 24 nov 2026 · video: corredizas una por una</div>
           <div class="menu-sep"></div>
           <button id="btnExportCsv"><b>Exportar CSV</b><small>Lista de corte para Excel</small></button>
           <button id="btnPrintPlan"><b>Imprimir plan de corte / PDF</b><small>Lista + láminas acomodadas</small></button>
@@ -827,72 +909,84 @@
       <span id="toggleBottom" class="small ghost" style="display:inline-block;">Mostrar ▲</span>
     </summary>
     <div id="bottomBody">
-      <div style="display:flex;justify-content:flex-end;margin-bottom:6px;">
-        <button class="small ghost" id="bottomCloseBtn">✕ Cerrar</button>
-      </div>
-
-      <div id="quoteBox"></div>
-
-      <div class="fitbox" style="margin-bottom:12px;">
-        <div class="ts" style="font-weight:600;margin-bottom:6px;">Antes de mandar a cortar, revisa esto:</div>
-        <div class="ts">1. Las medidas de esta lista son <b>las mismas del 3D</b>. Si tú pegas el canto y quieres que corten un poquito más chico, marca abajo "Descontar el grosor del canto".</div>
-        <div class="ts" style="margin-top:4px;">2. Mide el espacio real (pared/piso) antes del corte definitivo — no siempre está 100% cuadrado.</div>
-        <div class="ts" style="margin-top:4px;">3. Revisa que quede espacio libre donde van bisagras, correderas o tornillos de armado.</div>
-        <div class="ts" style="margin-top:4px;">4. El diagrama de láminas de abajo es para calcular cuántas comprar — dale al operario de la sierra la <b>lista de piezas</b>, no ese dibujo.</div>
-      </div>
-
-      <div class="row2" style="max-width:420px;margin-bottom:12px;">
-        <div class="field"><label>Grosor de canto (mm)</label><input type="number" step="0.1" id="cantoThicknessInput" value="0.4"></div>
-      </div>
-      <label class="nest-opt" style="margin:-4px 0 12px;" title="Márcalo solo si TÚ pegas el canto después de cortar y quieres que la pieza se corte un poquito más chica">
-        <input type="checkbox" id="descCantoChk"> Descontar el grosor del canto en la medida de corte (normalmente no: la lista sale igual que en el 3D)
-      </label>
-      <div class="row2" style="max-width:420px;margin-bottom:12px;">
-        <div class="field"><label>Grosor de sierra / kerf (mm)</label><input type="number" step="0.1" id="kerfInput" value="3"></div>
-      </div>
-
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
-        <div class="seg" style="width:auto;">
-          <button type="button" data-cv="agrupada" class="on">Agrupada (para la sierra)</button>
-          <button type="button" data-cv="detalle">Pieza por pieza</button>
-          <button type="button" data-cv="pedido">Formato para pedir</button>
+      <div class="lc-top">
+        <div class="lc-tabs" role="tablist">
+          <button type="button" data-lt="pedido" class="on"><span class="ic">📋</span>Pedido</button>
+          <button type="button" data-lt="piezas"><span class="ic">🧩</span>Piezas</button>
+          <button type="button" data-lt="laminas"><span class="ic">🪵</span>Láminas</button>
+          <button type="button" data-lt="precio"><span class="ic">💲</span>Precio</button>
+          <button type="button" data-lt="huecos"><span class="ic">🔩</span>Huecos</button>
         </div>
-        <span class="hint" id="cutGroupSummary" style="margin:0;"></span>
+        <span class="lc-sum" id="cutGroupSummary"></span>
+        <button class="small ghost" id="bottomCloseBtn" title="Cerrar">✕</button>
       </div>
-      <table id="cutGroupTable">
-        <thead><tr>
-          <th>#</th><th>Ancho final</th><th>Alto final</th><th>Ancho corte</th><th>Alto corte</th><th>Esp.</th><th>Material</th>
-          <th>Cant.</th><th>Canto (tapacanto)</th><th>Canto (m)</th><th>Piezas</th>
-        </tr></thead>
-        <tbody id="cutGroupBody"></tbody>
-      </table>
-      <table id="cutDetailTable" style="display:none;">
-        <thead><tr>
-          <th>Pieza</th><th>Ancho final</th><th>Alto final</th>
-          <th>Corte ancho</th><th>Corte alto</th>
-          <th>Esp.</th><th>Cant.</th><th>Canto (tapacanto)</th><th>Orientación</th>
-        </tr></thead>
-        <tbody id="cutlistBody"></tbody>
-      </table>
-      <div id="cutOrderWrap" style="display:none;"></div>
-      <div id="hardwareWrap"></div>
+
+      <section class="lc-pane" data-lp="pedido">
+        <div id="cutOrderWrap"></div>
+      </section>
+
+      <section class="lc-pane" data-lp="piezas" hidden>
+        <div class="lc-row">
+          <div class="seg" style="width:auto;">
+            <button type="button" data-cv="agrupada" class="on">Agrupada</button>
+            <button type="button" data-cv="detalle">Pieza por pieza</button>
+          </div>
+          <details class="lc-adj"><summary>⚙ Ajustes</summary>
+            <div class="lc-adj-body">
+              <div class="field"><label>Canto (mm)</label><input type="number" step="0.1" id="cantoThicknessInput" value="0.4"></div>
+              <div class="field"><label>Sierra (mm)</label><input type="number" step="0.1" id="kerfInput" value="3"></div>
+              <label class="nest-opt" title="Solo si tú pegas el canto después de cortar"><input type="checkbox" id="descCantoChk"> Descontar canto al cortar</label>
+            </div>
+          </details>
+        </div>
+        <table id="cutGroupTable">
+          <thead><tr>
+            <th>#</th><th>Ancho final</th><th>Alto final</th><th>Ancho corte</th><th>Alto corte</th><th>Esp.</th><th>Material</th>
+            <th>Cant.</th><th>Canto (tapacanto)</th><th>Canto (m)</th><th>Piezas</th>
+          </tr></thead>
+          <tbody id="cutGroupBody"></tbody>
+        </table>
+        <table id="cutDetailTable" style="display:none;">
+          <thead><tr>
+            <th>Pieza</th><th>Ancho final</th><th>Alto final</th>
+            <th>Corte ancho</th><th>Corte alto</th>
+            <th>Esp.</th><th>Cant.</th><th>Canto (tapacanto)</th><th>Orientación</th>
+          </tr></thead>
+          <tbody id="cutlistBody"></tbody>
+        </table>
+        <div id="hardwareWrap"></div>
+        <div class="lc-tips">✔ Mide el espacio real antes de cortar · ✔ Al que corta dale el <b>Pedido</b>, no el dibujo de láminas</div>
+      </section>
+
+      <section class="lc-pane" data-lp="laminas" hidden>
       <div class="nest-head">
-        <div class="ts" style="font-weight:700;">Acomodo en láminas (optimizado)</div>
+        <div class="ts" style="font-weight:700;">Cómo salen de la lámina</div>
         <label class="nest-opt" title="La veta de la lámina va a lo largo (244). Con esto cada pieza se pone con su lado largo a lo largo de la lámina, como se ve la madera.">
-          <input type="checkbox" id="nestVeta"> Respetar veta (no girar piezas)
+          <input type="checkbox" id="nestVeta"> Respetar veta
         </label>
-        <button class="ghost small" id="nestPrint" title="Abre el plan de corte listo para imprimir o guardar en PDF">Imprimir plan de corte / PDF</button>
+        <button class="ghost small" id="nestPrint" title="Abre el plan de corte listo para imprimir o guardar en PDF">Imprimir / PDF</button>
       </div>
       <div id="nestSummary" class="hint" style="margin-top:6px;"></div>
       <div id="nestWrap"></div>
+      </section>
 
-      <div class="ts" style="font-weight:600;margin-top:18px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px;"><circle cx="12" cy="6" r="3"/><rect x="10.2" y="9" width="3.6" height="12" rx="0.5"/><path d="M8.5 12.5h7M8.5 15.5h7M8.5 18.5h7"/></svg> Plan de perforación por lateral (coordenadas del panel — para la máquina)</div>
-      <div class="hint" style="margin-bottom:8px;">Alto = desde la base de ESE lateral · Ancho = desde el borde frontal de ESE lateral. No es la posición general del mueble, es la del panel tal cual va a la máquina.</div>
-      <div class="field" style="max-width:200px;margin-bottom:10px;">
-        <label>Diámetro de perforación (mm)</label>
-        <input type="number" step="0.1" id="drillDiamInput" value="8">
-      </div>
-      <div id="drillPlanWrap"></div>
+      <section class="lc-pane" data-lp="precio" hidden>
+        <div class="pv-step"><span class="pv-n">1</span>Material y corte</div>
+        <div id="quoteBox"></div>
+        <div class="pv-step"><span class="pv-n">2</span>Herrajes</div>
+        <div id="hwPriceBox"></div>
+        <div class="pv-step"><span class="pv-n">3</span>Precio para el cliente</div>
+        <div id="saleBox"></div>
+      </section>
+
+      <section class="lc-pane" data-lp="huecos" hidden>
+        <div class="lc-row">
+          <div class="field" style="max-width:160px;margin:0;"><label>Broca (mm)</label><input type="number" step="0.1" id="drillDiamInput" value="8"></div>
+          <span class="lc-note" title="Alto = desde la base de ese lateral · Ancho = desde su borde de adelante">Medidas desde la base y el borde de adelante de cada lateral</span>
+        </div>
+        <div id="drillPlanWrap"></div>
+        <div id="hingeDrillWrap" style="margin-top:14px;"></div>
+      </section>
     </div>
   </details>
 
@@ -1836,6 +1930,16 @@ function animateDoor(p, opening){
   const pivot = doorPivots[p.id];
   p.doorOpen = opening;
   if(!pivot) return;
+  if(p.sliding){
+    const base = pivot.userData.baseX, from = pivot.position.x, to = base + (opening ? (p.slideDir||1)*slideTravel(p) : 0), t0 = performance.now();
+    (function step(now){
+      const t = Math.min(1, (now - t0)/450), e = t<0.5 ? 2*t*t : -1+(4-2*t)*t;
+      if(doorPivots[p.id] !== pivot) return;
+      pivot.position.x = from + (to-from)*e; markDirty();
+      if(t<1) requestAnimationFrame(step); else markShadow();
+    })(t0);
+    return;
+  }
   const sign = p.hinge === 'left' ? -1 : 1;
   const fromAngle = pivot.rotation.y;
   const toAngle = opening ? sign * (100*Math.PI/180) : 0;
@@ -2515,7 +2619,19 @@ function recordTour(){
   const fov = camera.fov*Math.PI/180;
   const R = big / (2*Math.tan(fov/2)) * 1.15 + (b.maxZ-b.minZ)/2;
   const elev = 0.32;
-  const doors = pieces.filter(p=>p.isDoor && !p.doorOpen).map(p=>p.id);
+  const doors = pieces.filter(p=>p.isDoor && !p.sliding && !p.doorOpen).map(p=>p.id);
+  // corredizas: una por una (se corre hasta su tope, espera y vuelve; luego la siguiente), por cada juego
+  const slideEvents = [];
+  {
+    const sets = {};
+    pieces.forEach(p=>{ if(p.isDoor && p.sliding){ if(p.doorOpen){ p.doorOpen = false; } (sets[p.slideSet || p.id] = sets[p.slideSet || p.id] || []).push(p); } });
+    const win = 1.6 + 4.5;                                // dura lo mismo que abrir + recorrer por dentro
+    Object.values(sets).forEach(ds=>{
+      ds.sort((a,b)=>_bx(a).x0 - _bx(b).x0);
+      const slot = win / ds.length;
+      ds.forEach((d,i)=>{ slideEvents.push({ at: i*slot + 0.15, id: d.id, done:false }); slideEvents.push({ at: i*slot + slot*0.72, id: d.id, done:false }); });
+    });
+  }
   const drawers = [...new Set(pieces.filter(p=>p.isDrawer && p.drawerId).map(p=>p.drawerId))].filter(d=>!isDrawerOpen(d));
   const orbitPos = a => new THREE.Vector3(c.x + Math.sin(a)*R*Math.cos(elev), c.y + R*Math.sin(elev), c.z + Math.cos(a)*R*Math.cos(elev));
   // lo que sobresalen gavetas y puertas abiertas, para que la cámara no quede metida en ellas
@@ -2558,6 +2674,8 @@ function recordTour(){
       const k = ease(t / T.back); const from = new THREE.Vector3(c.x + (b.maxX-b.minX)*0.35, insideY, zIn);
       setCam(from.lerp(orbitPos(Math.PI*0.22), k), inTgt(1).lerp(c, k));
     } else setCam(orbitPos(Math.PI*0.22), c);           // 7) se queda quieto un momento al final
+    const tSl = el - T.orbit - T.toFront;
+    if(tSl >= 0) slideEvents.forEach(ev=>{ if(!ev.done && tSl >= ev.at){ ev.done = true; const d = pieces.find(x=>x.id===ev.id); if(d) toggleDoor(d.id); } });
     if(opened && el < total - T.back - T.hold + 0.6) renderer.shadowMap.needsUpdate = true; // sombras de puertas en movimiento
     renderer.render(scene, camera);
     g.fillStyle = bg; g.fillRect(0, 0, out.width, out.height);
@@ -2571,6 +2689,7 @@ function recordTour(){
   rec.onstop = ()=>{
     ov.classList.remove('on');
     if(opened && !closed){ doors.forEach(id=>toggleDoor(id)); drawers.forEach(d=>toggleDrawer(d)); }
+    pieces.forEach(p=>{ if(p.isDoor && p.sliding && p.doorOpen) p.doorOpen = false; });   // corredizas siempre terminan cerradas
     touring = false; controls.enabled = true;
     renderer.setPixelRatio(prev.pr); resizeRenderer();
     renderOpts.cotas = prev.cotas; if(gridHelper) gridHelper.visible = prev.grid; selectedId = prev.sel;
@@ -2928,12 +3047,14 @@ function rebuild3D(){
     const showEdges = renderOpts.bordes || strongLine;
 
     if(p.isDoor){
-      const hingeX = p.hinge === 'left' ? pos.x : pos.x + size.sx;
+      const hingeX = p.sliding ? pos.x + size.sx/2 : (p.hinge === 'left' ? pos.x : pos.x + size.sx);
       const pivot = new THREE.Group();
       pivot.position.set(hingeX, pos.y + size.sy/2, pos.z + size.sz/2);
+      pivot.userData.baseX = hingeX;
       const sign = p.hinge === 'left' ? -1 : 1;
-      pivot.rotation.y = p.doorOpen ? sign * (100*Math.PI/180) : 0;
-      const localX = p.hinge === 'left' ? size.sx/2 : -size.sx/2;
+      if(p.sliding) pivot.position.x = hingeX + (p.doorOpen ? (p.slideDir||1) * slideTravel(p) : 0);
+      else pivot.rotation.y = p.doorOpen ? sign * (100*Math.PI/180) : 0;
+      const localX = p.sliding ? 0 : (p.hinge === 'left' ? size.sx/2 : -size.sx/2);
 
       const mesh = new THREE.Mesh(geo, mat);
       mesh.position.set(localX, 0, 0);
@@ -2947,8 +3068,15 @@ function rebuild3D(){
         pivot.add(line);
       }
 
+      if(!p.sliding && !renderOpts.xray){
+        const hg = buildHingeMeshes(p, pos, size);
+        const _pb = pivot.position.clone(); _pb.x = pivot.userData.baseX;
+        hg.door.forEach(m=>{ m.position.sub(_pb); m.userData.pieceId = p.id; pivot.add(m); });
+        hg.fixed.forEach(m=>{ m.userData.pieceId = p.id; meshGroup.add(m); });
+      }
       if(p.handle){
-        buildHandleMeshes(p).forEach(hg=>{ hg.position.sub(pivot.position); pivot.add(hg); });
+        const _pv = pivot.position.clone(); _pv.x = pivot.userData.baseX;
+        buildHandleMeshes(p).forEach(hg=>{ hg.position.sub(_pv); pivot.add(hg); });
       }
       meshGroup.add(pivot);
       doorPivots[p.id] = pivot;
@@ -3291,13 +3419,30 @@ function setup3DPicking(){
     controls.enabled = true;
   }
 
+  // "Solo mirar": un toque corto (sin arrastrar) sobre una puerta o gaveta la abre / cierra, sin seleccionar nada
+  let _lookTap = null;
+  renderer.domElement.addEventListener('pointerup', (e)=>{
+    const tap = _lookTap; _lookTap = null;
+    if(!lookOnly || touring || !tap) return;
+    if(Math.hypot(e.clientX - tap.x, e.clientY - tap.y) > 6 || performance.now() - tap.t > 600) return;
+    toMouse(e);
+    raycaster.setFromCamera(mouse, camera);
+    const hit = raycaster.intersectObjects(meshGroup.children, true).find(h=>h.object.userData.pieceId !== undefined);
+    const p = hit && pieces.find(x=>x.id===hit.object.userData.pieceId);
+    if(!p) return;
+    if(p.isDoor && p.sliding) armSlideTap(p.id, e);
+    else if(p.isDoor) toggleDoor(p.id);
+    else if(p.isDrawer && p.drawerId) toggleDrawer(p.drawerId);
+  });
+
   renderer.domElement.addEventListener('pointerdown', (e)=>{
     // Solo el botón izquierdo (o el primer dedo) mueve piezas. El clic derecho
     // queda libre para desplazar la vista, y un segundo dedo (pellizcar para
     // zoom en pantalla táctil) ya no agarra ni arrastra piezas por error.
     if(e.button !== 0 || !e.isPrimary) return;
     if(dragState || marqueeState) return;
-    if(lookOnly || touring) return; // "Solo mirar" (o grabando video): el clic solo mueve la vista
+    if(touring) return; // grabando video: el clic solo mueve la vista
+    if(lookOnly){ _lookTap = { x:e.clientX, y:e.clientY, t:performance.now() }; return; } // "Solo mirar": mueve la vista; un toque corto abre puertas y gavetas
     toMouse(e);
     raycaster.setFromCamera(mouse, camera);
     const hits = raycaster.intersectObjects(meshGroup.children, true).filter(h=>h.object.userData.pieceId !== undefined);
@@ -3443,7 +3588,8 @@ function setup3DPicking(){
       redoStack = _redoBeforeDrag || [];
       const p = pieces.find(x=>x.id===ds.id);
       refreshAll();
-      if(p && p.isDoor && !p.locked && e && e.type==='pointerup'){
+      if(p && p.isDoor && p.sliding && e && e.type==='pointerup') armSlideTap(p.id, e);
+      if(p && p.isDoor && !p.sliding && !p.locked && e && e.type==='pointerup'){
         toggleDoor(p.id); // después de redibujar, para que la animación no se corte
         renderForm();
       }
@@ -3947,7 +4093,10 @@ function buildInfoHtml(p){
   const fitOk = fitInfo && fitInfo.ok;
   const restOk = restInfo && restInfo.ok && !restInfo.held;
 
-  let infoHtml = `<div class="fitbox ${getWarningIds().has(p.id) ? 'bad' : 'good'}"><div class="ts">Esta pieza queda de <b class="mono">${round1(pos.y)}</b> a <b class="mono">${round1(pos.y+size.sy)}</b> cm de altura desde el piso.</div>`;
+  let slideBanner = '';
+  if(!p.sliding && p.orientation === 'vertical-front' && !p.isDrawer && !p.isFondo && /corrediz/i.test(p.name || '') && slidingCandidates(p).length >= 2)
+    slideBanner = `<div class="fitbox" style="border-color:var(--wood);background:#fbf3ea;margin-bottom:8px;"><div class="ts" style="margin-bottom:6px;">Esta tabla se llama corrediza pero todavía no corre.</div><button type="button" class="primary small" data-mkslide="${p.id}" style="width:100%;font-weight:700;">↔ Convertir en puertas corredizas</button></div>`;
+  let infoHtml = slideBanner + `<div class="fitbox ${getWarningIds().has(p.id) ? 'bad' : 'good'}"><div class="ts">Esta pieza queda de <b class="mono">${round1(pos.y)}</b> a <b class="mono">${round1(pos.y+size.sy)}</b> cm de altura desde el piso.</div>`;
   if(p.groupId && groups[p.groupId] && groups[p.groupId].active){
     infoHtml += `<div class="ts" style="margin-top:4px;color:var(--blue);">${ICON_LINK} Pertenece a un grupo activo: al arrastrarla o cambiar X/Y/Z, se mueve junto con el resto del grupo.</div>`;
   }
@@ -4239,8 +4388,16 @@ function renderForm(){
 
     <div class="ftab" data-ftab="mas">
       <div class="field">
-        <label class="canto-chip ${p.isDoor?'on':''}" style="display:flex;width:100%;box-sizing:border-box;"><input type="checkbox" id="f-isdoor" ${p.isDoor?'checked':''}> <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px;"><rect x="5" y="3" width="14" height="18" rx="1"/><circle cx="15" cy="12" r="1" fill="currentColor" stroke="none"/></svg> Es una puerta (con bisagra, abre al hacerle clic)</label>
-        ${p.isDoor ? `
+        <label class="canto-chip ${p.isDoor?'on':''}" style="display:flex;width:100%;box-sizing:border-box;"><input type="checkbox" id="f-isdoor" ${p.isDoor?'checked':''}> <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px;"><rect x="5" y="3" width="14" height="18" rx="1"/><circle cx="15" cy="12" r="1" fill="currentColor" stroke="none"/></svg> Es una puerta (${p.sliding ? 'corrediza' : 'con bisagra, abre al hacerle clic'})</label>
+        ${p.isDoor && p.sliding ? `
+          <div style="margin-top:8px;">
+            <div class="hint" style="margin:0 0 6px;">↔ Corrediza · vía ${p.slideTrack ? 'de adelante' : 'de atrás'} · doble clic en el 3D para correrla</div>
+            <button type="button" class="small ghost" id="f-toggledoor">${p.doorOpen ? '◐ Cerrar (probar)' : '◑ Correr (probar)'}</button>
+            <button type="button" class="small ghost" data-rmslide="${p.id}" style="margin-left:4px;">Quitar corrediza</button>
+          </div>
+        ` : ''}
+        ${!p.sliding && p.orientation === 'vertical-front' && !p.isDrawer && !p.isFondo ? `<button type="button" class="small ghost" data-mkslide="${p.id}" style="width:100%;margin-top:8px;">↔ Hacer corrediza (con la de al lado)</button>` : ''}
+        ${p.isDoor && !p.sliding ? `
           <div style="margin-top:8px;">
             <label>Lado de la bisagra</label>
             <div class="seg">
@@ -4251,7 +4408,9 @@ function renderForm(){
           </div>
         ` : ''}
       </div>
+      <div id="f-hinges"></div>
       <div id="f-drawer"></div>
+      <div id="f-rail"></div>
       ${p.compId ? `<div class="field"><button class="small ghost" id="f-unique" style="width:100%;">Hacer única (separar de sus copias vinculadas)</button></div>` : ''}
     </div>
   `;
@@ -4276,6 +4435,8 @@ function renderForm(){
   if(p.isDrawer && p.drawerId) renderDrawerSection(p);
   else if(p.isDoor) renderDoorHandleSection(p);
   else if(p.isRanurado) renderRanuradoSection(p);
+  renderHingeSection(p);
+  renderRailSection(p);
   foot.querySelector('#f-dup').addEventListener('click', ()=>duplicatePiece(p.id));
   foot.querySelector('#f-lock').addEventListener('click', ()=>togglePieceLock(p.id));
   foot.querySelector('#f-comp').addEventListener('click', ()=>duplicateAsComponent(p.id));
@@ -4469,6 +4630,7 @@ function renderCutGroups(){
       <td style="font-size:11px;color:var(--text-dim);max-width:320px;" title="${esc(g.names.join(', '))}">${esc(g.names.length > 3 ? g.names.slice(0,3).join(', ') + ` y ${g.names.length-3} más` : g.names.join(', '))}</td>
     </tr>`).join('');
   renderCutOrder();
+  if(lcTab === 'precio'){ renderHwPrices(); renderSale(); }
   const totalPieces = list.reduce((s,g)=>s+g.qty, 0);
   const totalCanto = round1(list.reduce((s,g)=>s+g.cantoM, 0));
   const byC = cantoMetersByColor(list);
@@ -4499,14 +4661,12 @@ function renderCutOrder(){
   if(!data.length){ wrap.innerHTML = '<div class="hint">Todavía no hay piezas para cortar.</div>'; return; }
   const num = (v,n)=>`<span class="co-num${n===1?' l1':(n>=2?' l2':'')}">${v}</span>`;
   wrap.innerHTML = `
-    <div class="co-help"><span>Así se le pasa al que corta: <b>ancho × alto = cantidad</b>.</span>
-      <span><span class="ex">${num('42',1)}</span> = 1 lado con tapacanto</span>
-      <span><span class="ex">${num('80',2)}</span> = los 2 lados</span>
-      <span>sin raya = sin tapacanto</span></div>
+    <div class="co-help"><span><span class="ex">${num('42',1)}</span> 1 lado con canto</span>
+      <span><span class="ex">${num('80',2)}</span> 2 lados</span></div>
     <div class="co-actions">
-      <button class="small" id="coCopy" title="Copia la lista con las rayitas para pegarla en WhatsApp">Copiar para WhatsApp</button>
-      <button class="small" id="coImg" title="Descarga la lista como imagen (PNG) para mandarla por WhatsApp">Descargar imagen</button>
-      <button class="small ghost" id="coPrint" title="Abre el formato listo para imprimir o guardar en PDF">Imprimir / PDF</button>
+      <button class="primary btn-big" id="coImg" title="Descarga la lista como imagen para mandarla por WhatsApp">⬇ Descargar imagen</button>
+      <button class="ghost btn-big" id="coCopy" title="Copia la lista con las rayitas para pegarla en WhatsApp">Copiar para WhatsApp</button>
+      <button class="ghost btn-big" id="coPrint" title="Imprimir o guardar en PDF">Imprimir</button>
     </div>
     ${data.map(m=>{
       const tot = m.rows.reduce((s,r)=>s+r.qty,0);
@@ -4610,12 +4770,12 @@ function printCutOrder(){
   w.document.write(html); w.document.close();
 }
 function setCutView(v){
+  if(v !== 'agrupada' && v !== 'detalle') v = 'agrupada';
   cutView = v;
   try{ localStorage.setItem('jank_cutview', v); }catch(e){}
   document.querySelectorAll('[data-cv]').forEach(b=>b.classList.toggle('on', b.dataset.cv===v));
   document.getElementById('cutGroupTable').style.display = v==='agrupada' ? '' : 'none';
   document.getElementById('cutDetailTable').style.display = v==='detalle' ? '' : 'none';
-  const ow = document.getElementById('cutOrderWrap'); if(ow) ow.style.display = v==='pedido' ? '' : 'none';
 }
 
 function renderCutlist(){
@@ -4657,10 +4817,14 @@ function renderCutlist(){
     if(casters) parts.push(`${casters} rodachín(es)`);
     rielTxt.forEach(t=>parts.push(t));
     rods.forEach(r=> parts.push(`${esc(r.name)}: tubo de ${r.w} cm (Ø${r.h} cm) x${r.qty}`));
-    hwWrap.innerHTML = `<div class="hint" style="margin-top:8px;"><b>Herrajes (no van en la lámina):</b> ${parts.join(' · ')}</div>`;
+    hwWrap.innerHTML = '';
   } else {
     hwWrap.innerHTML = '';
   }
+  const _hw = hardwareItems();
+  if(_hw.length) hwWrap.innerHTML = `<div class="pv-step" style="margin-top:14px;">🔩 Herrajes</div><table class="hg-tbl"><thead><tr><th>Herraje</th><th>Cant.</th><th>Dónde va</th></tr></thead><tbody>
+    ${_hw.map(it=>`<tr><td>${esc(it.name)}</td><td><b>${it.qty}</b> ${it.unit==='und'?'':esc(it.unit)}</td><td><small>${esc(it.loc||'')}</small></td></tr>`).join('')}</tbody></table>`;
+  renderHingeDrill();
 
   renderScrewTable();
   nestSheets();
@@ -5051,13 +5215,13 @@ function renderQuote(){
   if(!pieces.some(p=>!isHardware(p))){ box.innerHTML = ''; return; }
   const q = quoteData();
   const glassHtml = q.vidrio.list.length ? `<div class="qt-sheets qt-glass">
-      <div class="qt-sub">🔷 Vidrios — se encargan en la vidriería <small>(no salen de la lámina ni llevan tapacanto)</small></div>
+      <div class="qt-sub">🔷 Vidrio (vidriería)</div>
       ${q.vidrio.list.map(g=>`<div class="qt-sheet-row"><span class="nm"><b>${g.qty} ×</b>&nbsp;${g.w} × ${g.h} cm · ${round1(g.t*10)} mm</span><span class="n">${esc(g.names.slice(0,3).join(', '))}${g.names.length>3?'…':''}</span></div>`).join('')}
       <div class="qt-sheet-row"><span class="nm">Total: <b>${q.vidrio.m2} m²</b>${q.vidrio.sep ? ` · <b>${q.vidrio.sep} separadores</b> metálicos` : ''}</span><span class="n">valor m² ($)</span><input type="number" min="0" step="1000" id="qt-vVidrio" value="${+quoteCfg.vVidrio||''}" placeholder="$ m²"></div>
     </div>` : '';
   const sw = c => `<i style="${finishSwatchCss(c)}"></i>`;
   box.innerHTML = `<div class="qt">
-    <div class="qt-hd">🧾 Resumen para cotizar el corte <small>· todo el mueble</small></div>
+
     <div class="qt-tiles">
       <div class="qt-tile"><b>${q.laminas}${q.ranuradas ? ' + ' + q.ranuradas : ''}</b><span>lámina${q.laminas===1?'':'s'}${q.ranuradas ? ' + ranurada' + (q.ranuradas>1?'s':'') : ''}</span></div>
       <div class="qt-tile"><b>${q.piezas}</b><span>piezas en total</span></div>
@@ -5071,10 +5235,10 @@ function renderQuote(){
       <div><label>Valor metro de tapacanto ($)</label><input type="number" min="0" step="50" id="qt-vCanto" value="${+quoteCfg.vCanto||''}" placeholder="0"></div>
     </div>
     <div class="qt-sheets">
-      <div class="qt-sub">Precio de cada lámina entera <small>(opcional · se recuerda para los próximos muebles)</small></div>
+      <div class="qt-sub">Precio de la lámina</div>
       <div class="seg qt-lam" style="width:auto;margin:2px 0 8px;">
-        <button type="button" data-modolam="completa" class="${quoteCfg.modoLam!=='area'?'on':''}">Láminas completas (aunque sobre)</button>
-        <button type="button" data-modolam="area" class="${quoteCfg.modoLam==='area'?'on':''}">Solo lo que usan las piezas</button>
+        <button type="button" data-modolam="completa" class="${quoteCfg.modoLam!=='area'?'on':''}">Lámina completa</button>
+        <button type="button" data-modolam="area" class="${quoteCfg.modoLam==='area'?'on':''}">Solo lo usado</button>
       </div>
       ${quoteCfg.modoLam==='area' ? `<div class="qt-umbral">Si las piezas ocupan más del <input type="number" min="1" max="100" step="5" id="qt-umbral" value="${+quoteCfg.umbral||60}"> % de una lámina, esa lámina se cobra <b>completa</b>.</div>` : ''}
       ${q.porLamina.map(x=>`<div class="qt-sheet-row"><span class="nm">${sw(x.color)}${esc(finishName(x.color))} · ${x.t} cm${x.isR ? ' · ranurada' : ''}</span>
@@ -5084,7 +5248,6 @@ function renderQuote(){
     </div>
     ${glassHtml}
     <div class="qt-calc" id="qt-calc"></div>
-    <div class="hint" style="margin:8px 0 0;">Los cortes de sierra salen del acomodo de las láminas de abajo (cada vez que el disco separa un pedazo). El tapacanto es el largo exacto de los lados marcados; el taller suele sumar unos cm por lado al pegarlo.</div>
   </div>`;
   const calc = ()=>{
     const q2 = quoteData(), el = document.getElementById('qt-calc'); if(!el) return;
@@ -5102,7 +5265,7 @@ function renderQuote(){
     const sinPrecio = q2.porLamina.filter(x=>!x.precio).length;
     if(sinPrecio && q2.porLamina.some(x=>x.precio)) rows.push(`<div style="color:var(--text-dim);font-size:11.5px;"><span>${sinPrecio} tipo(s) de lámina sin precio — no se suman</span><span></span></div>`);
     if(q2.vidrio.m2 && +quoteCfg.vVidrio) rows.push(`<div><span>${q2.vidrio.m2} m² de vidrio × ${money(quoteCfg.vVidrio)}</span><b>${money(q2.costo.vidrio)}</b></div>`);
-    rows.push(`<div class="tot"><span>Total aproximado</span><span>${money(q2.costo.total)}</span></div>`);
+    rows.push(`<div class="tot"><span>Total material y corte</span><span>${money(q2.costo.total)}</span></div>`);
     el.innerHTML = rows.join('');
   };
   const save = ()=>{ try{ localStorage.setItem('jank_quote', JSON.stringify(quoteCfg)); }catch(e){} calc(); };
@@ -5248,6 +5411,7 @@ function refreshAll(){
   rebuild3D();
   render2D();
   renderCutlistIfOpen();
+  updateFirmChip();
 }
 
 // Igual que refreshAll pero sin redibujar el formulario completo — se usa
@@ -5260,6 +5424,7 @@ function refreshLight(){
   rebuild3D();
   render2D();
   renderCutlistIfOpen();
+  updateFirmChip();
 }
 
 /* ============================================================
@@ -5640,6 +5805,7 @@ function openDoorModal(){
   const overlay = document.getElementById('modalOverlay');
   let hinge = 'left';
   let mode = 'auto';
+  let kind = 'batiente', nSl = 2, slModo = 'dentro';
   const options = pieces.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
 
   function bodyHtml(){
@@ -5648,7 +5814,7 @@ function openDoorModal(){
         return `<div class="hint">Necesitas al menos las piezas que rodean el hueco ya creadas (costados, entrepaños, etc.) antes de poder ajustar una puerta automáticamente. Usa "Medida manual" mientras tanto.</div>`;
       }
       return `
-        <div class="hint" style="margin-bottom:10px;">Elige las piezas que forman ese hueco específico — la puerta se ajusta exacta a ese espacio, ni a otro.</div>
+        <div class="hint" style="margin-bottom:10px;">Elige las piezas que rodean el hueco.</div>
         <div class="row2">
           <div class="field"><label>Lado izquierdo</label><select id="dr-left">${options}</select></div>
           <div class="field"><label>Lado derecho</label><select id="dr-right">${options}</select></div>
@@ -5681,13 +5847,18 @@ function openDoorModal(){
     const h = round1(ap.y - (bp.y+bs.sy));
     const as=boxSize(above), rs=boxSize(right);
     const front = Math.max(lp.z+ls.sz, rp.z+rs.sz, bp.z+bs.sz, ap.z+as.sz);
-    return { w, h, x: round1(lp.x+ls.sx), y: round1(bp.y+bs.sy), front, ok: w>0 && h>0 };
+    return { w, h, x: round1(lp.x+ls.sx), y: round1(bp.y+bs.sy), front, ok: w>0 && h>0,
+      sideT: Math.min(ls.sx, rs.sx), botT: bs.sy, topT: as.sy, lx: lp.x, rx: rp.x + rs.sx, by: bp.y, ty: ap.y + as.sy };
   }
 
   function render(){
     overlay.innerHTML = `
       <div id="modalCard">
         <h2>Nueva puerta</h2>
+        <div class="seg" style="margin-bottom:12px;">
+          <button type="button" data-kind="batiente" class="${kind==='batiente'?'on':''}">🚪 Con bisagra</button>
+          <button type="button" data-kind="corrediza" class="${kind==='corrediza'?'on':''}">↔ Corrediza</button>
+        </div>
         <div class="field">
           <label>Medida</label>
           <div class="seg">
@@ -5697,22 +5868,35 @@ function openDoorModal(){
         </div>
         <div id="dr-body">${bodyHtml()}</div>
         <div class="field"><label>Espesor (cm)</label><input type="number" step="0.1" id="dr-t" value="1.5"></div>
+        ${kind === 'corrediza' ? `
+        <div class="field"><label>Cuántas puertas</label>
+          <div class="seg">${[2,3,4].map(k=>`<button type="button" data-nsl="${k}" class="${nSl===k?'on':''}">${k}</button>`).join('')}</div></div>
+        <div class="field"><label>Dónde van</label>
+          <div class="seg">
+            <button type="button" data-slm="dentro" class="${slModo==='dentro'?'on':''}">Dentro del hueco</button>
+            <button type="button" data-slm="fuera" class="${slModo==='fuera'?'on':''}">Por delante (tapan todo)</button>
+          </div></div>
+        <div class="field"><label>Se montan una sobre otra (cm)</label><input type="number" step="0.5" id="dr-tr" value="3"></div>
+        ` : `
         <div class="field">
           <label>Lado de la bisagra</label>
           <div class="seg">
             <button type="button" data-hinge="left" class="${hinge==='left'?'on':''}">Izquierda</button>
             <button type="button" data-hinge="right" class="${hinge==='right'?'on':''}">Derecha</button>
           </div>
-        </div>
+        </div>`}
         <div class="modal-actions">
           <button class="ghost" id="doorCancel">Cancelar</button>
-          <button class="primary" id="doorCreate">Crear puerta</button>
+          <button class="primary" id="doorCreate">${kind==='corrediza' ? 'Crear puertas corredizas' : 'Crear puerta'}</button>
         </div>
       </div>
     `;
     overlay.classList.add('open');
 
     overlay.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click', ()=>{ mode=b.dataset.mode; render(); }));
+    overlay.querySelectorAll('[data-kind]').forEach(b=>b.addEventListener('click', ()=>{ kind=b.dataset.kind; render(); }));
+    overlay.querySelectorAll('[data-nsl]').forEach(b=>b.addEventListener('click', ()=>{ nSl=+b.dataset.nsl; overlay.querySelectorAll('[data-nsl]').forEach(x=>x.classList.toggle('on', x===b)); }));
+    overlay.querySelectorAll('[data-slm]').forEach(b=>b.addEventListener('click', ()=>{ slModo=b.dataset.slm; overlay.querySelectorAll('[data-slm]').forEach(x=>x.classList.toggle('on', x===b)); }));
     overlay.querySelectorAll('[data-hinge]').forEach(b=>b.addEventListener('click', ()=>{
       hinge = b.dataset.hinge;
       overlay.querySelectorAll('[data-hinge]').forEach(x=>x.classList.remove('on'));
@@ -5736,7 +5920,7 @@ function openDoorModal(){
         const el = document.getElementById('dr-preview');
         if(!gap || !el) return;
         el.innerHTML = gap.ok
-          ? `Esta puerta quedaría de ${gap.w} × ${gap.h} cm.`
+          ? `Hueco: ${gap.w} × ${gap.h} cm.`
           : `<span style="color:var(--danger);font-weight:600;">Esas piezas no forman un hueco (daría ${gap.w} × ${gap.h} cm). Revisa izquierda/derecha y abajo/arriba.</span>`;
       }
       ['dr-left','dr-right','dr-below','dr-above'].forEach(id=>document.getElementById(id).addEventListener('change', updatePreview));
@@ -5750,6 +5934,27 @@ function openDoorModal(){
         if(!gap || !gap.ok) return; // no se crea una puerta con medida negativa
       }
       snapshot();
+      if(kind === 'corrediza'){
+        const t = parseFloat(document.getElementById('dr-t').value) || 1.5;
+        const trasl = Math.max(0, parseFloat(document.getElementById('dr-tr').value) || 0);
+        let g;
+        if(gap){
+          g = { x0:gap.x, x1:round2(gap.x+gap.w), y0:gap.y, y1:round2(gap.y+gap.h), front:gap.front, sideT:gap.sideT, topT:gap.topT, botT:gap.botT };
+        } else {
+          const W = parseFloat(document.getElementById('dr-w').value) || 120, H = parseFloat(document.getElementById('dr-h').value) || 200;
+          const b = pieces.length ? frameBounds() : { minX:0, maxZ:0 };
+          g = { x0:round1(b.minX), x1:round1(b.minX + W), y0:round1(pieces.length ? floorLevel() : 0), front: round1(b.maxZ), sideT:0, topT:0, botT:0 };
+          g.y1 = round1(g.y0 + H);
+        }
+        const doors = makeSlidingDoors(g, { n:nSl, t, traslape:trasl, modo: mode==='manual' ? 'fuera' : slModo });
+        const cut = (mode !== 'manual' && slModo === 'dentro') ? clearForSliding(g, doors) : 0;
+        doors.forEach(d=> pieces.push(d));
+        selectedId = doors[0].id;
+        overlay.classList.remove('open');
+        refreshAll();
+        if(cut) showToast(`Se corrieron ${cut} pieza(s) hacia atrás para que pasen las puertas.`);
+        return;
+      }
       const p = newPiece();
       p.name = 'Puerta ' + (pieces.filter(x=>x.isDoor).length+1);
       p.t = parseFloat(document.getElementById('dr-t').value) || 1.5;
@@ -6383,7 +6588,8 @@ const drawerAnim = {}; // drawerId -> { frac, target }
 
 function drawerOpenDist(drawerId){
   const lat = pieces.find(p=>p.drawerId===drawerId && p.drawerRole==='lat-izq');
-  return lat ? round2((lat.rielLen || lat.w) * 0.8) : 30;
+  const _rc = lat && lat.rielRef ? rielById(lat.rielRef) : null;
+  return lat ? round2((lat.rielLen || lat.w) * (_rc && _rc.ext === 'total' ? 0.95 : 0.8)) : 30;
 }
 
 // corre hacia adelante (el frente del mueble es la Z mayor, el lado de la cámara) todo lo de esa gaveta
@@ -6417,6 +6623,445 @@ function toggleDrawer(drawerId){
   requestAnimationFrame(step);
 }
 
+
+/* ============================================================
+   MÓDULO DE BISAGRAS (cazoleta 35 mm) — parche · semiparche · recta
+   - No cambia la medida ni la posición de las puertas: solo agrega el herraje.
+   - Tipo automático según cómo está puesta la puerta (tapa el lateral, media tabla o va por dentro).
+   - Medidas de perforación configurables (cada fabricante trae las suyas).
+============================================================ */
+const HINGE_TYPES = {
+  parche:     { name:'Bisagra parche',     uso:'Puerta que tapa todo el lateral (superpuesta)' },
+  semiparche: { name:'Bisagra semiparche', uso:'Dos puertas sobre una misma división (cada una tapa media tabla)' },
+  recta:      { name:'Bisagra recta',      uso:'Puerta por dentro del mueble (al ras)' }
+};
+// valores de partida comunes en bisagras de cazoleta; se cambian según la ficha de la bisagra que compres
+let hingeCfg = { K:4, cupDepth:12, extremo:10, retiro:37, sepTornillos:32, densidad:650, maxKg:6 };
+try{ Object.assign(hingeCfg, JSON.parse(localStorage.getItem('jank_hinge_cfg') || '{}')); }catch(e){}
+function saveHingeCfg(){ try{ localStorage.setItem('jank_hinge_cfg', JSON.stringify(hingeCfg)); }catch(e){} }
+function pieceKg(p){ return round1(p.w * p.h * p.t / 1e6 * (hingeCfg.densidad || 650) * (p.qty || 1)); }
+
+// lateral donde se atornilla la base de la bisagra (el que queda del lado de la bisagra)
+function hingeLateral(door){
+  const d = _bx(door), left = door.hinge === 'left';
+  const edge = left ? d.x0 : d.x1;
+  let best = null;
+  pieces.forEach(o=>{
+    if(o.id===door.id || o.isDoor || o.isDrawer || o.isFondo || o.isGlass || isHardware(o) || o.orientation !== 'vertical-side') return;
+    const b = _bx(o);
+    if(Math.min(b.y1, d.y1) - Math.max(b.y0, d.y0) < Math.min(10, (d.y1-d.y0)*0.5)) return;
+    if(b.z1 < d.z0 - 3 || b.z0 > d.z1) return;                       // tiene que estar justo detrás de la puerta
+    // puerta por dentro: el borde queda pegado a la cara interior · por fuera: el borde queda delante del lateral
+    const inner = left ? b.x1 : b.x0;
+    const front = d.z0 >= b.z1 - 0.15;
+    const dist = front ? (edge >= b.x0 - 1 && edge <= b.x1 + 1 ? 0 : Math.min(Math.abs(edge-b.x0), Math.abs(edge-b.x1))) : Math.abs(edge - inner);
+    if(dist > 2.5) return;
+    if(!best || dist < best.dist) best = { piece:o, b, inner, front, dist };
+  });
+  return best;
+}
+// tipo que corresponde por cómo está puesta la puerta
+function hingeTypeDetected(door){
+  const L = hingeLateral(door);
+  if(!L) return 'parche';
+  if(!L.front) return 'recta';
+  const d = _bx(door), b = L.b, T = b.x1 - b.x0;
+  const cover = door.hinge === 'left' ? (b.x1 - Math.max(d.x0, b.x0)) : (Math.min(d.x1, b.x1) - b.x0);
+  return (cover / T) >= 0.75 ? 'parche' : 'semiparche';
+}
+function hingeTypeOf(door){ return HINGE_TYPES[door.hingeType] ? door.hingeType : hingeTypeDetected(door); }
+// cantidad sugerida: por alto, ancho y peso de la puerta
+function hingeQtySuggested(door){
+  const h = door.h, w = door.w;
+  let n = h <= 90 ? 2 : h <= 160 ? 3 : h <= 200 ? 4 : h <= 240 ? 5 : 6;
+  if(w > 60) n++;
+  const kg = pieceKg(Object.assign({}, door, { qty:1 }));
+  while(kg / n > (hingeCfg.maxKg || 6) && n < 8) n++;
+  return n;
+}
+function hingeQtyOf(door){ return door.hingeQty > 0 ? door.hingeQty : hingeQtySuggested(door); }
+// alturas (desde abajo de la puerta) de cada bisagra
+function hingeHeights(door){
+  const n = hingeQtyOf(door), e = Math.min(hingeCfg.extremo || 10, door.h/3);
+  if(n <= 1) return [round1(door.h/2)];
+  return Array.from({ length:n }, (_, i)=> round1(e + i*(door.h - 2*e)/(n-1)));
+}
+function hingeDoors(){ return pieces.filter(p=>p.isDoor && !p.sliding); }
+
+// piezas 3D de la bisagra: cazoleta + brazo corto (se mueven con la puerta) y base + brazo (quedan en el lateral)
+function buildHingeMeshes(door, pos, size){
+  const out = { door:[], fixed:[] };
+  const L = hingeLateral(door), left = door.hinge === 'left';
+  const metal = new THREE.MeshStandardMaterial({ color:'#b9bec3', metalness: renderOpts.realista ? 0.85 : 0.3, roughness:0.35 });
+  const dark = new THREE.MeshStandardMaterial({ color:'#7d848b', metalness: renderOpts.realista ? 0.8 : 0.3, roughness:0.45 });
+  const cupX = left ? pos.x + (hingeCfg.K + 17.5)/10 : pos.x + size.sx - (hingeCfg.K + 17.5)/10;
+  const backZ = pos.z;                                       // cara de atrás de la puerta
+  const jZ = backZ - 0.9;                                    // donde se unen brazo y cazoleta
+  const plateX = L ? L.inner + (left ? 0.15 : -0.15) : cupX + (left ? -1.2 : 1.2);
+  const plateZ = L ? round2(L.b.z1 - (hingeCfg.retiro || 37)/10) : jZ - 2;
+  hingeHeights(door).forEach(hy=>{
+    const y = pos.y + hy;
+    // cazoleta Ø35: aro que se ve en la cara de atrás de la puerta
+    const cup = new THREE.Mesh(new THREE.CylinderGeometry(1.75, 1.75, 0.25, 28), metal);
+    cup.rotation.x = Math.PI/2; cup.position.set(cupX, y, backZ - 0.12); out.door.push(cup);
+    const stub = new THREE.Mesh(new THREE.BoxGeometry(1.4, 1.0, 0.9), dark);
+    stub.position.set(cupX, y, backZ - 0.45); out.door.push(stub);
+    // brazo: de la cazoleta a la base, por dentro del mueble (no atraviesa la tabla)
+    const dx = plateX - cupX, dz = plateZ - jZ, len = Math.hypot(dx, dz);
+    if(len > 0.2){
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.0, len), metal);
+      arm.position.set((cupX + plateX)/2, y, (jZ + plateZ)/2); arm.rotation.y = Math.atan2(dx, dz); out.fixed.push(arm);
+    }
+    // base de montaje atornillada al lateral
+    const plate = new THREE.Mesh(new THREE.BoxGeometry(0.3, 4.4, 1.4), dark);
+    plate.position.set(plateX, y, plateZ); out.fixed.push(plate);
+  });
+  return out;
+}
+
+// perforaciones para el plano: cazoletas en la puerta y tornillos de la base en el lateral
+function hingeDrillRows(){
+  return hingeDoors().map(d=>{
+    const L = hingeLateral(d), ys = hingeHeights(d);
+    return { door:d, tipo:hingeTypeOf(d), qty:ys.length, ys, lateral: L ? L.piece : null,
+      latYs: L ? ys.map(y=> round1(piecePosition(d).y + y - piecePosition(L.piece).y)) : [] };
+  });
+}
+function renderHingeDrill(){
+  const wrap = document.getElementById('hingeDrillWrap'); if(!wrap) return;
+  const rows = hingeDrillRows();
+  if(!rows.length){ wrap.innerHTML = ''; return; }
+  const c = hingeCfg, cupC = round1(c.K + 17.5);
+  wrap.innerHTML = `<div class="hg-head"><b>Bisagras · cazoleta Ø35 mm</b>
+    <details class="lc-adj"><summary>⚙ Medidas del fabricante</summary><div class="lc-adj-body">
+      <div class="field"><label>Borde a cazoleta K (mm)</label><input type="number" step="0.5" data-hc="K" value="${c.K}"></div>
+      <div class="field"><label>Hondo cazoleta (mm)</label><input type="number" step="0.5" data-hc="cupDepth" value="${c.cupDepth}"></div>
+      <div class="field"><label>Desde arriba/abajo (cm)</label><input type="number" step="0.5" data-hc="extremo" value="${c.extremo}"></div>
+      <div class="field"><label>Base: desde adelante (mm)</label><input type="number" step="0.5" data-hc="retiro" value="${c.retiro}"></div>
+      <div class="field"><label>Base: entre tornillos (mm)</label><input type="number" step="1" data-hc="sepTornillos" value="${c.sepTornillos}"></div>
+    </div></details></div>
+    <table class="hg-tbl"><thead><tr><th>Puerta</th><th>Tipo</th><th>Cant.</th><th>Cazoleta (en la puerta)</th><th>Base (en el lateral)</th></tr></thead><tbody>
+    ${rows.map(r=>`<tr><td><b>${esc(r.door.name)}</b><br><small>${round1(r.door.w)}×${round1(r.door.h)} · bisagra ${r.door.hinge==='left'?'izq':'der'}</small></td>
+      <td>${HINGE_TYPES[r.tipo].name.replace('Bisagra ','')}</td><td><b>${r.qty}</b></td>
+      <td>Ø35 · centro a <b>${cupC} mm</b> del borde · hondo ${c.cupDepth} mm<br>alturas: <b>${r.ys.join(' · ')}</b> cm desde abajo</td>
+      <td>${r.lateral ? `${esc(r.lateral.name)}: a <b>${c.retiro} mm</b> del borde de adelante · 2 tornillos a ${c.sepTornillos} mm<br>alturas: <b>${r.latYs.join(' · ')}</b> cm desde abajo del lateral` : '<span style="color:var(--text-dim);">No encontré el lateral</span>'}</td></tr>`).join('')}
+    </tbody></table>`;
+  wrap.querySelectorAll('[data-hc]').forEach(inp=> inp.addEventListener('change', ()=>{
+    const v = parseFloat(inp.value); if(isNaN(v) || v < 0) return;
+    hingeCfg[inp.dataset.hc] = v; saveHingeCfg(); rebuild3D(); renderHingeDrill();
+  }));
+}
+// sección "Bisagras" en el panel de la puerta
+function renderHingeSection(p){
+  const box = document.getElementById('f-hinges'); if(!box) return;
+  if(!p.isDoor || p.sliding){ box.innerHTML = ''; return; }
+  const det = hingeTypeDetected(p), cur = hingeTypeOf(p), sug = hingeQtySuggested(p), kg = pieceKg(Object.assign({}, p, { qty:1 }));
+  const mismatch = p.hingeType && p.hingeType !== det;
+  box.innerHTML = `<div class="fitbox" style="margin-top:8px;">
+    <div class="ts" style="font-weight:700;margin-bottom:6px;">Bisagras</div>
+    <div class="seg hg-seg">
+      <button type="button" data-ht="" class="${!p.hingeType?'on':''}" title="Según cómo está puesta la puerta">Auto</button>
+      ${Object.keys(HINGE_TYPES).map(k=>`<button type="button" data-ht="${k}" class="${p.hingeType===k?'on':''}" title="${HINGE_TYPES[k].uso}">${HINGE_TYPES[k].name.replace('Bisagra ','')}</button>`).join('')}
+    </div>
+    <div class="hint" style="margin:6px 0;">${!p.hingeType ? `Auto: <b>${HINGE_TYPES[det].name.replace('Bisagra ','')}</b> · ` : ''}${HINGE_TYPES[cur].uso}</div>
+    ${mismatch ? `<div class="hint" style="color:#8a5a00;margin:0 0 6px;">⚠ Por cómo está puesta, esta puerta va con bisagra ${HINGE_TYPES[det].name.replace('Bisagra ','').toLowerCase()}.</div>` : ''}
+    <div class="row2" style="align-items:end;">
+      <div class="field" style="margin:0;"><label>Cantidad</label><input type="number" min="1" max="10" step="1" id="f-hqty" value="${p.hingeQty||''}" placeholder="${sug}"></div>
+      <div class="hint" style="margin:0 0 8px;">Sugeridas: <b>${sug}</b><br>puerta ≈ ${kg} kg</div>
+    </div>
+  </div>`;
+  box.querySelectorAll('[data-ht]').forEach(b=> b.addEventListener('click', ()=>{ snapshot(); p.hingeType = b.dataset.ht || null; refreshAll(); }));
+  box.querySelector('#f-hqty').addEventListener('change', e=>{ snapshot(); const v = parseInt(e.target.value); p.hingeQty = v > 0 ? Math.min(10, v) : null; refreshAll(); });
+}
+
+/* ============================================================
+   CATÁLOGO DE RIELES (Madecentro Colombia) Y SELECCIÓN AUTOMÁTICA
+   Solo datos publicados por Madecentro / Homecenter. Lo que no está publicado
+   queda vacío (null) y ese riel NO se recomienda hasta completar su ficha.
+   descuento = "descuento del vano" en mm EN TOTAL (lo que la caja es más angosta que el hueco).
+============================================================ */
+const RIEL_CATALOG_DEFAULT = [
+  { id:'HRE220', ref:'HRE220', marca:'Mobile', nombre:'Extensión total carga liviana', ext:'total', func:'normal', montaje:'lateral',
+    cargaKg:20, descuentoMM:25, altoMM:35, largos:[25,30,35,40,45,50], precios:{25:4949,30:5757,35:6666,40:7575,45:8585,50:9595},
+    profMinMM:null, tornillos:12, accesorios:'1 par de rieles y 12 tornillos', ciclos:25000, disponible:true,
+    url:'https://madecentro.com/products/riel-corredera-para-cajon-extension-total-carga-liviana-20-kg',
+    fuente:'madecentro.com (HRE220-35/45: descuento del vano 25 mm en total) · Homecenter HRE220-40: 35×400 mm, 20 kg' },
+  { id:'HRE221', ref:'HRE221', marca:'Mach', nombre:'Eco extensión total carga liviana', ext:'total', func:'normal', montaje:'lateral',
+    cargaKg:15, descuentoMM:null, altoMM:null, largos:[25,30,35,40,45,50], precios:{25:4893,30:5561,35:6292,40:7170,45:8048,50:9073},
+    profMinMM:null, tornillos:12, accesorios:'1 par de rieles y 12 tornillos', ciclos:20000, disponible:true,
+    url:'https://madecentro.com/products/riel-corredera-para-cajon-eco-extension-total-carga-mediana-copia',
+    fuente:'madecentro.com: 15 kg, 20.000 ciclos. Falta el descuento del vano en la ficha publicada.' },
+  { id:'HRE126', ref:'HRE126', marca:'Mobile', nombre:'Extensión total carga media', ext:'total', func:'normal', montaje:'lateral',
+    cargaKg:38, descuentoMM:27, altoMM:42, largos:[45,50], precios:{45:12300},
+    profMinMM:null, tornillos:12, accesorios:'1 par de rieles y 12 tornillos', ciclos:25000, disponible:true,
+    url:'https://www.homecenter.com.co/homecenter-co/product/468708/riel-extension-total-mediano-42x450mm-38-kg/468708/',
+    fuente:'Homecenter HRE126-45: 42×450 mm, 38 kg, descuento del vano 27 mm en total. Largos publicados: 450 y 500 mm.' },
+  { id:'HRE127', ref:'HRE127', marca:'Madecentro', nombre:'Extensión total ECO carga mediana', ext:'total', func:'normal', montaje:'lateral',
+    cargaKg:null, descuentoMM:null, altoMM:null, largos:[25,30,35,40,45,50,55], precios:{},
+    profMinMM:null, tornillos:null, accesorios:'', ciclos:null, disponible:true,
+    url:'https://issuu.com/madecentrocolombiasas/docs/hre127',
+    fuente:'Ficha HRE127-25/30/35/40/45/50/55 (Madecentro, issuu). Sin carga ni descuento publicados: completar desde la ficha.' },
+  { id:'HRE320', ref:'HRE320', marca:'Bonuit', nombre:'Extensión total carga pesada', ext:'total', func:'normal', montaje:'lateral',
+    cargaKg:45, descuentoMM:27, altoMM:null, largos:[30,35,40,45,50,55,60,70], precios:{30:7954,35:8711,40:9999,45:11287,50:13484,55:14923,60:15832,70:18483},
+    profMinMM:null, tornillos:12, accesorios:'1 par de rieles y 12 tornillos', ciclos:45000, disponible:true,
+    url:'https://madecentro.com/products/riel-corredera-para-cajon-de-extension-total-carga-pesada-45-kg',
+    fuente:'Homecenter HRE320-45: descuento 27 mm en total · madecentro.com HRE320-40: 26 mm. Se usa 27 mm (verificar con el riel en mano).' },
+  { id:'HRE551', ref:'HRE551', marca:'Mobile', nombre:'Cierre lento eco extensión total', ext:'total', func:'cierre lento', montaje:'lateral',
+    cargaKg:20, descuentoMM:27, altoMM:45, largos:[30,35,40,45,50,55], precios:{30:13711,35:14771,40:16135,45:17423,50:18786,55:20225},
+    profMinMM:null, tornillos:12, accesorios:'1 par de rieles y 12 tornillos', ciclos:15000, disponible:true,
+    url:'https://madecentro.com/products/riel-corredera-para-cajon-cierre-lento-eco-con-extension-total-20-kg',
+    fuente:'madecentro.com + Homecenter HRE551-40: 45×400 mm, 20 kg, descuento del vano 27 mm en total.' },
+  { id:'CL30', ref:'', marca:'', nombre:'Cierre lento extensión total 30 kg', ext:'total', func:'cierre lento', montaje:'lateral',
+    cargaKg:30, descuentoMM:27, altoMM:45, largos:[30,35,40,45,55], precios:{30:44900,45:58900},
+    profMinMM:null, tornillos:12, accesorios:'1 par de rieles y 12 tornillos', ciclos:25000, disponible:true,
+    url:'https://www.homecenter.com.co/homecenter-co/product/468693/riel-extension-total-cierre-lento-45x450mm-30-kg/468693/',
+    fuente:'Homecenter (Madecentro): 45×300…550 mm, 30 kg, descuento 27 mm en total. Referencia HRE no publicada: completar.' },
+  { id:'MB30', ref:'', marca:'Bonuit', nombre:'Montaje bajo cierre lento', ext:'total', func:'cierre lento', montaje:'bajo',
+    cargaKg:30, descuentoMM:null, descuentoPorEsp:{ '15':18, '18':12 }, altoMM:null, largos:[40,45,55], precios:{40:87900,45:93900,55:114900},
+    profMinMM:null, tornillos:null, accesorios:'1 par de rieles y 1 par de enganches', ciclos:35000, disponible:true,
+    url:'https://www.homecenter.com.co/homecenter-co/product/468657/riel-montaje-bajo-cierre-lento-450mm-30-kg/468657/',
+    fuente:'Homecenter (Bonuit): descuento del vano 18 mm con tablero de 15 mm / 12 mm con tablero de 18 mm. Referencia HRE no publicada.' },
+  { id:'HRE780', ref:'HRE780', marca:'Madecentro', nombre:'Montaje bajo push to open', ext:'total', func:'push', montaje:'bajo',
+    cargaKg:30, descuentoMM:null, descuentoPorEsp:{ '15':18, '18':12 }, altoMM:null, largos:[55], precios:{},
+    profMinMM:null, tornillos:null, accesorios:'', ciclos:30000, disponible:true,
+    url:'https://homecenter.falabella.com.co/homecenter-co/product/119175534/Riel-Montaje-Bajo-Push-To-Open-550mm-30-Kg/119175535',
+    fuente:'Homecenter HRE780-55: 550 mm, 30 kg, descuento 18 mm (tablero 15) / 12 mm (tablero 18).' },
+  { id:'SENC', ref:'', marca:'Mobile', nombre:'Riel sencillo (extensión parcial)', ext:'parcial', func:'normal', montaje:'lateral',
+    cargaKg:15, descuentoMM:25, altoMM:null, largos:[40,50,55], precios:{},
+    profMinMM:null, tornillos:8, accesorios:'1 par de rieles y 8 tornillos', ciclos:20000, disponible:true,
+    url:'https://www.homecenter.com.co/homecenter-co/product/468712/riel-sencillo-blanco-400mm/468712/',
+    fuente:'Homecenter: corredera de cajón sencilla, 15 kg, vano 25 mm, 1 par + 8 tornillos. Referencia no publicada.' }
+];
+function rielCatalog(){
+  try{ const c = JSON.parse(localStorage.getItem('jank_riel_catalog') || 'null'); if(Array.isArray(c) && c.length) return c; }catch(e){}
+  return JSON.parse(JSON.stringify(RIEL_CATALOG_DEFAULT));
+}
+function saveRielCatalog(c){ try{ localStorage.setItem('jank_riel_catalog', JSON.stringify(c)); return true; }catch(e){ return false; } }
+function rielById(id){ return rielCatalog().find(r=>r.id===id) || null; }
+function rielLabel(r){ return `${r.ref ? r.ref + ' · ' : ''}${r.nombre}`; }
+// holgura por lado en mm enteros (la app trabaja al milímetro); se redondea hacia arriba para que el riel siempre quepa
+function railClearMM(desc){ return Math.ceil(desc/2 - 1e-6); }
+function railBoxW(huecoW, desc){ return round1(huecoW - 2*railClearMM(desc)/10); }
+// descuento total (mm) de un riel para cierto espesor de caja (los de montaje bajo dependen del tablero)
+function rielDescuento(r, tCm){
+  if(r.descuentoMM != null) return r.descuentoMM;
+  if(r.descuentoPorEsp){ const k = String(Math.round(tCm*10)); return r.descuentoPorEsp[k] != null ? r.descuentoPorEsp[k] : null; }
+  return null;
+}
+// qué le falta a la ficha para poder recomendarlo
+function rielFaltantes(r){
+  const f = [];
+  if(!(r.cargaKg > 0)) f.push('carga');
+  if(r.descuentoMM == null && !r.descuentoPorEsp) f.push('descuento del vano');
+  if(!r.largos || !r.largos.length) f.push('largos');
+  return f;
+}
+// datos de una gaveta para escoger riel
+function drawerRailInputs(did){
+  const d = drawerParts(did); if(!d.latL || !d.latR) return null;
+  const nL = drawerNeighbor(d.latL, 'left'), nR = drawerNeighbor(d.latR, 'right');
+  const boxFront = d.latL.z + d.latL.w;
+  const back = (nL && nR) ? Math.max(nL.back, nR.back) : null;
+  const boxKg = round1(d.list.reduce((s,q)=> s + pieceKg(q), 0));
+  const load = d.face && d.face.cargaKg != null ? +d.face.cargaKg : null;
+  return {
+    d, huecoW: (nL && nR) ? round2(nR.edge - nL.edge) : null,
+    boxH: d.latL.h, boxD: d.latL.w, boxW: round2(_bx(d.latR).x1 - _bx(d.latL).x0), t: d.latL.t,
+    avail: back != null ? round2(boxFront - back) : null,
+    boxKg, load, totalKg: load != null ? round1(boxKg + load) : null
+  };
+}
+// evalúa un riel para una gaveta: largo que cabe, si aguanta y por qué no
+function evalRail(r, inp){
+  const falta = rielFaltantes(r);
+  if(falta.length) return { r, ok:false, why:`Ficha incompleta: falta ${falta.join(', ')}` };
+  const desc = rielDescuento(r, inp.t);
+  if(desc == null) return { r, ok:false, why:`Sin descuento publicado para caja de ${round1(inp.t*10)} mm` };
+  const L = r.largos.filter(l=> l <= inp.avail + 0.01 && (!r.profMinMM || r.profMinMM/10 <= inp.avail + 0.01)).sort((a,b)=>b-a)[0];
+  if(!L) return { r, ok:false, why:`No cabe: hay ${inp.avail} cm de fondo y el más corto mide ${Math.min(...r.largos)} cm` };
+  if(r.altoMM && r.altoMM/10 > inp.boxH + 0.01) return { r, ok:false, why:`El riel mide ${r.altoMM} mm de alto y la caja ${round1(inp.boxH*10)} mm` };
+  if(inp.totalKg != null && r.cargaKg < inp.totalKg) return { r, ok:false, why:`Aguanta ${r.cargaKg} kg y la gaveta pesa ≈ ${inp.totalKg} kg` };
+  const price = r.precios && r.precios[L] != null ? +r.precios[L] : null;
+  return { r, ok:true, L, desc, price, boxW: railBoxW(inp.huecoW, desc) };
+}
+// económica · recomendada · premium (si falta un dato, no hay recomendación definitiva)
+function railOptions(did){
+  const inp = drawerRailInputs(did); if(!inp) return { error:'Esta gaveta no tiene sus dos laterales.' };
+  const missing = [];
+  if(inp.huecoW == null) missing.push('los laterales del mueble a cada lado de la gaveta');
+  if(inp.avail == null) missing.push('el fondo disponible del mueble');
+  if(inp.load == null) missing.push('el peso que va a cargar la gaveta');
+  const all = rielCatalog().filter(r=>r.disponible !== false);
+  if(missing.length) return { inp, missing, evals: inp.huecoW != null && inp.avail != null ? all.map(r=>evalRail(r, Object.assign({}, inp, { totalKg:null }))) : [] };
+  const evals = all.map(r=>evalRail(r, inp));
+  const ok = evals.filter(e=>e.ok);
+  const byPrice = (a,b)=> (a.price==null) - (b.price==null) || (a.price||0) - (b.price||0) || a.r.cargaKg - b.r.cargaKg;
+  const eco = ok.slice().sort(byPrice)[0] || null;
+  const margin = ok.filter(e=> e.r.ext==='total' && e.r.montaje==='lateral' && e.r.cargaKg >= inp.totalKg*1.5).sort(byPrice);
+  const rec = margin.find(e=>!eco || e.r.id!==eco.r.id) || margin[0] || ok.filter(e=>e.r.ext==='total').sort((a,b)=>b.r.cargaKg-a.r.cargaKg)[0] || eco;
+  const premPool = ok.filter(e=> e.r.func!=='normal' || e.r.montaje==='bajo')
+    .sort((a,b)=> (b.r.montaje==='bajo') - (a.r.montaje==='bajo') || (b.r.func==='cierre lento') - (a.r.func==='cierre lento') || b.r.cargaKg - a.r.cargaKg);
+  const prem = premPool.find(e=> (!rec || e.r.id!==rec.r.id)) || premPool[0] || null;
+  const why = (e, k)=>{
+    if(!e) return '';
+    const m = round1(e.r.cargaKg / inp.totalKg);
+    if(k==='eco') return `La más barata que cabe (${e.L} cm) y aguanta el peso (${e.r.cargaKg} kg para ≈ ${inp.totalKg} kg).`;
+    if(k==='rec') return `Extensión total: se ve todo el cajón. Aguanta ${m}× el peso estimado.`;
+    return `${e.r.montaje==='bajo' ? 'Va oculto debajo del cajón. ' : ''}${e.r.func==='cierre lento' ? 'Cierra suave, sin golpe.' : e.r.func==='push' ? 'Abre empujando, sin manija.' : ''}`;
+  };
+  return { inp, evals, opts:[ ['eco','Económica',eco], ['rec','Recomendada',rec], ['prem','Premium',prem] ].map(([k,t,e])=>({ k, t, e, why: why(e,k) })) };
+}
+// pone el riel escogido: ancho de la caja según SU descuento y largo según el fondo
+function applyRailToDrawer(did, railId, L){
+  const r = rielById(railId); if(!r) return false;
+  const d = drawerParts(did); if(!d.latL || !d.latR) return false;
+  const nL = drawerNeighbor(d.latL, 'left'), nR = drawerNeighbor(d.latR, 'right'); if(!nL || !nR) return false;
+  const desc = rielDescuento(r, d.latL.t); if(desc == null) return false;
+  const t = d.latL.t, huecoW = round2(nR.edge - nL.edge);
+  const clear = railClearMM(desc)/10, boxW = railBoxW(huecoW, desc);
+  if(boxW <= 2*t + 2) return false;
+  snapshot();
+  d.list.forEach(q=>{ const o = piecePosition(q); q.posMode='free'; q.attachTo=null; q.x=round2(o.x); q.y=round2(o.y); q.z=round2(o.z);
+    q.rielClear = clear; q.rielRef = r.id; q.rielLen = L; });
+  const x0 = round2(nL.edge + clear);
+  d.latL.x = x0; d.latR.x = round2(x0 + boxW - t);
+  [d.front, d.back].forEach(q=>{ if(q){ q.w = round2(boxW - 2*t); q.x = round2(x0 + t); } });
+  if(d.base){ d.base.w = boxW; d.base.x = x0; }
+  const boxFront = round2(d.latL.z + d.latL.w);
+  [d.latL, d.latR].forEach(q=>{ q.w = L; q.z = round2(boxFront - L); });
+  if(d.base){ d.base.h = L; d.base.z = round2(boxFront - L); }
+  if(d.back) d.back.z = round2(boxFront - L);
+  refreshAll();
+  return true;
+}
+function renderRailSection(p){
+  const box = document.getElementById('f-rail'); if(!box) return;
+  if(!p.isDrawer){ box.innerHTML = ''; return; }
+  const did = p.drawerId, d = drawerParts(did), face = d.face || d.latL;
+  const cur = d.latL && d.latL.rielRef ? rielById(d.latL.rielRef) : null;
+  const res = railOptions(did);
+  const money0 = v => v == null ? 'sin precio' : money(v);
+  let body = '';
+  if(res.error) body = `<div class="hint">${res.error}</div>`;
+  else if(res.missing){
+    body = `<div class="hint" style="color:#8a5a00;margin:6px 0;">Para recomendar falta: <b>${res.missing.join(', ')}</b>.</div>`;
+  } else {
+    body = `<div class="rl-opts">${res.opts.map(o=> o.e ? `<div class="rl-card ${cur && cur.id===o.e.r.id && d.latL.rielLen===o.e.L ? 'on' : ''}">
+        <div class="rl-k">${o.t}</div>
+        <div class="rl-n">${esc(rielLabel(o.e.r))}</div>
+        <div class="rl-d">${o.e.L} cm · ${o.e.r.cargaKg} kg · ${o.e.r.ext==='total'?'ext. total':'ext. parcial'}${o.e.r.func!=='normal'?' · '+o.e.r.func:''}<br>descuento ${o.e.desc} mm · caja ${o.e.boxW} cm · <b>${money0(o.e.price)}</b> el par</div>
+        <div class="rl-w">${esc(o.why)}</div>
+        <button type="button" class="small ${cur && cur.id===o.e.r.id && d.latL.rielLen===o.e.L ? 'primary' : 'ghost'}" data-rl="${esc(o.e.r.id)}" data-rll="${o.e.L}">${cur && cur.id===o.e.r.id && d.latL.rielLen===o.e.L ? '✓ Puesto' : 'Usar'}</button>
+      </div>` : `<div class="rl-card off"><div class="rl-k">${o.t}</div><div class="hint">Ninguno sirve</div></div>`).join('')}</div>`;
+  }
+  const evs = (res.evals || []);
+  const okList = evs.filter(e=>e.ok);
+  body += `<details style="margin-top:6px;"><summary style="cursor:pointer;font-size:12px;font-weight:600;color:#6b6259;">Escoger a mano · ${okList.length} sirven</summary>
+    ${evs.map(e=> e.ok
+      ? `<button type="button" class="rl-row" data-rl="${esc(e.r.id)}" data-rll="${e.L}"><b>${esc(rielLabel(e.r))}</b> · ${e.L} cm · ${e.r.cargaKg} kg · ${money0(e.price)}</button>`
+      : `<div class="rl-row off"><b>${esc(rielLabel(e.r))}</b><br><small>${esc(e.why)}</small></div>`).join('')}
+    <button type="button" class="small ghost" id="rl-cat" style="margin-top:6px;width:100%;">⚙ Catálogo de rieles</button></details>`;
+  const inp = res.inp;
+  box.innerHTML = `<div class="fitbox" style="margin-top:8px;">
+    <div class="ts" style="font-weight:700;margin-bottom:4px;">Riel</div>
+    <div class="hint" style="margin:0 0 6px;">Puesto: <b>${cur ? esc(rielLabel(cur)) + ' · ' + d.latL.rielLen + ' cm' : `telescópico ${d.latL ? d.latL.rielLen : '?'} cm (genérico)`}</b>${inp ? `<br>Hueco ${inp.huecoW ?? '?'} cm · fondo libre ${inp.avail ?? '?'} cm · caja ≈ ${inp.boxKg} kg` : ''}</div>
+    <div class="field" style="margin:0 0 4px;"><label>¿Cuánto peso va a cargar? (kg)</label><input type="number" min="0" step="1" id="rl-load" value="${face && face.cargaKg != null ? face.cargaKg : ''}" placeholder="Ej: 10"></div>
+    ${body}
+  </div>`;
+  const load = box.querySelector('#rl-load');
+  load.addEventListener('change', ()=>{ const v = parseFloat(load.value); d.list.forEach(q=>{ if(q.drawerRole==='frente' || q===face) q.cargaKg = isNaN(v) ? null : Math.max(0, v); }); if(typeof scheduleAutosave === 'function') scheduleAutosave(); renderRailSection(p); });
+  box.querySelectorAll('[data-rl]').forEach(b=> b.addEventListener('click', ()=>{
+    if(!applyRailToDrawer(did, b.dataset.rl, +b.dataset.rll)) showToast('No se pudo poner ese riel en esta gaveta.', true);
+    else showToast('Riel puesto: la caja se ajustó a su medida.');
+  }));
+  const cat = box.querySelector('#rl-cat'); if(cat) cat.addEventListener('click', openRailCatalog);
+}
+
+// ---------- administrador del catálogo (sin tocar el código) ----------
+function openRailCatalog(){
+  const overlay = document.getElementById('modalOverlay');
+  let cat = rielCatalog(), editing = null;
+  const F = [
+    ['ref','Referencia','text'],['marca','Marca','text'],['nombre','Nombre','text'],
+    ['ext','Extensión','sel',[['total','Total'],['parcial','Parcial']]],
+    ['func','Funcionamiento','sel',[['normal','Normal'],['cierre lento','Cierre lento'],['push','Push to open']]],
+    ['montaje','Montaje','sel',[['lateral','Lateral'],['bajo','Bajo (oculto)']]],
+    ['cargaKg','Carga (kg)','num'],['descuentoMM','Descuento del vano total (mm)','num'],['altoMM','Alto del riel (mm)','num'],
+    ['largos','Largos (cm, separados por coma)','list'],['precios','Precio del par por largo (ej: 40=7575, 45=8585)','prices'],
+    ['profMinMM','Profundidad mínima (mm)','num'],['tornillos','Tornillos por par','num'],['accesorios','Accesorios incluidos','text'],
+    ['ciclos','Ciclos','num'],['disponible','Disponible','bool'],['url','Enlace del proveedor','text'],['fuente','Fuente / notas','text']
+  ];
+  const val = (r,k,t)=> t==='list' ? (r[k]||[]).join(', ') : t==='prices' ? Object.entries(r[k]||{}).map(([a,b])=>`${a}=${b}`).join(', ') : (r[k] == null ? '' : r[k]);
+  function render(){
+    const list = cat.map((r,i)=>{ const f = rielFaltantes(r); return `<tr data-i="${i}">
+      <td><b>${esc(r.ref||'—')}</b></td><td>${esc(r.nombre)}<br><small>${esc(r.marca||'')}</small></td>
+      <td>${r.cargaKg ?? '<span class="rc-miss">?</span>'} kg</td><td>${rielDescuento(r,1.5) ?? '<span class="rc-miss">?</span>'} mm</td>
+      <td>${(r.largos||[]).join(', ')}</td><td>${f.length ? `<span class="rc-miss">Falta: ${f.join(', ')}</span>` : '✓'}</td>
+      <td><button class="small ghost" data-ed="${i}">Editar</button></td></tr>`; }).join('');
+    const r = editing != null ? cat[editing] : null;
+    overlay.innerHTML = `<div id="modalCard" style="max-width:860px;width:96vw;">
+      <h2>Catálogo de rieles</h2>
+      <div class="hint" style="margin-bottom:8px;">Datos de Madecentro. Lo que dice <span class="rc-miss">?</span> no está publicado: complétalo con la ficha del riel. Un riel con datos incompletos no se recomienda.</div>
+      ${r ? `<div class="rc-form">${F.map(([k,l,t,o])=> t==='sel'
+          ? `<div class="field"><label>${l}</label><select data-f="${k}">${o.map(([v,n])=>`<option value="${v}" ${r[k]===v?'selected':''}>${n}</option>`).join('')}</select></div>`
+          : t==='bool' ? `<label class="nest-opt"><input type="checkbox" data-f="${k}" ${r[k]!==false?'checked':''}> ${l}</label>`
+          : `<div class="field ${['nombre','fuente','url','precios','accesorios'].includes(k)?'wide':''}"><label>${l}</label><input type="${t==='num'?'number':'text'}" data-f="${k}" data-t="${t}" value="${esc(String(val(r,k,t)))}"></div>`).join('')}
+        ${r.descuentoPorEsp ? `<div class="hint wide">Este riel usa descuento según el espesor del tablero: ${Object.entries(r.descuentoPorEsp).map(([a,b])=>`${a} mm → ${b} mm`).join(' · ')}</div>` : ''}
+        <div class="modal-actions wide"><button class="ghost" id="rc-del" style="color:var(--danger);">Borrar</button><span style="flex:1"></span><button class="ghost" id="rc-cancel">Volver</button><button class="primary" id="rc-save">Guardar</button></div></div>`
+      : `<div style="max-height:52vh;overflow:auto;"><table class="hg-tbl"><thead><tr><th>Ref.</th><th>Riel</th><th>Carga</th><th>Descuento</th><th>Largos (cm)</th><th>Ficha</th><th></th></tr></thead><tbody>${list}</tbody></table></div>
+      <div class="modal-actions"><button class="ghost" id="rc-reset">Restaurar Madecentro</button><button class="ghost" id="rc-exp">Exportar</button><button class="ghost" id="rc-imp">Importar</button><span style="flex:1"></span><button class="ghost" id="rc-new">+ Nuevo riel</button><button class="primary" id="rc-close">Listo</button></div>`}
+    </div>`;
+    overlay.classList.add('open');
+    overlay.querySelectorAll('[data-ed]').forEach(b=> b.addEventListener('click', ()=>{ editing = +b.dataset.ed; render(); }));
+    const q = id => overlay.querySelector('#'+id);
+    if(r){
+      q('rc-cancel').onclick = ()=>{ editing = null; render(); };
+      q('rc-del').onclick = ()=>{ if(confirm('¿Borrar este riel del catálogo?')){ cat.splice(editing,1); saveRielCatalog(cat); editing = null; render(); } };
+      q('rc-save').onclick = ()=>{
+        overlay.querySelectorAll('[data-f]').forEach(inp=>{
+          const k = inp.dataset.f, t = inp.dataset.t;
+          if(inp.type === 'checkbox'){ r[k] = inp.checked; return; }
+          const v = inp.value.trim();
+          if(inp.tagName === 'SELECT'){ r[k] = v; return; }
+          if(t === 'num'){ r[k] = v === '' ? null : parseFloat(v); if(k==='descuentoMM' && v !== '') delete r.descuentoPorEsp; return; }
+          if(t === 'list'){ r[k] = v.split(/[,;\s]+/).map(Number).filter(x=>x>0).sort((a,b)=>a-b); return; }
+          if(t === 'prices'){ const o = {}; v.split(/[,;]+/).forEach(pair=>{ const m = pair.split('='); const a = parseFloat(m[0]), b = parseFloat(m[1]); if(a>0 && b>=0) o[a] = b; }); r[k] = o; return; }
+          r[k] = v;
+        });
+        if(!r.id) r.id = (r.ref || 'R') + '-' + Date.now().toString(36);
+        saveRielCatalog(cat); editing = null; render(); refreshAll();
+      };
+    } else {
+      q('rc-close').onclick = ()=>{ overlay.classList.remove('open'); refreshAll(); };
+      q('rc-new').onclick = ()=>{ cat.push({ id:'N'+Date.now().toString(36), ref:'', marca:'', nombre:'Riel nuevo', ext:'total', func:'normal', montaje:'lateral', cargaKg:null, descuentoMM:null, altoMM:null, largos:[], precios:{}, profMinMM:null, tornillos:null, accesorios:'', ciclos:null, disponible:true, url:'', fuente:'' }); editing = cat.length-1; render(); };
+      q('rc-reset').onclick = ()=>{ if(confirm('¿Volver al catálogo original de Madecentro? Se pierden tus cambios de precios.')){ cat = JSON.parse(JSON.stringify(RIEL_CATALOG_DEFAULT)); saveRielCatalog(cat); render(); } };
+      q('rc-exp').onclick = ()=>{ const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(cat, null, 2)], { type:'application/json' })); a.download = 'catalogo-rieles.json'; document.body.appendChild(a); a.click(); a.remove(); };
+      q('rc-imp').onclick = ()=>{ const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json,application/json';
+        inp.onchange = ()=>{ const f = inp.files[0]; if(!f) return; f.text().then(txt=>{ try{ const c = JSON.parse(txt); if(!Array.isArray(c)) throw 0; c.forEach(x=>{ if(!x.id) x.id = (x.ref||'R') + Math.random().toString(36).slice(2,6); }); cat = c; saveRielCatalog(cat); render(); showToast('Catálogo importado.'); }catch(e){ alert('Ese archivo no es un catálogo de rieles.'); } }); };
+        inp.click(); };
+    }
+  }
+  render();
+}
+
+// doble clic en una corrediza: el 2º clic rápido en el mismo punto la corre,
+// aunque al 1º clic se haya abierto el panel de la derecha encima
+let _slideTap = null, _swallowClick = false;
+function armSlideTap(id, e){ _slideTap = { id, t: performance.now(), x: e.clientX, y: e.clientY }; }
+document.addEventListener('pointerdown', e=>{
+  const st = _slideTap; if(!st) return;
+  if(performance.now() - st.t > 450 || Math.hypot(e.clientX - st.x, e.clientY - st.y) > 40){ _slideTap = null; return; }
+  _slideTap = null;
+  e.preventDefault(); e.stopPropagation(); _swallowClick = true;
+  toggleDoor(st.id);
+  if(!lookOnly) setTimeout(renderForm, 0);
+}, true);
+document.addEventListener('pointerup', e=>{ if(_swallowClick){ e.stopPropagation(); } }, true);
+document.addEventListener('click', e=>{ if(_swallowClick){ _swallowClick = false; e.preventDefault(); e.stopPropagation(); } }, true);
+document.addEventListener('click', e=>{
+  const mk = e.target.closest('[data-mkslide]'); if(mk){ convertToSliding(Number(mk.dataset.mkslide)); return; }
+  const rm = e.target.closest('[data-rmslide]'); if(rm){ removeSliding(Number(rm.dataset.rmslide)); }
+});
 /* ---------- Manijas ---------- */
 const HANDLE_TYPES = [
   { id:'barra',    name:'Barra tubular',     hint:'Tubo redondo sobre dos patas. La más usada.', cc:true },
@@ -6511,7 +7156,15 @@ function buildRailMeshes(d){
   const fixed = [], moving = [];
   [[d.latL,'izq'],[d.latR,'der']].forEach(([lat, side])=>{
     const lp = piecePosition(lat), ls = boxSize(lat);
-    const railH = Math.min(4.5, ls.sy*0.6);
+    const _rc = lat.rielRef ? rielById(lat.rielRef) : null;
+    if(_rc && _rc.montaje === 'bajo'){
+      const by = d.base ? piecePosition(d.base).y : lp.y, cz2 = lp.z + len/2;
+      const xb = side==='izq' ? lp.x + 1.2 : lp.x + ls.sx - 1.2;
+      const f2 = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.9, len), fixedMat); f2.position.set(xb, by - 0.45, cz2); fixed.push(f2);
+      const m2 = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.6, len), movMat); m2.position.set(xb, by - 0.3, cz2); moving.push(m2);
+      return;
+    }
+    const railH = Math.min(_rc && _rc.altoMM ? _rc.altoMM/10 : 4.5, ls.sy*0.9);
     const cy = lp.y + Math.min(ls.sy/2, railH/2 + 2);
     const half = clear/2;
     const xFixed = side==='izq' ? lp.x - clear + half/2 : lp.x + ls.sx + clear - half/2;
@@ -7229,6 +7882,140 @@ function T_doors(f, xa, xb, ya, yb, n, color, handle, hinge1){
   }
   return out;
 }
+// ===== PUERTAS CORREDIZAS =====
+// gap = hueco interior {x0,x1,y0,y1, front (cara de adelante), sideT, topT, botT}
+// modo 'dentro': van dentro del hueco en riel doble vía · 'fuera': por delante, tapan todo el mueble
+function makeSlidingDoors(gap, o){
+  const n = Math.max(2, Math.min(4, o.n || 2)), trasl = o.traslape != null ? o.traslape : 3, t = o.t || 1.5, sep = 1;
+  const fuera = o.modo === 'fuera';
+  const xa = fuera ? gap.x0 - (gap.sideT||0) : gap.x0, xb = fuera ? gap.x1 + (gap.sideT||0) : gap.x1;
+  const W = xb - xa;
+  const w = round2((W + (n-1)*trasl) / n);
+  const rielAbajo = fuera ? 0 : 1, rielArriba = fuera ? 0 : 1;   // lo que ocupa el riel dentro del hueco
+  const ya = fuera ? gap.y0 - (gap.botT||0) : gap.y0 + rielAbajo;
+  const h = round2((fuera ? (gap.y1 + (gap.topT||0)) : (gap.y1 - rielArriba)) - ya);
+  const setId = 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2,5);
+  const zFront = fuera ? round2(gap.front + sep + t + sep) : round2(gap.front - t);   // vía de adelante
+  const zBack  = fuera ? round2(gap.front + sep)           : round2(gap.front - 2*t - sep); // vía de atrás
+  const out = [];
+  for(let i=0;i<n;i++){
+    const front = i % 2 === 1;
+    const dir = (i < n/2) ? 1 : -1;            // las de la izquierda abren hacia la derecha y al revés
+    const d = newPiece();
+    Object.assign(d, {
+      name: `Puerta corrediza ${i+1}`, orientation:'vertical-front', w, h:round2(h), t,
+      x: round2(xa + i*(w - trasl)), y: round2(ya), z: front ? zFront : zBack,
+      color: o.color || d.color, canto:{ top:true, bottom:true, left:true, right:true },
+      isDoor:true, sliding:true, slideSet:setId, slideTrack: front ? 1 : 0, slideDir: dir, slideDist: round2(w - trasl),
+      slideModo: fuera ? 'fuera' : 'dentro', hinge: dir > 0 ? 'right' : 'left', doorOpen:false, posMode:'free',
+      handle: Object.assign({ type:'embutir', cc:128, pos:'centro', color:'negro' }, o.handle || {})
+    });
+    out.push(d);
+  }
+  return out;
+}
+// cuánto corre de verdad una corrediza: frena contra la manija de la otra puerta (o su manija contra el canto
+// de la otra), no se sale del juego y nunca queda completamente encima de la otra
+const SLIDE_STOP_FLUSH = 4;   // cm de tope del riel cuando no hay manija que frene
+function slideTravel(p){
+  const s = p.slideDir || 1, b = _bx(p);
+  const mates = pieces.filter(q=>q.sliding && q.slideSet && q.slideSet===p.slideSet && q.id!==p.id);
+  if(!mates.length) return Math.max(0, round1(p.slideDist || 0));
+  const all = [b, ...mates.map(_bx)];
+  const minX = Math.min(...all.map(a=>a.x0)), maxX = Math.max(...all.map(a=>a.x1));
+  let lim = s > 0 ? maxX - b.x1 : b.x0 - minX;                          // no se sale del juego
+  const lead = s > 0 ? b.x1 : b.x0;
+  const sticks = h => h && !['embutir','ninguna','perfil'].includes(h.type);   // manija que sobresale
+  const hx = q => { const bq = _bx(q); return q.hinge === 'left' ? bq.x1 - 5 : bq.x0 + 5; };  // a 5 cm del borde libre
+  const HW = 1.5;                                                         // medio grueso de la manija + holgura
+  let frenada = false;
+  mates.forEach(o=>{
+    if((o.slideTrack||0) === (p.slideTrack||0)) return;
+    const bo = _bx(o);
+    if(s > 0 ? bo.x1 <= b.x0 : bo.x0 >= b.x1) return;                     // no está en su camino
+    if((p.slideTrack||0) > (o.slideTrack||0)){                            // va adelante: la manija de la de atrás la frena
+      if(sticks(o.handle)){ const x = hx(o); if((x - lead)*s > -0.01){ lim = Math.min(lim, (x - s*HW - lead)*s); frenada = true; } }
+    } else {                                                              // va atrás: su manija choca con el canto de la de adelante
+      if(sticks(p.handle)){ const x = hx(p), edge = s > 0 ? bo.x0 : bo.x1; if((edge - x)*s > 0){ lim = Math.min(lim, (edge - s*0.5 - (x + s*HW))*s); frenada = true; } }
+    }
+  });
+  if(!frenada) lim = Math.min(lim, (p.slideDist || lim) - SLIDE_STOP_FLUSH);
+  else lim = Math.min(lim, p.slideDist || lim);
+  return Math.max(0, round1(lim));
+}
+// tablas frontales que forman un juego de corredizas con esta (mismo alto, pegadas o montadas, en vías distintas)
+function slidingCandidates(p0){
+  if(p0.orientation !== 'vertical-front' || p0.isDrawer || isHardware(p0) || p0.isFondo || p0.isGlass) return [p0];
+  const ok = q => q.orientation === 'vertical-front' && !q.isDrawer && !isHardware(q) && !q.isFondo && !q.isGlass && (!q.isDoor || q.sliding || q.id === p0.id);
+  const set = [p0], seen = new Set([p0.id]);
+  for(let i=0;i<set.length;i++){
+    const a = _bx(set[i]);
+    pieces.forEach(q=>{
+      if(seen.has(q.id) || !ok(q)) return;
+      const b = _bx(q);
+      const oy = Math.min(a.y1,b.y1) - Math.max(a.y0,b.y0);
+      if(oy < 0.8*Math.min(a.y1-a.y0, b.y1-b.y0) || Math.abs((a.y1-a.y0)-(b.y1-b.y0)) > 6) return;
+      if(Math.abs(a.z0 - b.z0) > 7) return;                                   // vías cercanas
+      if(Math.min(a.x1,b.x1) - Math.max(a.x0,b.x0) < -1.5) return;           // pegadas o montadas
+      seen.add(q.id); set.push(q);
+    });
+  }
+  return set;
+}
+function makeSlidingSet(list){
+  if(list.length < 2) return false;
+  list.sort((a,b)=>_bx(a).x0 - _bx(b).x0);
+  const setId = 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2,5);
+  const zs = [...new Set(list.map(q=>round1(_bx(q).z0)))].sort((a,b)=>a-b);
+  const n = list.length;
+  list.forEach((q,i)=>{
+    const b = _bx(q), nb = list[i+1] ? _bx(list[i+1]) : (list[i-1] ? _bx(list[i-1]) : null);
+    const over = nb ? Math.max(0, Math.min(b.x1,nb.x1) - Math.max(b.x0,nb.x0)) : 0;
+    const o = piecePosition(q); q.posMode = 'free'; q.attachTo = null; q.x = round2(o.x); q.y = round2(o.y); q.z = round2(o.z);
+    Object.assign(q, { isDoor:true, sliding:true, slideSet:setId, slideTrack: round1(b.z0) === zs[zs.length-1] && zs.length > 1 ? 1 : 0,
+      slideDir: (i < n/2) ? 1 : -1, slideDist: round2((b.x1 - b.x0) - over), doorOpen:false });
+    q.hinge = q.slideDir > 0 ? 'right' : 'left';
+    if(!q.handle) q.handle = { type:'embutir', cc:128, pos:'centro', color:'negro' };
+  });
+  return true;
+}
+function convertToSliding(id){
+  const p0 = pieces.find(x=>x.id===id); if(!p0) return;
+  const list = slidingCandidates(p0);
+  if(list.length < 2){ showToast('Necesito al menos 2 puertas pegadas o montadas, del mismo alto.', true); return; }
+  snapshot();
+  makeSlidingSet(list);
+  refreshAll();
+  showToast(`Listo: ${list.length} puertas corredizas. Doble clic para correrlas.`);
+}
+function removeSliding(id){
+  const p0 = pieces.find(x=>x.id===id); if(!p0 || !p0.sliding) return;
+  snapshot();
+  pieces.forEach(q=>{ if(q.slideSet && q.slideSet === p0.slideSet){ q.sliding = false; q.doorOpen = false; delete q.slideSet; } });
+  refreshAll();
+}
+// recorta lo que está dentro del hueco y estorba a las puertas (repisas, divisiones, maleteros)
+function clearForSliding(gap, doors){
+  const zLimit = Math.min(...doors.map(d=>d.z)) - 0.5;
+  let n = 0;
+  pieces.forEach(p=>{
+    if(p.isDoor || p.isDrawer || isHardware(p) || p.isFondo || p.isGlass) return;
+    const b = _bx(p);
+    const inside = b.x0 >= gap.x0 - 0.05 && b.x1 <= gap.x1 + 0.05 && b.y0 >= gap.y0 - 0.05 && b.y1 <= gap.y1 + 0.05;
+    if(!inside || b.z1 <= zLimit + 0.01) return;
+    const cut = round2(b.z1 - zLimit);
+    if(p.orientation === 'horizontal' && p.h - cut > 5){ p.h = round2(p.h - cut); n++; }
+    else if(p.orientation === 'vertical-side' && p.w - cut > 5){ p.w = round2(p.w - cut); n++; }
+  });
+  return n;
+}
+function T_sliding(f, xa, xb, ya, yb, n, color, handle){
+  const gap = { x0:xa, x1:xb, y0:ya, y1:yb, front:f.D, sideT:f.t, topT:f.t, botT:f.t };
+  const doors = makeSlidingDoors(gap, { n, color, handle, t:f.t, modo:'dentro' });
+  clearForSliding(gap, doors);
+  doors.forEach(d=> pieces.push(d));
+  return doors;
+}
 function T_rod(f, xa, xb, y){
   return tp({ name:'Colgadero', orientation:'vertical-front', w:round2(xb-xa), h:2.5, t:2.5, x:xa, y:round2(y-1.25), z:round2(f.D/2-1.25),
     color:'#9aa1a7', canto:CANTO_NONE(), isRod:true });
@@ -7428,6 +8215,19 @@ const TEMPLATES = [
       T_doors(f, f.x0, xd, f.y0, f.y1, 1, c2, h, 'left');
       T_doors(f, xr, f.x1, f.y0, f.y1, 2, c2, h);
     } },
+  { id:'closetCorredizo', name:'Clóset puertas corredizas', cat:'Alcoba', desc:'2 puertas corredizas: repisas a un lado, colgadero y maletero al otro.',
+    def:{ W:160, H:220, D:60, t:1.8, color:'#f3f2ee', color2:'#a5764c', zocalo:8 },
+    icon:TEMPLATE_ICON('<rect x="8" y="3" width="48" height="50"/><rect x="10" y="5" width="23" height="46"/><rect x="31" y="5" width="23" height="46"/><path d="M14 28h4M46 28h4"/>'),
+    build(f, c2){
+      const sd = round2(f.D - 2*f.t - 2);
+      const xd = round2(f.x0 + (f.x1 - f.x0 - f.t)/2);
+      const dv = T_division(f, xd, f.y0, f.y1, 'División'); if(dv) dv.w = sd;
+      T_even(f.y0, f.y1, 5, f.t).forEach((y,i)=> T_shelf(f, y, `Repisa ${i+1}`, sd, f.x0, xd));
+      const xr = round2(xd + f.t);
+      const mal = T_shelf(f, f.y1 - 40 - f.t, 'Maletero', sd, xr, f.x1);
+      T_rod(f, xr, f.x1, mal.y - 6);
+      T_sliding(f, f.x0, f.x1, f.y0, f.y1, 2, c2, { type:'embutir', cc:128, pos:'centro', color:'negro' });
+    } },
   { id:'closetAbierto', name:'Clóset abierto', cat:'Alcoba', desc:'Sin puertas, tipo vestier: torre de repisas, colgadero, maletero y zapatera.',
     def:{ W:120, H:200, D:50, t:1.8, color:'#c7ac85', color2:'#c7ac85', zocalo:6 },
     build(f){
@@ -7512,6 +8312,7 @@ const TEMPLATE_CATS = { armario2p:'Alcoba', armarioGav:'Alcoba', mesaNoche:'Alco
 TEMPLATES.forEach(t=>{ if(!t.cat) t.cat = TEMPLATE_CATS[t.id] || 'Otros'; });
 // fotos de cada plantilla (hechas con la misma app)
 const TEMPLATE_THUMBS = {
+  closetCorredizo:"data:image/webp;base64,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",
   armario2p:"data:image/webp;base64,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",
   armarioGav:"data:image/webp;base64,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",
   mesaNoche:"data:image/webp;base64,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",
@@ -7557,13 +8358,581 @@ function buildTemplate(tpl, v, replace){
   autoFitCamera();
 }
 
+
+/* ============================================================
+   LISTA DE CORTE EN PESTAÑAS
+============================================================ */
+let lcTab = 'pedido';
+try{ lcTab = localStorage.getItem('jank_lctab') || 'pedido'; }catch(e){}
+function setLcTab(t){
+  if(!document.querySelector(`.lc-pane[data-lp="${t}"]`)) t = 'pedido';
+  lcTab = t; try{ localStorage.setItem('jank_lctab', t); }catch(e){}
+  document.querySelectorAll('.lc-tabs [data-lt]').forEach(b=>b.classList.toggle('on', b.dataset.lt===t));
+  document.querySelectorAll('.lc-pane').forEach(p=>{ p.hidden = p.dataset.lp !== t; });
+  if(t === 'precio'){ renderHwPrices(); renderSale(); }
+}
+
+/* ============================================================
+   HERRAJES AUTOMÁTICOS (cantidades salen del mueble, el precio lo pones tú)
+============================================================ */
+let hwPrices = {};
+try{ hwPrices = JSON.parse(localStorage.getItem('jank_hw_prices') || '{}') || {}; }catch(e){ hwPrices = {}; }
+function hingesFor(h){ return h <= 90 ? 2 : (h <= 160 ? 3 : 4); }
+function hardwareItems(){
+  const out = [];
+  const add = (key, name, qty, unit)=>{ if(qty > 0) out.push({ key, name, qty: round2(qty), unit: unit || 'und' }); };
+  const doors = hingeDoors();
+  Object.keys(HINGE_TYPES).forEach(k=>{
+    const ds = doors.filter(d=>hingeTypeOf(d)===k);
+    const q = ds.reduce((s,d)=> s + hingeQtyOf(d)*(d.qty||1), 0);
+    if(q) out.push({ key:'bisagra-'+k, name:HINGE_TYPES[k].name, qty:q, unit:'und', loc: ds.map(d=>`${d.name} (${hingeQtyOf(d)}, ${d.hinge==='left'?'izq':'der'})`).join(' · ') });
+  });
+  const sl = pieces.filter(p=>p.isDoor && p.sliding);
+  if(sl.length){
+    add('kit-corrediza', 'Kit corredizo (ruedas y guías, por puerta)', sl.reduce((s,p)=>s+(p.qty||1),0));
+    const sets = {}; sl.forEach(p=>{ const b = _bx(p), k = p.slideSet || 'x'; if(!sets[k]) sets[k] = [b.x0, b.x1]; sets[k][0] = Math.min(sets[k][0], b.x0); sets[k][1] = Math.max(sets[k][1], b.x1); });
+    const m = Object.values(sets).reduce((s,v)=> s + (v[1]-v[0]), 0) / 100;
+    add('riel-corrediza', 'Riel doble vía, arriba y abajo (m)', round2(m*2), 'm');
+  }
+  const rl = {}, seen = new Set(), rlc = {};
+  pieces.forEach(p=>{ if(p.isDrawer && p.rielLen && !seen.has(p.drawerId)){
+    seen.add(p.drawerId);
+    const r = p.rielRef ? rielById(p.rielRef) : null;
+    if(r){ const k = r.id+'|'+p.rielLen; (rlc[k] = rlc[k] || { r, L:p.rielLen, n:0, locs:[] }).n++; const f = drawerParts(p.drawerId).face; rlc[k].locs.push(f ? f.name.replace(' · frente','') : p.drawerId); }
+    else rl[p.rielLen] = (rl[p.rielLen]||0) + 1;
+  } });
+  Object.keys(rl).sort((a,b)=>a-b).forEach(l=> add('riel-'+l, `Rieles de ${l} cm (par)`, rl[l], 'par'));
+  Object.values(rlc).forEach(o=>{
+    const pr = o.r.precios && o.r.precios[o.L] != null ? +o.r.precios[o.L] : null;
+    out.push({ key:'rielc-'+o.r.id+'-'+o.L, name:`Riel ${o.r.ref || ''} ${o.r.nombre} · ${o.L} cm (par)`.replace(/\s+/g,' '), qty:o.n, unit:'par', catPrice:pr, loc:o.locs.join(' · ') });
+    if(o.r.tornillos) out.push({ key:'tornillo-riel-'+o.r.id, name:`Tornillos del riel ${o.r.ref || o.r.nombre} (vienen con el riel)`, qty:o.n*o.r.tornillos, unit:'und', incluido:true });
+  });
+  const hd = {};
+  pieces.forEach(p=>{ if((p.drawerRole==='frente' || p.isDoor) && p.handle){ const k = handleLabel(p.handle); hd[k] = (hd[k]||0) + (p.qty||1); } });
+  Object.keys(hd).forEach(k=> add('manija-'+k, k, hd[k]));
+  add('rodachin', 'Rodachines', pieces.filter(p=>p.isCaster).reduce((s,p)=>s+(p.qty||1), 0));
+  const rods = pieces.filter(p=>p.isRod);
+  add('tubo', 'Tubo colgadero (m)', round2(rods.reduce((s,p)=> s + p.w*(p.qty||1), 0)/100), 'm');
+  add('soporte-tubo', 'Soportes de tubo', rods.reduce((s,p)=> s + 2*(p.qty||1), 0));
+  const gl = glassList();
+  add('separador', 'Separadores de vidrio', gl.sep || 0);
+  let holes = 0; try{ const plan = computeDrillPlan(); Object.values(plan).forEach(e=> holes += e.holes.length); }catch(e){}
+  add('tornillo', 'Tornillos de armado (aprox.)', holes);
+  out.forEach(it=>{
+    let pr = hwPrices[it.key];
+    if(pr == null && /^bisagra-/.test(it.key)) pr = hwPrices.bisagra;          // precio viejo de "Bisagras"
+    if(pr == null && it.catPrice != null) pr = it.catPrice;                       // precio del catálogo
+    it.price = it.incluido ? 0 : (+pr || 0); it.total = it.price * it.qty;
+  });
+  return out;
+}
+function hwTotal(){ return hardwareItems().reduce((s,it)=>s+it.total, 0); }
+function renderHwPrices(){
+  const box = document.getElementById('hwPriceBox'); if(!box) return;
+  const items = hardwareItems();
+  if(!items.length){ box.innerHTML = '<div class="lc-note">Este mueble no lleva herrajes.</div>'; return; }
+  box.innerHTML = `<table class="hw-tbl"><tbody>
+    ${items.map(it=>`<tr><td>${esc(it.name)}${it.loc ? `<br><small style="color:var(--text-dim);">${esc(it.loc)}</small>` : ''}</td><td class="q">${it.qty}</td>
+      <td class="pr">${it.incluido ? '<small>incluidos</small>' : `<input type="number" min="0" step="100" data-hwp="${esc(it.key)}" value="${it.price||''}" placeholder="$ c/u">`}</td>
+      <td class="st" data-hwt="${esc(it.key)}">${it.price ? money(it.total) : '—'}</td></tr>`).join('')}
+    <tr class="tot"><td colspan="3">Total herrajes</td><td class="st" id="hwTot">${money(items.reduce((s,it)=>s+it.total,0))}</td></tr>
+  </tbody></table>`;
+  box.querySelectorAll('[data-hwp]').forEach(inp=> inp.addEventListener('input', ()=>{
+    hwPrices[inp.dataset.hwp] = parseFloat(inp.value) || 0;
+    try{ localStorage.setItem('jank_hw_prices', JSON.stringify(hwPrices)); }catch(e){}
+    const it2 = hardwareItems();
+    it2.forEach(it=>{ const td = box.querySelector(`[data-hwt="${CSS.escape(it.key)}"]`); if(td) td.textContent = it.price ? money(it.total) : '—'; });
+    document.getElementById('hwTot').textContent = money(it2.reduce((s,it)=>s+it.total,0));
+    updateSaleNumbers();
+  }));
+}
+
+/* ============================================================
+   PRECIO PARA EL CLIENTE
+   material + herrajes + mano de obra + otros, más tu ganancia
+============================================================ */
+let saleCfg = { gan: 40, redondeo: true, negocio: '', tel: '' };
+try{ Object.assign(saleCfg, JSON.parse(localStorage.getItem('jank_sale') || '{}')); }catch(e){}
+let saleProj = { mo: 0, otros: 0 };   // va con cada proyecto
+function saveSaleCfg(){ try{ localStorage.setItem('jank_sale', JSON.stringify(saleCfg)); }catch(e){} }
+function saleNumbers(){
+  const mat = quoteData().costo.total, hw = hwTotal();
+  const costo = mat + hw + (+saleProj.mo||0) + (+saleProj.otros||0);
+  let precio = costo * (1 + (+saleCfg.gan||0)/100);
+  if(saleCfg.redondeo && precio > 0) precio = Math.ceil(precio/1000)*1000;
+  return { mat, hw, mo:+saleProj.mo||0, otros:+saleProj.otros||0, costo, precio, gan: precio - costo };
+}
+function renderSale(){
+  const box = document.getElementById('saleBox'); if(!box) return;
+  if(!pieces.some(p=>!isHardware(p))){ box.innerHTML = ''; return; }
+  box.innerHTML = `<div class="sale">
+    <div class="sale-grid">
+      <div class="field"><label>Mano de obra ($)</label><input type="number" min="0" step="1000" id="sl-mo" value="${saleProj.mo||''}" placeholder="0"></div>
+      <div class="field"><label>Otros: transporte, etc. ($)</label><input type="number" min="0" step="1000" id="sl-otros" value="${saleProj.otros||''}" placeholder="0"></div>
+      <div class="field"><label>Tu ganancia (%)</label><input type="number" min="0" step="5" id="sl-gan" value="${saleCfg.gan}"></div>
+    </div>
+    <div class="sale-sum" id="sl-sum"></div>
+    <div class="sale-big"><span>Precio de venta</span><b id="sl-precio">$0</b></div>
+    <label class="nest-opt" style="margin-top:6px;"><input type="checkbox" id="sl-red" ${saleCfg.redondeo?'checked':''}> Redondear a miles</label>
+    <details style="margin-top:8px;"><summary style="cursor:pointer;font-size:12.5px;font-weight:600;color:#6b6259;">Datos de tu negocio (salen en la cotización)</summary>
+      <div class="sale-biz">
+        <div class="field"><label>Nombre del negocio</label><input type="text" id="sl-neg" value="${esc(saleCfg.negocio||'')}" placeholder="Tu negocio"></div>
+        <div class="field"><label>Teléfono / WhatsApp</label><input type="text" id="sl-tel" value="${esc(saleCfg.tel||'')}" placeholder="300 000 0000"></div>
+      </div>
+    </details>
+    <div class="sale-actions">
+      <button class="primary btn-big" id="sl-img">⬇ Cotización para el cliente (imagen)</button>
+      <button class="ghost btn-big" id="sl-copy">Copiar para WhatsApp</button>
+    </div>
+  </div>`;
+  const num = id => parseFloat(document.getElementById(id).value) || 0;
+  const onP = ()=>{ saleProj.mo = num('sl-mo'); saleProj.otros = num('sl-otros'); if(typeof scheduleAutosave === 'function') scheduleAutosave(); updateSaleNumbers(); };
+  ['sl-mo','sl-otros'].forEach(id=> document.getElementById(id).addEventListener('input', onP));
+  document.getElementById('sl-gan').addEventListener('input', ()=>{ saleCfg.gan = num('sl-gan'); saveSaleCfg(); updateSaleNumbers(); });
+  document.getElementById('sl-red').addEventListener('change', e=>{ saleCfg.redondeo = e.target.checked; saveSaleCfg(); updateSaleNumbers(); });
+  document.getElementById('sl-neg').addEventListener('input', e=>{ saleCfg.negocio = e.target.value; saveSaleCfg(); });
+  document.getElementById('sl-tel').addEventListener('input', e=>{ saleCfg.tel = e.target.value; saveSaleCfg(); });
+  document.getElementById('sl-img').addEventListener('click', downloadClientQuote);
+  document.getElementById('sl-copy').addEventListener('click', copyClientQuote);
+  updateSaleNumbers();
+}
+function updateSaleNumbers(){
+  const el = document.getElementById('sl-sum'); if(!el) return;
+  const n = saleNumbers();
+  el.innerHTML = `<div><span>Material y corte</span><b>${money(n.mat)}</b></div>
+    <div><span>Herrajes</span><b>${money(n.hw)}</b></div>
+    <div><span>Mano de obra</span><b>${money(n.mo)}</b></div>
+    ${n.otros ? `<div><span>Otros</span><b>${money(n.otros)}</b></div>` : ''}
+    <div style="border-top:1px solid var(--line);margin-top:4px;padding-top:4px;"><span>Te cuesta</span><b>${money(n.costo)}</b></div>
+    <div class="sale-gan"><span>Te ganas</span><b>${money(n.gan)}</b></div>`;
+  document.getElementById('sl-precio').textContent = money(n.precio);
+}
+// lo que incluye el mueble, en palabras para el cliente
+function saleIncludes(){
+  const inc = [];
+  const nDr = new Set(pieces.filter(p=>p.isDrawer).map(p=>p.drawerId)).size;
+  const nDo = pieces.filter(p=>p.isDoor && !p.sliding).reduce((s,p)=>s+(p.qty||1),0);
+  const nSl = pieces.filter(p=>p.isDoor && p.sliding).reduce((s,p)=>s+(p.qty||1),0);
+  const nCa = pieces.filter(p=>p.isCaster).reduce((s,p)=>s+(p.qty||1),0);
+  const nRod = pieces.filter(p=>p.isRod).length;
+  const nShelf = pieces.filter(p=>p.orientation==='horizontal' && /entrepa|repisa/i.test(p.name) && !p.isGlass).reduce((s,p)=>s+(p.qty||1),0);
+  const gl = glassList();
+  if(nDr) inc.push(`${nDr} gaveta${nDr>1?'s':''} con rieles`);
+  if(nDo) inc.push(`${nDo} puerta${nDo>1?'s':''} con bisagras`);
+  if(nSl) inc.push(`${nSl} puertas corredizas con riel`);
+  if(nShelf) inc.push(`${nShelf} entrepaño${nShelf>1?'s':''}`);
+  if(gl.list.length) inc.push(`vidrio templado ${round1(gl.list[0].t*10)} mm`);
+  if(nRod) inc.push('tubo colgadero');
+  if(nCa) inc.push(`${nCa} rodachines`);
+  const hd = {}; pieces.forEach(p=>{ if((p.drawerRole==='frente' || p.isDoor) && p.handle && p.handle.type !== 'ninguna') hd[handleLabel(p.handle)] = 1; });
+  if(Object.keys(hd).length) inc.push('manijas');
+  return inc;
+}
+function saleColors(){
+  const area = {};
+  pieces.filter(p=>!isHardware(p) && !p.isGlass && !p.isFondo).forEach(p=>{ area[p.color] = (area[p.color]||0) + p.w*p.h*(p.qty||1); });
+  return Object.entries(area).sort((a,b)=>b[1]-a[1]).slice(0,2).map(x=>finishName(x[0]).replace(/\s*\(.*\)\s*/,''));
+}
+// foto del mueble para la cotización (sin cotas ni cuadrícula)
+function productShot(W, H){
+  try{
+    if(!renderer || !pieces.length) return null;
+    const src = renderer.domElement;
+    const prev = { sel:selectedId, cotas:renderOpts.cotas, grid: gridHelper ? gridHelper.visible : false, floor: floorMesh ? floorMesh.visible : false };
+    selectedId = null; renderOpts.cotas = false; if(gridHelper) gridHelper.visible = false; if(floorMesh) floorMesh.visible = false;
+    rebuild3D();
+    const b = overallBounds();
+    const c = new THREE.Vector3((b.minX+b.maxX)/2, (b.minY+b.maxY)/2, (b.minZ+b.maxZ)/2);
+    const r = 0.5*Math.hypot(b.maxX-b.minX, b.maxY-b.minY, b.maxZ-b.minZ) || 50;
+    const cam = camera.clone(); cam.aspect = src.width/src.height;
+    let half = cam.fov*Math.PI/360; const want = W/H; if(cam.aspect < want) half = Math.atan(Math.tan(half)*cam.aspect/want);
+    const dist = r / Math.sin(half) * 0.93;
+    const dir = new THREE.Vector3(0.55, 0.32, 1).normalize();
+    cam.position.copy(c).addScaledVector(dir, dist); cam.near = Math.max(0.5, dist - r*2); cam.far = dist + r*4;
+    cam.lookAt(c); cam.updateProjectionMatrix();
+    const prevClear = renderer.getClearAlpha();
+    renderer.setClearAlpha(0);
+    renderer.shadowMap.needsUpdate = true;
+    renderer.render(scene, cam);
+    const out = document.createElement('canvas'); out.width = W; out.height = H;
+    const g = out.getContext('2d');
+    let sw = src.width, sh = src.height;
+    if(sw/sh > want) sw = sh*want; else sh = sw/want;
+    g.drawImage(src, (src.width-sw)/2, (src.height-sh)/2, sw, sh, 0, 0, W, H);
+    renderer.setClearAlpha(prevClear);
+    selectedId = prev.sel; renderOpts.cotas = prev.cotas; if(gridHelper) gridHelper.visible = prev.grid; if(floorMesh) floorMesh.visible = prev.floor;
+    rebuild3D(); markDirty();
+    return out;
+  }catch(e){ return null; }
+}
+function clientQuoteCanvas(){
+  const n = saleNumbers();
+  const name = (typeof cloudProjectName !== 'undefined' && cloudProjectName && cloudProjectName !== 'Diseño sin título') ? cloudProjectName : 'Mueble a la medida';
+  const b = overallBounds(pieces.filter(p=>!isHardware(p) || p.isCaster));
+  const dims = `${round1(b.maxX-b.minX)} ancho × ${round1(b.maxY-b.minY)} alto × ${round1(b.maxZ-b.minZ)} fondo (cm)`;
+  const inc = saleIncludes(), cols = saleColors();
+  const W = 1080, S = 1, shotH = 560;
+  const shot = productShot(W - 120, shotH);
+  const lines = Math.ceil(inc.length / 2);
+  const H = 185 + shotH + 40 + 70 + 40 + lines*40 + 210 + 90;
+  const c = document.createElement('canvas'); c.width = W*S; c.height = H*S;
+  const g = c.getContext('2d'); g.scale(S,S);
+  const sans = 'Arial, Helvetica, sans-serif';
+  g.fillStyle = '#ffffff'; g.fillRect(0,0,W,H);
+  // encabezado
+  g.fillStyle = '#2a2420'; g.fillRect(0,0,W,110);
+  g.fillStyle = '#ffffff'; g.font = `bold 38px ${sans}`; g.textBaseline = 'middle';
+  g.fillText(saleCfg.negocio || 'Cotización', 60, 48);
+  g.font = `20px ${sans}`; g.fillStyle = '#d9c8b4';
+  g.fillText([saleCfg.tel ? '☎ ' + saleCfg.tel : '', new Date().toLocaleDateString('es-CO')].filter(Boolean).join('   ·   '), 60, 84);
+  let y = 185;
+  g.fillStyle = '#2a2420'; g.font = `bold 36px ${sans}`; g.textBaseline = 'alphabetic'; g.fillText(name, 60, y - 22);
+  // foto
+  const bg = g.createLinearGradient(0, y, 0, y + shotH); bg.addColorStop(0,'#f4f1ec'); bg.addColorStop(1,'#e6e1d9');
+  g.fillStyle = bg; roundRect(g, 60, y + 10, W - 120, shotH, 18); g.fill();
+  if(shot) g.drawImage(shot, 60, y + 10);
+  y += shotH + 60;
+  g.fillStyle = '#6b6259'; g.font = `22px ${sans}`; g.fillText('Medidas: ' + dims, 60, y);
+  y += 38; if(cols.length){ g.fillText('Color: ' + cols.join(' y '), 60, y); }
+  y += 50;
+  if(inc.length){
+    g.fillStyle = '#2a2420'; g.font = `bold 24px ${sans}`; g.fillText('Incluye', 60, y); y += 38;
+    g.font = `22px ${sans}`; g.fillStyle = '#4d463f';
+    inc.forEach((t,i)=>{ const col = i % 2, row = Math.floor(i/2); g.fillStyle = '#a35a2e'; g.fillText('✓', 60 + col*480, y + row*40); g.fillStyle = '#4d463f'; g.fillText(t, 92 + col*480, y + row*40); });
+    y += lines*40 + 10;
+  }
+  // precio
+  g.fillStyle = '#fbf3ea'; roundRect(g, 60, y, W - 120, 130, 18); g.fill();
+  g.fillStyle = '#6b6259'; g.font = `bold 24px ${sans}`; g.fillText('Precio', 96, y + 76);
+  g.fillStyle = '#a35a2e'; g.font = `bold 64px ${sans}`; g.textAlign = 'right'; g.fillText(money(n.precio), W - 96, y + 88); g.textAlign = 'left';
+  y += 175;
+  g.fillStyle = '#9a9088'; g.font = `18px ${sans}`; g.fillText('Precio válido por 15 días · Fabricado en melamina con tapacanto', 60, y);
+  return c;
+}
+function roundRect(g, x, y, w, h, r){ g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r); g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath(); }
+function downloadClientQuote(){
+  const c = clientQuoteCanvas(); if(!c) return;
+  const nm = ((typeof cloudProjectName !== 'undefined' && cloudProjectName) ? cloudProjectName : 'cotizacion').replace(/[^\w\-áéíóúñÁÉÍÓÚÑ ]+/g,'').trim().replace(/\s+/g,'-') || 'cotizacion';
+  const a = document.createElement('a'); a.href = c.toDataURL('image/png'); a.download = nm + '-cotizacion.png';
+  document.body.appendChild(a); a.click(); a.remove();
+  showToast('Cotización descargada.');
+}
+function copyClientQuote(){
+  const n = saleNumbers();
+  const name = (typeof cloudProjectName !== 'undefined' && cloudProjectName && cloudProjectName !== 'Diseño sin título') ? cloudProjectName : 'Mueble a la medida';
+  const b = overallBounds(pieces.filter(p=>!isHardware(p) || p.isCaster));
+  const inc = saleIncludes(), cols = saleColors();
+  let t = `*${name}*\nMedidas: ${round1(b.maxX-b.minX)} × ${round1(b.maxY-b.minY)} × ${round1(b.maxZ-b.minZ)} cm (ancho × alto × fondo)\n`;
+  if(cols.length) t += `Color: ${cols.join(' y ')}\n`;
+  if(inc.length) t += `Incluye: ${inc.join(', ')}\n`;
+  t += `\n*Precio: ${money(n.precio)}*`;
+  if(saleCfg.negocio) t += `\n\n${saleCfg.negocio}${saleCfg.tel ? ' · ' + saleCfg.tel : ''}`;
+  const ok = ()=> showToast('Copiado: pégalo en WhatsApp.');
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok).catch(()=>alert(t)); else alert(t);
+}
+
+/* ============================================================
+   AVISO DE FIRMEZA
+   revisa si una pata solo está amarrada arriba o si una caja no tiene fondo
+============================================================ */
+function _bx(p){ const s = boxSize(p), o = piecePosition(p); return { x0:o.x, x1:o.x+s.sx, y0:o.y, y1:o.y+s.sy, z0:o.z, z1:o.z+s.sz }; }
+function _touch(a, b){
+  const T = 0.35, ov = (a0,a1,b0,b1)=> Math.min(a1,b1) - Math.max(a0,b0);
+  const ox = ov(a.x0,a.x1,b.x0,b.x1), oy = ov(a.y0,a.y1,b.y0,b.y1), oz = ov(a.z0,a.z1,b.z0,b.z1);
+  const pos = [ox,oy,oz].filter(v=>v > 0.4).length, near = [ox,oy,oz].filter(v=>v > -T).length;
+  return near === 3 && pos >= 2;
+}
+let _firmKey = '', _firmRes = [];
+function computeFirmness(){
+  const key = JSON.stringify(pieces.map(p=>[p.id,p.w,p.h,p.t,p.x,p.y,p.z,p.orientation,p.posMode,p.attachTo,p.offsetA,p.offsetB,p.attachFace]));
+  if(key === _firmKey) return _firmRes;
+  _firmKey = key;
+  const struct = pieces.filter(p=>!isHardware(p) && !p.isGlass && !p.isDoor && !p.isDrawer);
+  const B = new Map(struct.map(p=>[p.id, _bx(p)]));
+  const sides = struct.filter(p=>p.orientation==='vertical-side' && p.h >= 40);
+  const out = [];
+  const flagged = new Set();
+  // 1) lateral que solo está amarrado arriba: se mece de lado
+  sides.forEach(S=>{
+    const bs = B.get(S.id);
+    const links = struct.filter(L=> L.id!==S.id && L.orientation!=='vertical-side' && _touch(B.get(L.id), bs)
+      && sides.some(S2=> S2.id!==S.id && Math.abs(B.get(S2.id).x0 - bs.x0) > 5 && _touch(B.get(L.id), B.get(S2.id))));
+    if(!links.length) return;
+    const lowLimit = bs.y0 + (bs.y1 - bs.y0) * 0.4;
+    const low = links.some(L=> B.get(L.id).y0 <= lowLimit);
+    const backPanel = struct.some(L=> L.orientation==='vertical-front' && (B.get(L.id).y1 - B.get(L.id).y0) >= 0.6*(bs.y1-bs.y0) && _touch(B.get(L.id), bs));
+    if(!low && !backPanel){
+      flagged.add(S.id);
+      out.push({ ids:[S.id], titulo:`${S.name}: se puede mecer de lado`, por:'Solo está amarrado arriba.', fix:'Ponle un travesaño abajo, atrás, que lo una al resto.' });
+    }
+  });
+  // 2) caja entre dos laterales sin fondo ni amarres atrás: se descuadra
+  const done = new Set();
+  sides.forEach(S1=> sides.forEach(S2=>{
+    if(S1.id >= S2.id) return;
+    const a = B.get(S1.id), b = B.get(S2.id);
+    const gap = Math.max(a.x0, b.x0) - Math.min(a.x1, b.x1);
+    if(gap < 20) return;
+    const shelves = struct.filter(L=> L.orientation==='horizontal' && _touch(B.get(L.id), a) && _touch(B.get(L.id), b));
+    if(shelves.length < 2) return;
+    if(flagged.has(S1.id) || flagged.has(S2.id)) return;
+    const zBack = Math.max(a.z0, b.z0), depth = Math.min(a.z1, b.z1) - zBack, hMin = Math.min(a.y1-a.y0, b.y1-b.y0);
+    if(hMin < 55) return; // muebles bajitos casi no se descuadran
+    const x0 = Math.min(a.x1, b.x1), x1 = Math.max(a.x0, b.x0);
+    const backs = struct.filter(L=>{
+      if(L.orientation!=='vertical-front') return false;
+      const l = B.get(L.id);
+      if(l.z1 > zBack + depth*0.25) return false;                 // tiene que estar atrás
+      return l.x0 <= x0 + 2 && l.x1 >= x1 - 2;                    // de lado a lado
+    });
+    const tall = backs.some(L=> (B.get(L.id).y1 - B.get(L.id).y0) >= 0.5*hMin);
+    const mid = Math.min(a.y0,b.y0) + hMin/2;
+    const top = backs.some(L=> B.get(L.id).y1 > mid), bottom = backs.some(L=> B.get(L.id).y0 < mid);
+    if(!tall && !(top && bottom)){
+      const k = S1.id+'-'+S2.id; if(done.has(k)) return; done.add(k);
+      out.push({ ids:[S1.id, S2.id], titulo:`Caja entre ${S1.name} y ${S2.name}: se puede descuadrar`, por:'No tiene fondo ni amarre atrás arriba y abajo.', fix:'Ponle fondo de MDF o un amarre atrás arriba.' });
+    }
+  }));
+  // 3) muy alto y angosto: se puede voltear
+  const body = pieces.filter(p=>!p.isDoor && !p.isGlass && !p.isRod);
+  if(body.length){
+    const o = overallBounds(body), H = o.maxY - o.minY, D = Math.min(o.maxZ - o.minZ, o.maxX - o.minX);
+    if(H >= 120 && D > 0 && H / D > 4.5) out.push({ ids:[], titulo:'Alto y angosto: se puede voltear', por:`Mide ${round1(H)} cm de alto y solo ${round1(D)} cm de base.`, fix:'Amárralo a la pared con una escuadra.' });
+  }
+  _firmRes = out;
+  return out;
+}
+function updateFirmChip(){
+  const host = document.getElementById('bottomLeft'); if(!host) return;
+  let chip = document.getElementById('firmChip');
+  if(!chip){ chip = document.createElement('button'); chip.id = 'firmChip'; chip.type = 'button'; chip.className = 'firm-chip'; host.appendChild(chip);
+    chip.addEventListener('click', e=>{ e.stopPropagation(); toggleFirmPop(); }); }
+  const hasStruct = pieces.filter(p=>!isHardware(p)).length >= 4;
+  if(!hasStruct){ chip.style.display = 'none'; closeFirmPop(); return; }
+  chip.style.display = '';
+  const r = computeFirmness();
+  chip.classList.toggle('ok', !r.length);
+  chip.innerHTML = r.length ? `⚠ Firmeza: ${r.length} ${r.length===1?'consejo':'consejos'}` : '✓ Firme';
+  chip.title = r.length ? 'Toca para ver dónde reforzar' : 'No vemos partes flojas';
+  const pop = document.getElementById('firmPop'); if(pop) fillFirmPop(pop);
+}
+function fillFirmPop(pop){
+  const r = computeFirmness();
+  if(!r.length){ closeFirmPop(); return; }
+  pop.innerHTML = `<h4>Para que quede firme</h4>` + r.map((it,i)=>`<button type="button" class="firm-item" data-fi="${i}"><b>${esc(it.titulo)}</b><span>${esc(it.por)}</span><i>→ ${esc(it.fix)}</i></button>`).join('');
+  pop.querySelectorAll('[data-fi]').forEach(b=> b.addEventListener('click', ()=>{
+    const it = r[+b.dataset.fi]; if(it && it.ids.length){ selectPiece(it.ids[0]); }
+  }));
+}
+function toggleFirmPop(){
+  if(document.getElementById('firmPop')){ closeFirmPop(); return; }
+  if(!computeFirmness().length) return;
+  const pop = document.createElement('div'); pop.id = 'firmPop'; pop.className = 'firm-pop';
+  document.getElementById('bottomLeft').appendChild(pop); fillFirmPop(pop);
+  setTimeout(()=> document.addEventListener('click', _firmOutside), 0);
+}
+function _firmOutside(e){ const pop = document.getElementById('firmPop'), chip = document.getElementById('firmChip'); if(pop && !pop.contains(e.target) && e.target !== chip) closeFirmPop(); }
+function closeFirmPop(){ const pop = document.getElementById('firmPop'); if(pop) pop.remove(); document.removeEventListener('click', _firmOutside); }
+
+/* ============================================================
+   CAMBIAR MEDIDAS DE UN MUEBLE ENTERO (estira sin cambiar el grosor)
+   Se corta el mueble por un hueco: lo de un lado se corre y lo que cruza se alarga.
+============================================================ */
+function freeAllPieces(){
+  const pos = new Map(pieces.map(p=>[p.id, piecePosition(p)]));
+  pieces.forEach(p=>{ const o = pos.get(p.id); p.x = round2(o.x); p.y = round2(o.y); p.z = round2(o.z); p.posMode = 'free'; p.attachTo = null; });
+}
+function stretchAxis(axis, delta){
+  if(!delta) return true;
+  const A = { x:['x0','x1','sx','x'], y:['y0','y1','sy','y'], z:['z0','z1','sz','z'] }[axis];
+  const dimField = (p)=>{ // qué medida de la pieza crece en ese eje
+    const o = p.orientation;
+    if(axis==='x') return o==='vertical-side' ? null : 'w';
+    if(axis==='y') return o==='horizontal' ? null : 'h';
+    return o==='vertical-front' ? null : (o==='vertical-side' ? 'w' : 'h');
+  };
+  const list = pieces.map(p=>({ p, b:_bx(p) }));
+  const lo = Math.min(...list.map(o=>o.b[A[0]])), hi = Math.max(...list.map(o=>o.b[A[1]]));
+  // partes que no se pueden estirar en este eje (tablas de canto)
+  const blocks = list.filter(o=> !dimField(o.p) && !o.p.isCaster).map(o=>[o.b[A[0]], o.b[A[1]]]).sort((a,b)=>a[0]-b[0]);
+  // el hueco más grande entre ellas
+  let best = null, cur = lo;
+  const merged = [];
+  blocks.forEach(bk=>{ if(merged.length && bk[0] <= merged[merged.length-1][1] + 0.01) merged[merged.length-1][1] = Math.max(merged[merged.length-1][1], bk[1]); else merged.push([bk[0], bk[1]]); });
+  merged.forEach(bk=>{ if(bk[0] - cur > (best ? best[1]-best[0] : 0)) best = [cur, bk[0]]; cur = Math.max(cur, bk[1]); });
+  if(hi - cur > (best ? best[1]-best[0] : 0)) best = [cur, hi];
+  if(!best || best[1] - best[0] < 1) best = [lo, hi];
+  const cut = (best[0] + best[1]) / 2;
+  // no se deja encoger más de lo que mide el hueco
+  if(delta < 0 && -delta > (best[1] - best[0]) - 2) return false;
+  list.forEach(({p, b})=>{
+    if(b[A[0]] >= cut - 0.001){
+      p[A[3]] = round2(p[A[3]] + delta);
+      if(p.isFondo){ if(axis==='x' && p.frameOX != null) p.frameOX = round2(p.frameOX + delta); if(axis==='y' && p.frameOY != null) p.frameOY = round2(p.frameOY + delta); }
+    }
+    else if(b[A[1]] > cut + 0.001){
+      const f = dimField(p); if(!f) return;
+      p[f] = round2(p[f] + delta);
+      // el fondo recuerda el tamaño de su marco: se actualiza igual
+      if(p.isFondo){ if(axis==='x' && p.frameAncho != null) p.frameAncho = round2(p.frameAncho + delta); if(axis==='y' && p.frameAlto != null) p.frameAlto = round2(p.frameAlto + delta); }
+    }
+  });
+  // corredizas: el ancho se reparte entre las puertas del juego (no se estira solo una)
+  if(axis==='x'){
+    const sets = {}; pieces.forEach(p=>{ if(p.isDoor && p.sliding && p.slideSet) (sets[p.slideSet] = sets[p.slideSet] || []).push(p); });
+    Object.values(sets).forEach(ds=>{
+      ds.sort((a,b)=>a.x-b.x);
+      const x0 = ds[0].x, x1 = Math.max(...ds.map(d=>d.x + d.w)), n = ds.length;
+      const trasl = n > 1 ? round2(ds[0].x + ds[0].w - ds[1].x) : 0;
+      const w = round2((x1 - x0 + (n-1)*trasl)/n);
+      ds.forEach((d,i)=>{ d.w = w; d.x = round2(x0 + i*(w - trasl)); d.slideDist = round2(w - trasl); });
+    });
+  }
+  if(axis==='z'){ // rieles = largo del lateral de la gaveta, a múltiplo de 5
+    const lat = {}; pieces.forEach(p=>{ if(p.isDrawer && (p.drawerRole==='lat-izq' || p.drawerRole==='lat-der')) lat[p.drawerId] = p.w; });
+    pieces.forEach(p=>{ if(p.isDrawer && p.rielLen && lat[p.drawerId]) p.rielLen = Math.max(25, Math.floor(lat[p.drawerId]/5)*5); });
+  }
+  return true;
+}
+function resizeWholeFurniture(W, H, D){
+  freeAllPieces();
+  const body = pieces.filter(p=>!p.isRod);
+  const b = overallBounds(body);
+  const ok = [ ['x', W - (b.maxX-b.minX)], ['y', H - (b.maxY-b.minY)], ['z', D - (b.maxZ-b.minZ)] ].every(([ax, d])=> stretchAxis(ax, round2(d)));
+  return ok;
+}
+
+/* ============================================================
+   MIS MUEBLES: guardar un diseño propio como plantilla
+============================================================ */
+function myFurnLocal(){ try{ return JSON.parse(localStorage.getItem('jank_mis_muebles') || '[]') || []; }catch(e){ return []; } }
+function myFurnSaveLocal(list){ try{ localStorage.setItem('jank_mis_muebles', JSON.stringify(list)); return true; }catch(e){ return false; } }
+function myFurnRef(){ return (cloudUser && fbDb) ? fbDb.ref('usuarios/' + cloudUser.uid + '/misMuebles') : null; }
+function myFurnLoad(){
+  const local = myFurnLocal();
+  const ref = myFurnRef();
+  if(!ref) return Promise.resolve(local);
+  return ref.once('value').then(snap=>{
+    const cloud = []; snap.forEach(ch=>{ const v = ch.val(); if(v && v.data) cloud.push(Object.assign({ id: ch.key }, v)); });
+    const ids = new Set(cloud.map(x=>x.id));
+    return cloud.concat(local.filter(x=>!ids.has(x.id))).sort((a,b)=>(b.t||0)-(a.t||0));
+  }).catch(()=>local);
+}
+function mainColors(list){
+  const body = {}, front = {};
+  list.filter(p=>!isHardware(p) && !p.isGlass && !p.isFondo).forEach(p=>{
+    const tgt = (p.isDoor || p.drawerRole==='frente') ? front : body;
+    tgt[p.color] = (tgt[p.color]||0) + p.w*p.h*(p.qty||1);
+  });
+  const top = o=> Object.entries(o).sort((a,b)=>b[1]-a[1]).map(x=>x[0])[0] || null;
+  return { body: top(body), front: top(front) };
+}
+function saveAsMyFurniture(){
+  if(!pieces.some(p=>!isHardware(p))){ showToast('Primero arma un mueble.', true); return; }
+  const def = (typeof cloudProjectName !== 'undefined' && cloudProjectName && cloudProjectName !== 'Diseño sin título') ? cloudProjectName : 'Mi mueble';
+  const name = prompt('Nombre para guardarlo en "Mis muebles":', def);
+  if(name === null) return;
+  const nm = (name || def).trim().slice(0, 60) || def;
+  const b = overallBounds(pieces.filter(p=>!p.isRod));
+  const item = { id: 'm' + Date.now().toString(36), name: nm, t: Date.now(), thumb: makeThumb() || '',
+    W: round1(b.maxX-b.minX), H: round1(b.maxY-b.minY), D: round1(b.maxZ-b.minZ),
+    data: JSON.parse(JSON.stringify({ version:2, pieces, nextId, groups, nextGroupId })) };
+  const list = myFurnLocal(); list.unshift(item);
+  if(!myFurnSaveLocal(list)){ list.pop(); myFurnSaveLocal(list.filter(x=>x.id!==item.id).slice(0, 30).concat([])); }
+  const ref = myFurnRef();
+  if(ref) ref.child(item.id).set({ name:item.name, t:item.t, thumb:item.thumb, W:item.W, H:item.H, D:item.D, data:JSON.stringify(item.data) }).catch(()=>{});
+  showToast(`"${nm}" guardado en Mis muebles.`);
+}
+function deleteMyFurniture(id){
+  myFurnSaveLocal(myFurnLocal().filter(x=>x.id!==id));
+  const ref = myFurnRef(); if(ref) ref.child(id).remove().catch(()=>{});
+}
+function renderMyFurnSection(){
+  const host = document.getElementById('myFurnSec'); if(!host) return;
+  myFurnLoad().then(list=>{
+    if(!document.getElementById('myFurnSec')) return;
+    if(!list.length){ host.innerHTML = `<h3>⭐ Mis muebles</h3><div class="lc-note">Guarda tus diseños con <b>Archivo → Guardar en Mis muebles</b> y aparecen aquí.</div>`; return; }
+    host.innerHTML = `<h3>⭐ Mis muebles</h3><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;">
+      ${list.map(m=>`<div class="tpl-card mine" role="button" tabindex="0" data-my="${esc(m.id)}">
+        ${m.thumb ? `<img class="tpl-thumb" src="${m.thumb}" alt="">` : '<span class="tpl-icon">⭐</span>'}
+        <span class="tpl-name">${esc(m.name)}</span><span class="tpl-dims">${m.W} × ${m.H} × ${m.D} cm</span>
+        <button type="button" class="my-del" data-mydel="${esc(m.id)}" title="Borrar">✕</button></div>`).join('')}</div>`;
+    host.querySelectorAll('[data-my]').forEach(card=> card.addEventListener('click', e=>{
+      if(e.target.closest('[data-mydel]')) return;
+      document.querySelectorAll('#modalOverlay [data-tpl], #modalOverlay [data-my]').forEach(x=>x.classList.toggle('on', x===card));
+      showMyFurnForm(list.find(x=>x.id===card.dataset.my));
+    }));
+    host.querySelectorAll('[data-mydel]').forEach(bt=> bt.addEventListener('click', e=>{
+      e.stopPropagation();
+      const m = list.find(x=>x.id===bt.dataset.mydel);
+      if(m && confirm(`¿Borrar "${m.name}" de Mis muebles?`)){ deleteMyFurniture(m.id); renderMyFurnSection(); }
+    }));
+  });
+}
+function showMyFurnForm(m){
+  const box = document.getElementById('tplForm'); if(!box || !m) return;
+  const data = typeof m.data === 'string' ? JSON.parse(m.data) : m.data;
+  const mc = mainColors(data.pieces);
+  let color = mc.body, color2 = mc.front || mc.body;
+  box.innerHTML = `
+    <div class="fitbox" style="margin-top:12px;">
+      <div class="ts" style="font-weight:700;font-size:14px;margin-bottom:8px;">⭐ ${esc(m.name)}</div>
+      <div class="row2">
+        <div class="field"><label>Ancho (cm)</label><input type="number" step="0.5" id="my-W" value="${m.W}"></div>
+        <div class="field"><label>Alto (cm)</label><input type="number" step="0.5" id="my-H" value="${m.H}"></div>
+        <div class="field"><label>Fondo (cm)</label><input type="number" step="0.5" id="my-D" value="${m.D}"></div>
+      </div>
+      <details style="margin:4px 0 6px;"><summary style="cursor:pointer;font-weight:700;font-size:13px;padding:6px 0;">🎨 Cambiar color <span style="font-weight:400;color:var(--text-dim);">(<span id="my-cn">${finishName(color)}</span>${mc.front && mc.front!==mc.body ? ` · frentes <span id="my-cn2">${finishName(color2)}</span>` : ''})</span></summary>
+      <div class="field"><label>Cuerpo</label><div class="colors">${colorPaletteHtml(color,'data-mc')}</div></div>
+      ${mc.front ? `<div class="field"><label>Frentes</label><div class="colors">${colorPaletteHtml(color2,'data-mc2')}</div></div>` : ''}
+      </details>
+      <div class="hint" id="my-msg" style="margin-top:6px;"></div>
+      <button class="primary" id="my-create" style="width:100%;margin-top:8px;padding:10px;font-weight:700;">Usar este mueble</button>
+    </div>`;
+  box.querySelectorAll('[data-mc]').forEach(dv=>dv.addEventListener('click', ()=>{ color = dv.dataset.mc; box.querySelectorAll('[data-mc]').forEach(x=>x.classList.toggle('sel', x===dv)); document.getElementById('my-cn').textContent = finishName(color); }));
+  box.querySelectorAll('[data-mc2]').forEach(dv=>dv.addEventListener('click', ()=>{ color2 = dv.dataset.mc2; box.querySelectorAll('[data-mc2]').forEach(x=>x.classList.toggle('sel', x===dv)); const e2 = document.getElementById('my-cn2'); if(e2) e2.textContent = finishName(color2); }));
+  box.scrollIntoView({ block:'nearest' });
+  document.getElementById('my-create').addEventListener('click', ()=>{
+    const num = id => parseFloat(document.getElementById(id).value);
+    const W = num('my-W'), H = num('my-H'), D = num('my-D');
+    const msg = document.getElementById('my-msg');
+    if([W,H,D].some(x=>isNaN(x) || x<=10)){ msg.innerHTML = '<span style="color:var(--danger);font-weight:600;">Revisa las medidas.</span>'; return; }
+    const backup = JSON.stringify(projectData());
+    const prevName = cloudProjectName;
+    if(_tplFromHome) newDesign(m.name);
+    try{
+      const d2 = JSON.parse(JSON.stringify(data));
+      d2.pieces.forEach(p=>{
+        if(p.isCaster || p.isRod || p.isGlass) return;
+        if((p.isDoor || p.drawerRole==='frente') && mc.front){ if(p.color === mc.front) p.color = color2; }
+        else if(p.color === mc.body) p.color = color;
+      });
+      const keepName = cloudProjectName;
+      applyProjectData(d2);
+      cloudProjectName = keepName;
+      if(Math.abs(W - m.W) > 0.05 || Math.abs(H - m.H) > 0.05 || Math.abs(D - m.D) > 0.05){
+        if(!resizeWholeFurniture(W, H, D)) throw new Error('chico');
+      }
+      selectedId = null; refreshAll(); autoFitCamera();
+      document.getElementById('modalOverlay').classList.remove('open');
+      if(_tplFromHome){ hideHome(); _tplFromHome = false; }
+      if(typeof scheduleAutosave === 'function') scheduleAutosave();
+    }catch(e){
+      applyProjectData(JSON.parse(backup)); cloudProjectName = prevName;
+      msg.innerHTML = '<span style="color:var(--danger);font-weight:600;">Así de pequeño no cabe. Prueba medidas más grandes.</span>';
+    }
+  });
+}
+
 function openTemplatesModal(preId, fromHome){
   const overlay = document.getElementById('modalOverlay');
   _tplFromHome = !!fromHome;
   overlay.innerHTML = `
     <div id="modalCard" style="width:720px;max-height:88vh;overflow-y:auto;">
       <h2>Plantillas de muebles</h2>
-      <div class="hint" style="margin-bottom:12px;">Elige un mueble, ajusta las medidas y la app lo arma con todas sus piezas, gavetas con riel y puertas. Después lo puedes modificar como quieras.</div>
+      
+      <div id="myFurnSec" class="my-sec"></div>
+      <h3 style="font-size:13px;margin:0 0 8px;">Plantillas</h3>
       <div id="tplGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;">
         ${TEMPLATES.map(t=>`
           <button type="button" class="tpl-card" data-tpl="${t.id}">
@@ -7578,9 +8947,10 @@ function openTemplatesModal(preId, fromHome){
   overlay.classList.add('open');
   document.getElementById('tplCancel').addEventListener('click', ()=> overlay.classList.remove('open'));
   overlay.querySelectorAll('[data-tpl]').forEach(b=>b.addEventListener('click', ()=>{
-    overlay.querySelectorAll('[data-tpl]').forEach(x=>x.classList.toggle('on', x===b));
+    overlay.querySelectorAll('[data-tpl], [data-my]').forEach(x=>x.classList.toggle('on', x===b));
     showTemplateForm(TEMPLATES.find(t=>t.id===b.dataset.tpl));
   }));
+  renderMyFurnSection();
   if(preId){ const b = overlay.querySelector(`[data-tpl="${preId}"]`); if(b) b.click(); }
 }
 let _tplFromHome = false;
@@ -7657,7 +9027,7 @@ function cloudConfigured(){ return !!(window.firebase && FIREBASE_CONFIG.apiKey 
 
 // todo lo que se guarda de un proyecto (igual que "Guardar proyecto" en archivo)
 function projectData(){
-  return { version:2, pieces, nextId, groups, nextGroupId, settings:{ cantoThicknessMM, kerfMM, drillDiamMM, quoteForce } };
+  return { version:2, pieces, nextId, groups, nextGroupId, settings:{ cantoThicknessMM, kerfMM, drillDiamMM, quoteForce, venta: { mo: saleProj.mo||0, otros: saleProj.otros||0 } } };
 }
 // carga un proyecto (de archivo o de la nube)
 function applyProjectData(data){
@@ -7672,6 +9042,7 @@ function applyProjectData(data){
   nextGroupId = data.nextGroupId || 1;
   cleanGroups();
   quoteForce = (data.settings && data.settings.quoteForce) || {};
+  saleProj = Object.assign({ mo:0, otros:0 }, (data.settings && data.settings.venta) || {});
   if(data.settings){
     cantoThicknessMM = numOr(data.settings.cantoThicknessMM, cantoThicknessMM);
     kerfMM = numOr(data.settings.kerfMM, kerfMM);
@@ -7939,7 +9310,7 @@ function createCloudProject(name, now){
 // empezar un diseño nuevo (en blanco); con la cuenta abierta se guarda solo al primer cambio
 function newDesign(name){
   flushAutosave();
-  pieces = []; groups = {}; selectedId = null; nextGroupId = 1; quoteForce = {};
+  pieces = []; groups = {}; selectedId = null; nextGroupId = 1; quoteForce = {}; saleProj = { mo:0, otros:0 };
   if(typeof multiSelectMode !== 'undefined' && multiSelectMode) exitMultiSelect(true);
   cloudProjectId = null; cloudProjectName = name || 'Diseño sin título';
   autoCreateCloud = !!cloudUser; _lastThumbAt = 0;
@@ -8968,6 +10339,8 @@ document.getElementById('multiSelectBtn').addEventListener('click', ()=>{ if(mul
   menu.addEventListener('click', e=>{ if(e.target.closest('button')) menu.classList.remove('open'); });
   document.addEventListener('click', e=>{ if(!e.target.closest('.menu-wrap')) menu.classList.remove('open'); });
   document.getElementById('btnPrintPlan').addEventListener('click', ()=> printCutPlan());
+  document.getElementById('btnSaveMine').addEventListener('click', ()=>{ document.getElementById('fileMenu').classList.remove('open'); saveAsMyFurniture(); });
+  document.getElementById('btnRailCat').addEventListener('click', ()=>{ document.getElementById('fileMenu').classList.remove('open'); openRailCatalog(); });
 })();
 // buscar pieza en la lista
 var pieceQuery = '';
@@ -9031,6 +10404,8 @@ document.getElementById('nestVeta').addEventListener('change', e=>{
 document.getElementById('nestPrint').addEventListener('click', printCutPlan);
 document.querySelectorAll('[data-cv]').forEach(b=>b.addEventListener('click', ()=>setCutView(b.dataset.cv)));
 setCutView(cutView);
+document.querySelectorAll('.lc-tabs [data-lt]').forEach(b=>b.addEventListener('click', ()=>setLcTab(b.dataset.lt)));
+setLcTab(lcTab);
 
 initThree();
 setup3DPicking();
