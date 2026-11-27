@@ -733,7 +733,7 @@
           <button id="btnSave"><b>Guardar proyecto</b><small>Descarga el archivo a tu equipo</small></button>
           <button id="btnSaveMine"><b>⭐ Guardar en Mis muebles</b><small>Para usarlo otra vez en otra medida o color</small></button>
           <button id="btnRailCat"><b>⚙ Catálogo de rieles</b><small>Referencias, precios y medidas de Madecentro</small></button>
-          <div style="padding:8px 12px 4px;font-size:11px;color:var(--text-dim);border-top:1px solid var(--line);margin-top:4px;">Versión 64 · 24 nov 2026 · video: corredizas una por una</div>
+          <div style="padding:8px 12px 4px;font-size:11px;color:var(--text-dim);border-top:1px solid var(--line);margin-top:4px;">Versión 65 · 25 nov 2026 · abatibles, costados por dentro y modulares</div>
           <div class="menu-sep"></div>
           <button id="btnExportCsv"><b>Exportar CSV</b><small>Lista de corte para Excel</small></button>
           <button id="btnPrintPlan"><b>Imprimir plan de corte / PDF</b><small>Lista + láminas acomodadas</small></button>
@@ -1940,6 +1940,16 @@ function animateDoor(p, opening){
     })(t0);
     return;
   }
+  if(p.flap){
+    const from = pivot.rotation.x, to = opening ? flapAngle(p) : 0, t0 = performance.now();
+    (function step(now){
+      const t = Math.min(1, (now - t0)/550), e = t<0.5 ? 2*t*t : -1+(4-2*t)*t;
+      if(doorPivots[p.id] !== pivot) return;
+      pivot.rotation.x = from + (to-from)*e; updateFlapStays(pivot); markDirty();
+      if(t<1) requestAnimationFrame(step); else markShadow();
+    })(t0);
+    return;
+  }
   const sign = p.hinge === 'left' ? -1 : 1;
   const fromAngle = pivot.rotation.y;
   const toAngle = opening ? sign * (100*Math.PI/180) : 0;
@@ -3046,7 +3056,30 @@ function rebuild3D(){
       transparent: !strongLine, opacity: strongLine ? 1 : (renderOpts.realista ? (_light ? 1 : 0.45) : 1) });
     const showEdges = renderOpts.bordes || strongLine;
 
-    if(p.isDoor){
+    if(p.isDoor && p.flap && !p.sliding){
+      const up = p.flap === 'arriba';
+      const pivot = new THREE.Group();
+      pivot.position.set(pos.x + size.sx/2, up ? pos.y + size.sy : pos.y, pos.z + size.sz/2);
+      pivot.userData.baseX = pivot.position.x;
+      pivot.rotation.x = p.doorOpen ? flapAngle(p) : 0;
+      const localY = up ? -size.sy/2 : size.sy/2;
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(0, localY, 0);
+      mesh.userData.pieceId = p.id;
+      mesh.castShadow = mesh.receiveShadow = !renderOpts.xray;
+      pivot.add(mesh);
+      if(showEdges){ const line = edgeScale(new THREE.LineSegments(edges, lineMat)); line.position.set(0, localY, 0); pivot.add(line); }
+      const _pb = pivot.position.clone();
+      if(!renderOpts.xray){
+        const hg = buildFlapHinges(p, pos, size);
+        hg.door.forEach(m=>{ m.position.sub(_pb); m.userData.pieceId = p.id; pivot.add(m); });
+        hg.fixed.forEach(m=>{ m.userData.pieceId = p.id; meshGroup.add(m); });
+      }
+      if(p.handle) buildHandleMeshes(p).forEach(hg=>{ hg.position.sub(_pb); pivot.add(hg); });
+      meshGroup.add(pivot);
+      doorPivots[p.id] = pivot;
+      if(!renderOpts.xray) buildFlapStays(p, pos, size, pivot);
+    } else if(p.isDoor){
       const hingeX = p.sliding ? pos.x + size.sx/2 : (p.hinge === 'left' ? pos.x : pos.x + size.sx);
       const pivot = new THREE.Group();
       pivot.position.set(hingeX, pos.y + size.sy/2, pos.z + size.sz/2);
@@ -3068,7 +3101,7 @@ function rebuild3D(){
         pivot.add(line);
       }
 
-      if(!p.sliding && !renderOpts.xray){
+      if(!p.sliding && !p.flap && !renderOpts.xray){
         const hg = buildHingeMeshes(p, pos, size);
         const _pb = pivot.position.clone(); _pb.x = pivot.userData.baseX;
         hg.door.forEach(m=>{ m.position.sub(_pb); m.userData.pieceId = p.id; pivot.add(m); });
@@ -4397,7 +4430,7 @@ function renderForm(){
           </div>
         ` : ''}
         ${!p.sliding && p.orientation === 'vertical-front' && !p.isDrawer && !p.isFondo ? `<button type="button" class="small ghost" data-mkslide="${p.id}" style="width:100%;margin-top:8px;">↔ Hacer corrediza (con la de al lado)</button>` : ''}
-        ${p.isDoor && !p.sliding ? `
+        ${p.isDoor && !p.sliding && !p.flap ? `
           <div style="margin-top:8px;">
             <label>Lado de la bisagra</label>
             <div class="seg">
@@ -5858,6 +5891,8 @@ function openDoorModal(){
         <div class="seg" style="margin-bottom:12px;">
           <button type="button" data-kind="batiente" class="${kind==='batiente'?'on':''}">🚪 Con bisagra</button>
           <button type="button" data-kind="corrediza" class="${kind==='corrediza'?'on':''}">↔ Corrediza</button>
+          <button type="button" data-kind="arriba" class="${kind==='arriba'?'on':''}" title="Abatible hacia arriba con pistones">↑ Arriba</button>
+          <button type="button" data-kind="abajo" class="${kind==='abajo'?'on':''}" title="Abatible hacia abajo con compases">↓ Abajo</button>
         </div>
         <div class="field">
           <label>Medida</label>
@@ -5877,7 +5912,7 @@ function openDoorModal(){
             <button type="button" data-slm="fuera" class="${slModo==='fuera'?'on':''}">Por delante (tapan todo)</button>
           </div></div>
         <div class="field"><label>Se montan una sobre otra (cm)</label><input type="number" step="0.5" id="dr-tr" value="3"></div>
-        ` : `
+        ` : (kind === 'arriba' || kind === 'abajo') ? `<div class="hint" style="margin:0 0 8px;">${kind==='arriba' ? 'Bisagras arriba y 2 pistones a gas.' : 'Bisagras abajo y 2 compases.'}</div>` : `
         <div class="field">
           <label>Lado de la bisagra</label>
           <div class="seg">
@@ -5887,7 +5922,7 @@ function openDoorModal(){
         </div>`}
         <div class="modal-actions">
           <button class="ghost" id="doorCancel">Cancelar</button>
-          <button class="primary" id="doorCreate">${kind==='corrediza' ? 'Crear puertas corredizas' : 'Crear puerta'}</button>
+          <button class="primary" id="doorCreate">${kind==='corrediza' ? 'Crear puertas corredizas' : (kind==='arriba' || kind==='abajo') ? 'Crear puerta abatible' : 'Crear puerta'}</button>
         </div>
       </div>
     `;
@@ -5976,6 +6011,7 @@ function openDoorModal(){
         if(pieces.length){ const b = frameBounds(); p.x = round1(b.minX); p.y = round1(floorLevel()); p.z = round1(b.maxZ); }
       }
 
+      if(kind === 'arriba' || kind === 'abajo'){ p.flap = kind; p.name = 'Puerta abatible ' + (pieces.filter(x=>x.isDoor).length+1); p.handle = { type:'rect', cc:128, pos:'centro', color:'niquel' }; }
       pieces.push(p);
       selectedId = p.id;
       overlay.classList.remove('open');
@@ -6662,6 +6698,14 @@ function hingeLateral(door){
 }
 // tipo que corresponde por cómo está puesta la puerta
 function hingeTypeDetected(door){
+  if(door.flap){
+    const R = flapRail(door);
+    if(!R) return 'parche';
+    if(!R.front) return 'recta';
+    const d = _bx(door), b = R.b, T = b.y1 - b.y0;
+    const cover = door.flap === 'arriba' ? (Math.min(d.y1, b.y1) - b.y0) : (b.y1 - Math.max(d.y0, b.y0));
+    return (cover / T) >= 0.75 ? 'parche' : 'semiparche';
+  }
   const L = hingeLateral(door);
   if(!L) return 'parche';
   if(!L.front) return 'recta';
@@ -6672,6 +6716,7 @@ function hingeTypeDetected(door){
 function hingeTypeOf(door){ return HINGE_TYPES[door.hingeType] ? door.hingeType : hingeTypeDetected(door); }
 // cantidad sugerida: por alto, ancho y peso de la puerta
 function hingeQtySuggested(door){
+  if(door.flap) return flapHingeQty(door);
   const h = door.h, w = door.w;
   let n = h <= 90 ? 2 : h <= 160 ? 3 : h <= 200 ? 4 : h <= 240 ? 5 : 6;
   if(w > 60) n++;
@@ -6722,6 +6767,11 @@ function buildHingeMeshes(door, pos, size){
 // perforaciones para el plano: cazoletas en la puerta y tornillos de la base en el lateral
 function hingeDrillRows(){
   return hingeDoors().map(d=>{
+    if(d.flap){
+      const R = flapRail(d), xs = flapHingeXs(d);
+      return { door:d, tipo:hingeTypeOf(d), qty:xs.length, ys:xs, flap:true, lateral: R ? R.piece : null,
+        latYs: R ? xs.map(x=> round1(piecePosition(d).x + x - piecePosition(R.piece).x)) : [] };
+    }
     const L = hingeLateral(d), ys = hingeHeights(d);
     return { door:d, tipo:hingeTypeOf(d), qty:ys.length, ys, lateral: L ? L.piece : null,
       latYs: L ? ys.map(y=> round1(piecePosition(d).y + y - piecePosition(L.piece).y)) : [] };
@@ -6741,10 +6791,10 @@ function renderHingeDrill(){
       <div class="field"><label>Base: entre tornillos (mm)</label><input type="number" step="1" data-hc="sepTornillos" value="${c.sepTornillos}"></div>
     </div></details></div>
     <table class="hg-tbl"><thead><tr><th>Puerta</th><th>Tipo</th><th>Cant.</th><th>Cazoleta (en la puerta)</th><th>Base (en el lateral)</th></tr></thead><tbody>
-    ${rows.map(r=>`<tr><td><b>${esc(r.door.name)}</b><br><small>${round1(r.door.w)}×${round1(r.door.h)} · bisagra ${r.door.hinge==='left'?'izq':'der'}</small></td>
-      <td>${HINGE_TYPES[r.tipo].name.replace('Bisagra ','')}</td><td><b>${r.qty}</b></td>
-      <td>Ø35 · centro a <b>${cupC} mm</b> del borde · hondo ${c.cupDepth} mm<br>alturas: <b>${r.ys.join(' · ')}</b> cm desde abajo</td>
-      <td>${r.lateral ? `${esc(r.lateral.name)}: a <b>${c.retiro} mm</b> del borde de adelante · 2 tornillos a ${c.sepTornillos} mm<br>alturas: <b>${r.latYs.join(' · ')}</b> cm desde abajo del lateral` : '<span style="color:var(--text-dim);">No encontré el lateral</span>'}</td></tr>`).join('')}
+    ${rows.map(r=>`<tr><td><b>${esc(r.door.name)}</b><br><small>${round1(r.door.w)}×${round1(r.door.h)} · ${r.flap ? 'abre hacia ' + r.door.flap : 'bisagra ' + (r.door.hinge==='left'?'izq':'der')}</small></td>
+      <td>${HINGE_TYPES[r.tipo].name.replace('Bisagra ','')}${r.flap ? `<br><small>abatible ${r.door.flap==='arriba'?'↑ (pistón)':'↓ (compás)'}</small>` : ''}</td><td><b>${r.qty}</b></td>
+      <td>Ø35 · centro a <b>${cupC} mm</b> del borde${r.flap ? (r.door.flap==='arriba' ? ' de arriba' : ' de abajo') : ''} · hondo ${c.cupDepth} mm<br>${r.flap ? 'a lo ancho' : 'alturas'}: <b>${r.ys.join(' · ')}</b> cm ${r.flap ? 'desde la izquierda' : 'desde abajo'}</td>
+      <td>${r.lateral ? `${esc(r.lateral.name)}: a <b>${c.retiro} mm</b> del borde de adelante · 2 tornillos a ${c.sepTornillos} mm<br>${r.flap ? 'a lo ancho' : 'alturas'}: <b>${r.latYs.join(' · ')}</b> cm ${r.flap ? 'desde la izquierda de la tabla' : 'desde abajo del lateral'}` : '<span style="color:var(--text-dim);">No encontré dónde va la base</span>'}</td></tr>`).join('')}
     </tbody></table>`;
   wrap.querySelectorAll('[data-hc]').forEach(inp=> inp.addEventListener('change', ()=>{
     const v = parseFloat(inp.value); if(isNaN(v) || v < 0) return;
@@ -6758,6 +6808,12 @@ function renderHingeSection(p){
   const det = hingeTypeDetected(p), cur = hingeTypeOf(p), sug = hingeQtySuggested(p), kg = pieceKg(Object.assign({}, p, { qty:1 }));
   const mismatch = p.hingeType && p.hingeType !== det;
   box.innerHTML = `<div class="fitbox" style="margin-top:8px;">
+    <div class="ts" style="font-weight:700;margin-bottom:6px;">Abre hacia</div>
+    <div class="seg hg-seg" style="margin-bottom:10px;">
+      <button type="button" data-flap="" class="${!p.flap?'on':''}">⟷ El lado</button>
+      <button type="button" data-flap="arriba" class="${p.flap==='arriba'?'on':''}" title="Bisagras arriba y 2 pistones a gas">↑ Arriba (pistón)</button>
+      <button type="button" data-flap="abajo" class="${p.flap==='abajo'?'on':''}" title="Bisagras abajo y 2 compases">↓ Abajo</button>
+    </div>
     <div class="ts" style="font-weight:700;margin-bottom:6px;">Bisagras</div>
     <div class="seg hg-seg">
       <button type="button" data-ht="" class="${!p.hingeType?'on':''}" title="Según cómo está puesta la puerta">Auto</button>
@@ -6771,6 +6827,9 @@ function renderHingeSection(p){
     </div>
   </div>`;
   box.querySelectorAll('[data-ht]').forEach(b=> b.addEventListener('click', ()=>{ snapshot(); p.hingeType = b.dataset.ht || null; refreshAll(); }));
+  box.querySelectorAll('[data-flap]').forEach(b=> b.addEventListener('click', ()=>{ snapshot(); p.flap = b.dataset.flap || null; p.doorOpen = false; p.hingeQty = null;
+    if(p.flap && p.handle && p.handle.type !== 'ninguna') p.handle = Object.assign({}, p.handle, { type: p.handle.type === 'barra' ? 'rect' : p.handle.type });
+    refreshAll(); }));
   box.querySelector('#f-hqty').addEventListener('change', e=>{ snapshot(); const v = parseInt(e.target.value); p.hingeQty = v > 0 ? Math.min(10, v) : null; refreshAll(); });
 }
 
@@ -7109,11 +7168,13 @@ function buildHandleMeshes(face){
   const pos = piecePosition(face), size = boxSize(face);
   const col = HANDLE_COLORS.find(x=>x.id===h.color) || HANDLE_COLORS[0];
   const mat = new THREE.MeshStandardMaterial({ color:col.hex, metalness: renderOpts.realista ? col.metal : Math.min(col.metal,0.4), roughness:col.rough });
-  const door = !!face.isDoor;
+  const flap = face.isDoor && face.flap ? face.flap : null;
+  const door = !!face.isDoor && !flap;
   const L = door ? size.sy : size.sx;          // largo del frente en la dirección de la manija
   const half = door ? size.sx/2 : size.sy/2;   // distancia del centro al borde donde va la manija
   let yOff;
-  if(h.type==='perfil') yOff = half;
+  if(flap) yOff = (flap === 'arriba' ? -1 : 1) * (h.type==='perfil' ? half : half - 5); // abatible: cerca del borde que se levanta / baja
+  else if(h.type==='perfil') yOff = half;
   else if(door) yOff = half - 5;               // a 5 cm del borde libre de la puerta
   else yOff = h.pos==='arriba' ? half - Math.min(4, size.sy*0.25) : 0;
   const cc = (h.cc || 128) / 10;
@@ -7851,6 +7912,22 @@ const CANTO_ALL  = ()=>({ top:true, bottom:true, left:true, right:true });
 // marco con costados por fuera; zocalo = altura del piso (con tabla de zócalo al frente)
 function T_frame(o){
   const { ox, W, H, D, t, color } = o, zoc = o.zocalo || 0;
+  if(o.lat === 'dentro'){
+    // COSTADOS POR DENTRO: techo y piso de punta a punta; los costados van encajados entre ellos.
+    // El peso de arriba baja directo por los costados (aguanta más que colgado de tornillos).
+    tp({ name:'Techo', orientation:'horizontal', w:W, h:D, t, x:ox, y:round2(H-t), z:0, color, canto:{top:true,bottom:false,left:true,right:true} });
+    tp({ name:'Piso', orientation:'horizontal', w:W, h:D, t, x:ox, y:zoc, z:0, color, canto:{top:true,bottom:false,left:true,right:true} });
+    const sideIn = { orientation:'vertical-side', w:D, h:round2(H - zoc - 2*t), t, y:round2(zoc + t), z:0, color, canto:{top:false,bottom:false,left:false,right:true} };
+    tp(Object.assign({ name:'Costado izquierdo', x:ox }, sideIn));
+    tp(Object.assign({ name:'Costado derecho', x:round2(ox+W-t) }, sideIn));
+    if(zoc > 0){
+      const zl = round2(D - t - 3);
+      tp({ name:'Zócalo lateral izq', orientation:'vertical-side', w:zl, h:zoc, t, x:ox, y:0, z:0, color, canto:{top:false,bottom:false,left:false,right:false} });
+      tp({ name:'Zócalo lateral der', orientation:'vertical-side', w:zl, h:zoc, t, x:round2(ox+W-t), y:0, z:0, color, canto:{top:false,bottom:false,left:false,right:false} });
+      tp({ name:'Zócalo', orientation:'vertical-front', w:round2(W-2*t), h:zoc, t, x:round2(ox+t), y:0, z:zl, color, canto:{top:false,bottom:false,left:false,right:false} });
+    }
+    return { ox, W, H, D, t, color, lat:'dentro', x0:round2(ox+t), x1:round2(ox+W-t), y0:round2(zoc+t), y1:round2(H-t) };
+  }
   const side = { orientation:'vertical-side', w:D, h:H, t, y:0, z:0, color, canto:{top:true,bottom:false,left:false,right:true} };
   tp(Object.assign({ name:'Costado izquierdo', x:ox }, side));
   tp(Object.assign({ name:'Costado derecho', x:round2(ox+W-t) }, side));
@@ -8016,6 +8093,168 @@ function T_sliding(f, xa, xb, ya, yb, n, color, handle){
   doors.forEach(d=> pieces.push(d));
   return doors;
 }
+
+/* ============================================================
+   PUERTAS ABATIBLES
+   flap 'arriba': bisagras en el borde de arriba, sube con 2 pistones a gas
+   flap 'abajo' : bisagras en el borde de abajo, baja y queda sostenida por 2 compases
+============================================================ */
+const FLAP_ANGLE = { arriba: 95, abajo: 90 };
+function flapAngle(p){ return (FLAP_ANGLE[p.flap] || 90) * Math.PI/180 * (p.flap === 'arriba' ? -1 : 1); }
+// tabla (techo, piso o repisa) donde se atornillan las bases de las bisagras de la abatible
+function flapRail(door){
+  const d = _bx(door), up = door.flap === 'arriba', edge = up ? d.y1 : d.y0;
+  let best = null;
+  pieces.forEach(o=>{
+    if(o.id===door.id || o.isDoor || o.isDrawer || o.isFondo || o.isGlass || isHardware(o) || o.orientation !== 'horizontal') return;
+    const b = _bx(o);
+    if(Math.min(b.x1, d.x1) - Math.max(b.x0, d.x0) < (d.x1-d.x0)*0.5) return;
+    if(b.z1 < d.z0 - 3 || b.z0 > d.z1) return;
+    const front = d.z0 >= b.z1 - 0.15;
+    const inner = up ? b.y0 : b.y1;
+    const dist = front ? (edge >= b.y0 - 1 && edge <= b.y1 + 1 ? 0 : Math.min(Math.abs(edge-b.y0), Math.abs(edge-b.y1))) : Math.abs(edge - inner);
+    if(dist > 2.5) return;
+    if(!best || dist < best.dist) best = { piece:o, b, inner, front, dist };
+  });
+  return best;
+}
+function flapHingeQty(door){ const w = door.w; return w <= 60 ? 2 : w <= 100 ? 3 : 4; }
+// posiciones de las bisagras a lo ancho (desde el borde izquierdo de la puerta)
+function flapHingeXs(door){
+  const n = hingeQtyOf(door), e = Math.min(hingeCfg.extremo || 10, door.w/3);
+  if(n <= 1) return [round1(door.w/2)];
+  return Array.from({ length:n }, (_, i)=> round1(e + i*(door.w - 2*e)/(n-1)));
+}
+function buildFlapHinges(door, pos, size){
+  const out = { door:[], fixed:[] };
+  const up = door.flap === 'arriba', R = flapRail(door);
+  const metal = new THREE.MeshStandardMaterial({ color:'#b9bec3', metalness: renderOpts.realista ? 0.85 : 0.3, roughness:0.35 });
+  const dark = new THREE.MeshStandardMaterial({ color:'#7d848b', metalness: renderOpts.realista ? 0.8 : 0.3, roughness:0.45 });
+  const cupY = up ? pos.y + size.sy - (hingeCfg.K + 17.5)/10 : pos.y + (hingeCfg.K + 17.5)/10;
+  const backZ = pos.z, jZ = backZ - 0.9;
+  const plateY = R ? R.inner + (up ? -0.15 : 0.15) : cupY + (up ? 1.2 : -1.2);
+  const plateZ = R ? round2(R.b.z1 - (hingeCfg.retiro || 37)/10) : jZ - 2;
+  flapHingeXs(door).forEach(hx=>{
+    const x = pos.x + hx;
+    const cup = new THREE.Mesh(new THREE.CylinderGeometry(1.75, 1.75, 0.25, 28), metal);
+    cup.rotation.x = Math.PI/2; cup.position.set(x, cupY, backZ - 0.12); out.door.push(cup);
+    const stub = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.4, 0.9), dark); stub.position.set(x, cupY, backZ - 0.45); out.door.push(stub);
+    const dy = plateY - cupY, dz = plateZ - jZ, len = Math.hypot(dy, dz);
+    if(len > 0.2){ const arm = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.2, len), metal); arm.position.set(x, (cupY+plateY)/2, (jZ+plateZ)/2); arm.rotation.x = -Math.atan2(dy, dz); out.fixed.push(arm); }
+    const plate = new THREE.Mesh(new THREE.BoxGeometry(4.4, 0.3, 1.4), dark); plate.position.set(x, plateY, plateZ); out.fixed.push(plate);
+  });
+  return out;
+}
+// pistones (arriba) o compases (abajo): una punta fija en el costado y la otra en la puerta; se estiran al abrir
+function buildFlapStays(door, pos, size, pivot){
+  const up = door.flap === 'arriba', h = size.sy;
+  const hingeY = up ? pos.y + size.sy : pos.y;
+  const backZ = pos.z;
+  const mat = new THREE.MeshStandardMaterial({ color: up ? '#2b2d30' : '#b9bec3', metalness: renderOpts.realista ? 0.7 : 0.3, roughness:0.4 });
+  const matRod = new THREE.MeshStandardMaterial({ color:'#d7dadd', metalness: renderOpts.realista ? 0.9 : 0.3, roughness:0.25 });
+  const list = [];
+  [pos.x + 2.2, pos.x + size.sx - 2.2].forEach(x=>{
+    const A = new THREE.Vector3(x, up ? hingeY - Math.min(14, h*0.45) : hingeY + Math.min(16, h*0.5), backZ - Math.min(12, 20));
+    const B = new THREE.Vector3(x, up ? hingeY - h*0.42 : hingeY + h*0.45, backZ - 0.6);
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(up ? 0.9 : 0.35, up ? 0.9 : 0.35, 1, 16), mat);
+    const rod  = new THREE.Mesh(new THREE.CylinderGeometry(up ? 0.4 : 0.3, up ? 0.4 : 0.3, 1, 12), matRod);
+    [body, rod].forEach(m=>{ m.userData.pieceId = door.id; m.castShadow = true; meshGroup.add(m); });
+    list.push({ body, rod, A, Bl: B.clone().sub(pivot.position) });
+  });
+  pivot.userData.stays = list;
+  updateFlapStays(pivot);
+}
+function _segment(mesh, a, b){
+  const d = new THREE.Vector3().subVectors(b, a), L = Math.max(0.01, d.length());
+  mesh.position.copy(a).addScaledVector(d, 0.5);
+  mesh.scale.set(1, L, 1);
+  mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), d.normalize());
+}
+function updateFlapStays(pivot){
+  (pivot.userData.stays || []).forEach(s=>{
+    const B = s.Bl.clone().applyAxisAngle(new THREE.Vector3(1,0,0), pivot.rotation.x).add(pivot.position);
+    const mid = new THREE.Vector3().lerpVectors(s.A, B, 0.55);
+    _segment(s.body, s.A, mid);
+    _segment(s.rod, mid, B);
+  });
+}
+function T_flap(f, xa, xb, ya, yb, dir, color, handle){
+  const luz = 0.3;
+  return tp({ name:`Puerta abatible ${pieces.filter(p=>p.isDoor).length+1}`, orientation:'vertical-front', w:round2(xb-xa-2*luz), h:round2(yb-ya-2*luz), t:f.t,
+    x:round2(xa+luz), y:round2(ya+luz), z:round2(f.D - f.t), color, canto:CANTO_ALL(), isDoor:true, flap:dir, hinge:'left', doorOpen:false,
+    handle:Object.assign({ type:'rect', cc:128, pos:'centro', color:'negro' }, handle || {}) });
+}
+
+
+// ===== MUEBLES MODULARES: cada módulo es una caja con sus propios costados (se unen con tornillos) =====
+function T_modular(v, c2, kinds, o){
+  o = o || {};
+  const n = Math.max(2, Math.min(4, v.mods || 3));
+  const modW = round1(v.W / n);
+  const made = [];
+  for(let i=0;i<n;i++){
+    const W = i < n-1 ? modW : round2(v.W - modW*(n-1));
+    const start = pieces.length;
+    const f = T_frame({ ox: round2(v.ox + i*modW), W, H:v.H, D:v.D, t:v.t, color:v.color, zocalo:o.zocalo || 0, lat: v.lat || 'dentro' });
+    MODULE_FILL[kinds[i % kinds.length]](f, c2, o);
+    T_fondo(f);
+    pieces.slice(start).forEach(q=>{ q.name = `M${i+1} · ${q.name}`; });
+    made.push(f);
+  }
+  return { noFondo:true, modules:made };
+}
+const MODULE_FILL = {
+  // repisa en la mitad y puertas (1 si es angosto, 2 si es ancho)
+  puertas(f, c2, o){
+    const sd = round2(f.D - f.t - 0.5);
+    T_shelf(f, f.y0 + (f.y1 - f.y0 - f.t)/2, 'Repisa', sd);
+    T_doors(f, f.x0, f.x1, f.y0, f.y1, (f.x1 - f.x0) >= 55 ? 2 : 1, c2, Object.assign({ type:'perfil', cc:128, pos:'centro', color:'niquel' }, o.handle || {}), 'left');
+  },
+  // cajonera
+  gavetas(f, c2, o){
+    const n = (f.y1 - f.y0) >= 70 ? 3 : 2;
+    T_drawers(f, f.x0, f.x1, f.y0, f.y1, n, c2, Object.assign({ type:'perfil', cc:128, pos:'centro', color:'niquel' }, o.handle || {}), undefined, true);
+  },
+  // colgadero con maletero y puertas
+  colgar(f, c2, o){
+    const sd = round2(f.D - f.t - 0.5);
+    const mal = T_shelf(f, f.y1 - 38 - f.t, 'Maletero', sd);
+    T_rod(f, f.x0, f.x1, mal.y - 6);
+    T_doors(f, f.x0, f.x1, f.y0, f.y1, (f.x1 - f.x0) >= 55 ? 2 : 1, c2, Object.assign({ type:'barra', cc:192, pos:'centro', color:'negro' }, o.handle || {}), 'left');
+  },
+  // repisas parejas con puertas
+  repisas(f, c2, o){
+    const sd = round2(f.D - f.t - 0.5);
+    T_even(f.y0, f.y1, 4, f.t).forEach((y,i)=> T_shelf(f, y, `Repisa ${i+1}`, sd));
+    T_doors(f, f.x0, f.x1, f.y0, f.y1, (f.x1 - f.x0) >= 55 ? 2 : 1, c2, Object.assign({ type:'barra', cc:192, pos:'centro', color:'negro' }, o.handle || {}), 'left');
+  },
+  // gavetas abajo y repisas con puertas arriba (clóset)
+  gavetasArriba(f, c2, o){
+    const sd = round2(f.D - f.t - 0.5);
+    const base = T_shelf(f, f.y0 + 48, 'Base de gavetas');
+    T_drawers(f, f.x0, f.x1, f.y0, base.y, 2, c2, { type:'rect', cc:160, pos:'centro', color:'negro' }, undefined, true);
+    const y0 = round2(base.y + f.t);
+    T_even(y0, f.y1, 3, f.t).forEach((y,i)=> T_shelf(f, y, `Repisa ${i+1}`, sd));
+    T_doors(f, f.x0, f.x1, y0, f.y1, (f.x1 - f.x0) >= 55 ? 2 : 1, c2, Object.assign({ type:'barra', cc:192, pos:'centro', color:'negro' }, o.handle || {}), 'left');
+  },
+  // aéreo: repisa y puerta abatible hacia arriba con pistones
+  abatibleArriba(f, c2, o){
+    const sd = round2(f.D - f.t - 0.5);
+    T_shelf(f, f.y0 + (f.y1 - f.y0 - f.t)/2, 'Repisa', sd);
+    T_flap(f, f.x0, f.x1, f.y0, f.y1, 'arriba', c2, { type:'perfil', cc:128, pos:'centro', color:'niquel' });
+  },
+  // biblioteca: puertas abajo y repisas abiertas arriba
+  bibPuertas(f, c2, o){
+    const sd = round2(f.D - f.t - 0.5);
+    const fix = T_shelf(f, f.y0 + 72, 'Repisa fija');
+    T_shelf(f, f.y0 + (72 - f.t)/2, 'Repisa abajo', sd);
+    T_even(round2(fix.y + f.t), f.y1, 3, f.t).forEach((y,i)=> T_shelf(f, y, `Repisa ${i+1}`));
+    T_doors(f, f.x0, f.x1, f.y0, fix.y, (f.x1 - f.x0) >= 55 ? 2 : 1, c2, { type:'barra', cc:128, pos:'centro', color:'negro' }, 'left');
+  },
+  // biblioteca: todo abierto
+  abierto(f){ T_even(f.y0, f.y1, 4, f.t).forEach((y,i)=> T_shelf(f, y, `Repisa ${i+1}`)); }
+};
+
 function T_rod(f, xa, xb, y){
   return tp({ name:'Colgadero', orientation:'vertical-front', w:round2(xb-xa), h:2.5, t:2.5, x:xa, y:round2(y-1.25), z:round2(f.D/2-1.25),
     color:'#9aa1a7', canto:CANTO_NONE(), isRod:true });
@@ -8228,6 +8467,47 @@ const TEMPLATES = [
       T_rod(f, xr, f.x1, mal.y - 6);
       T_sliding(f, f.x0, f.x1, f.y0, f.y1, 2, c2, { type:'embutir', cc:128, pos:'centro', color:'negro' });
     } },
+
+  { id:'cocinaModular', name:'Cocina modular', cat:'Cocina', modular:true, desc:'Módulos bajos de cocina: puertas y cajoneras intercaladas. Escoge 2, 3 o 4 módulos.',
+    def:{ W:160, H:86, D:56, t:1.5, color:'#f3f2ee', color2:'#bdb8b0', zocalo:10, mods:3, lat:'dentro' },
+    icon:TEMPLATE_ICON('<path d="M4 14h56"/><rect x="6" y="14" width="17" height="34"/><rect x="23.5" y="14" width="17" height="34"/><rect x="41" y="14" width="17" height="34"/><path d="M23.5 25.5h17M23.5 37h17M10 22v4M53 22v4"/>'),
+    custom:true,
+    build(f0, c2, v){ return T_modular(v, c2, ['puertas','gavetas','puertas','gavetas'], { zocalo:10 }); } },
+  { id:'aereoModular', name:'Aéreos modulares', cat:'Cocina', modular:true, desc:'Muebles de pared: puertas y abatibles hacia arriba con pistón. 2, 3 o 4 módulos.',
+    def:{ W:160, H:60, D:33, t:1.5, color:'#f3f2ee', color2:'#6a6a48', mods:3, lat:'dentro' },
+    icon:TEMPLATE_ICON('<rect x="6" y="12" width="17" height="26"/><rect x="23.5" y="12" width="17" height="26"/><rect x="41" y="12" width="17" height="26"/><path d="M14.5 12v26M27 34h10M49.5 12v26M32 4l-4 5h8z"/>'),
+    custom:true,
+    build(f0, c2, v){ return T_modular(v, c2, ['puertas','abatibleArriba','puertas','abatibleArriba'], { handle:{ type:'ninguna', cc:0 } }); } },
+  { id:'closetModular', name:'Clóset modular', cat:'Alcoba', modular:true, desc:'Cuerpos independientes: colgadero, repisas y gavetas. Escoge 2, 3 o 4 módulos.',
+    def:{ W:180, H:210, D:56, t:1.8, color:'#f3f2ee', color2:'#a5764c', zocalo:6, mods:3, lat:'dentro' },
+    icon:TEMPLATE_ICON('<rect x="6" y="3" width="17" height="50"/><rect x="23.5" y="3" width="17" height="50"/><rect x="41" y="3" width="17" height="50"/><path d="M9 10h11M26.5 13h11M26.5 23h11M26.5 33h11M41 40h17M41 46.5h17"/>'),
+    custom:true,
+    build(f0, c2, v){ return T_modular(v, c2, ['colgar','repisas','gavetasArriba','colgar'], { zocalo:6 }); } },
+  { id:'bibliotecaModular', name:'Biblioteca modular', cat:'Sala', modular:true, desc:'Módulos con puertas abajo y repisas arriba, intercalados con módulos abiertos. 2, 3 o 4 módulos.',
+    def:{ W:180, H:190, D:32, t:1.8, color:'#86664c', color2:'#86664c', zocalo:6, mods:3, lat:'dentro' },
+    icon:TEMPLATE_ICON('<rect x="6" y="3" width="17" height="50"/><rect x="23.5" y="3" width="17" height="50"/><rect x="41" y="3" width="17" height="50"/><path d="M6 13h17M6 23h17M6 33h17M23.5 11h17M23.5 21h17M23.5 31h17M23.5 41h17M41 13h17M41 23h17M41 33h17M14.5 33v20M49.5 33v20"/>'),
+    custom:true,
+    build(f0, c2, v){ return T_modular(v, c2, ['bibPuertas','abierto','bibPuertas','abierto'], { zocalo:6 }); } },
+  { id:'aereoAbatible', name:'Aéreo con abatible', cat:'Cocina', desc:'Mueble de pared con puerta que sube con pistones a gas. Fácil de abrir sin golpear la cabeza.',
+    def:{ W:90, H:40, D:33, t:1.5, color:'#f3f2ee', color2:'#6a6a48', lat:'dentro' },
+    icon:TEMPLATE_ICON('<rect x="8" y="18" width="48" height="24"/><path d="M8 18l10-12h28l10 12"/><path d="M27 37h10"/>'),
+    build(f, c2){
+      T_shelf(f, f.y0 + (f.y1 - f.y0 - f.t)/2, 'Repisa', round2(f.D - f.t - 0.5));
+      T_flap(f, f.x0, f.x1, f.y0, f.y1, 'arriba', c2, { type:'perfil', cc:128, pos:'centro', color:'niquel' });
+    } },
+  { id:'tvAbatible', name:'Mueble TV con abatibles', cat:'Sala', desc:'Centro abierto para equipos y puertas que bajan (abatibles hacia abajo) a los lados.',
+    def:{ W:160, H:45, D:40, t:1.8, color:'#40302a', color2:'#dbc8a9', zocalo:6, lat:'dentro' },
+    icon:TEMPLATE_ICON('<rect x="3" y="16" width="58" height="22"/><path d="M22 16v22M42 16v22M22 27h20"/><path d="M3 38l-0 8h19v-8M42 38v8h19v-8"/>'),
+    build(f, c2){
+      const cw = (f.x1 - f.x0 - 2*f.t)/3;
+      const d1 = round2(f.x0 + cw), d2 = round2(f.x0 + 2*cw + f.t);
+      T_division(f, d1, f.y0, f.y1, 'División izquierda');
+      T_division(f, d2, f.y0, f.y1, 'División derecha');
+      T_shelf(f, f.y0 + (f.y1-f.y0-f.t)/2, 'Repisa centro', null, round2(d1+f.t), d2);
+      const h = { type:'rect', cc:128, pos:'centro', color:'negro' };
+      T_flap(f, f.x0, d1, f.y0, f.y1, 'abajo', c2, h);
+      T_flap(f, round2(d2 + f.t), f.x1, f.y0, f.y1, 'abajo', c2, h);
+    } },
   { id:'closetAbierto', name:'Clóset abierto', cat:'Alcoba', desc:'Sin puertas, tipo vestier: torre de repisas, colgadero, maletero y zapatera.',
     def:{ W:120, H:200, D:50, t:1.8, color:'#c7ac85', color2:'#c7ac85', zocalo:6 },
     build(f){
@@ -8312,6 +8592,12 @@ const TEMPLATE_CATS = { armario2p:'Alcoba', armarioGav:'Alcoba', mesaNoche:'Alco
 TEMPLATES.forEach(t=>{ if(!t.cat) t.cat = TEMPLATE_CATS[t.id] || 'Otros'; });
 // fotos de cada plantilla (hechas con la misma app)
 const TEMPLATE_THUMBS = {
+  cocinaModular:"data:image/webp;base64,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",
+  aereoModular:"data:image/webp;base64,UklGRlYJAABXRUJQVlA4WAoAAAAgAAAAPwEA7wAASUNDUMgBAAAAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADZWUDggaAcAABA3AJ0BKkAB8AA+bTaWSKQjIiEks6iQgA2JaW7hc0Dqd59z4PeNF/7N1l/H+iD02b+AdOTfbb5H73jy7RtlgbHcp5kCsrMI/rvrH98582GFqkxo3G2HtmAPrw594c+8OfeHPvCpZVu5uU+L/aHAWIsy7m8dk42zqkxo3G2F0kp5+cibMaonOjkf1S8NnWj/bCm+LVuVSbGQspfpQdYyFlL+Uu3H4nFiDxYMiCIbXTXhzM6NAhucIvb33WcsnnoOElHfmAg7INSpBQ9J+HsGcfoIaE9a+5+pQMdV7csKKdTsRm9Y9EgWkK+jfGdAfzXpWMwDljaFMURScQm5LMfZtY1I9NUY8Nwfr4l72s+JapHB+Y0/o4eLj3jM5sxTkGFtku/EmMgyhG8VhP7pTO32m3w91UVgLPesBB94CFrZec3raYPm2KJhkeOjxS5lrSDx/71kepSxr5EELDVa9pP5BT3YdOygQCgh9hmdiytMgb7exOq9oVLXzsCrCj4JHHXdhBNf4R9NGlZyFL/42zqkxo25NGuuslU7qRnp/wgRPmRA/wfgbQbD2zAHc6sENG42w9swB3OqTGjcbYe2YA7nVJhAAP7/R6NodTyPqNqH0kCIES4PBAAAAAAAAAN287aLnONnNZ4BplznGzms8A0y5zjZzWeAT0WbPdAszEK2LPaLWfQqjmguPu4tP8Ti/Jt78/hFA/aLNrteDA/fYi56WlJEbjHQo7YPSw2DTtgKOkcA6RadpytCfmsivuHhCzdPrwpE1kCBsi1UDifoRmdvVtWVeCf9Qd2s7AmapwIzBye/FCBzxXLq0GufyLECKDLfHIuGDNrCOq9dGs1Z8gzA7u6DA3icKMecksvcE/yyUgzVcftTzTtito2uzKldLn1f4mSF1gZ7iOOFXFZumunvncmJv5Rh9SxtoP7JfHHvyVWS+kdAM4DlymAsPyxC5pF3mSV4nUu1it3m2hLGf9SJGfA8VLxRWM2tNVqCbcs/hLiuWU20DHup7fG1gWFY+mPC2NuJSBqehIUuvtNue0Eu5y1pET3syTN5qcwHGwYf8q2oHZWElKgKeqL4vdZIu9qfc3pFXpwjWqn24MI4NJaXzC0HtJMbMhSTGMW4IL8jKa3n17J8NqyudR+PqQ6uh5nyyl1VxdylnhQ8RhACm62VcB9S8wuDAlXbGn8fWwC72x1B0O9GPy/Hw61mKWvtGHeyhqSsyZRnSPNwO/tHgrE5peJCZ1aS84o8oWBLih1sRBp/YHWKcFVs/UMj0DPHJ7c4ZVRWUZQwyFl3CpnJJJOHdkatkxKSZhAWi/0Qix8QmlXa/YlSKDwy5Q1ZpGwOE7kwAp6Sso1fhz3ZD8meXgGLfuZSlK7fVGsZi/KBLWhwx79s4XkCtJfCVC/wX7TrwHtUvhVcWvx1x2ovCCZG6YiPad9H7RfH5U8KJuZMDI6UzvjHcP7tKW8e89gfDjQrUwTvTNXXe+g5aLzOnsxMR5fl0FqBGa2Dl8W0oCrqmUrpJu4dAVDLGsxT/j0r/rieTjPso1l62kRCHox32P6yVuy1qHqqcF/hyFbeYejGD/CGs3nisDGTRawgwrckyDdOmbw36wrmMoXR/mKkuHRkVbm4Bh7KvbsNml8paOuuEiivhf9xPNV8ClE3XiQa4e7pFhy1s2OeNdCK3sHozndKXWZOpSK1zgO56BL42pQH/hVDuunymzCWflD0f0ni5mvyzhKHjNNEKr0T+7ZImvBXXt+YKfAnG3v98SmRNWKQbiB9g9G3/y9GWdHlcr7GjmAXniMbKV9XgoYY3SVz3RS6SVXb86UyWWWyHxgfShrMODCXkwhMrFhFT/drhDN295AcIFuwZwySYRY1ZnO5DkRTomVrWSuA3F+/U55+SV81eLXJPAK8znWDzPUqJPkBUkkgvZYSouk6LELQXNqNGt7Qb3faif8YtuDCjbH/DdrBLyo6usX1waExOhIAbsk5OTtJC21RwYIarMeD3bxzoPXuYo9iwgVTpYpmsfMLaI5h41d3XZ6521V/uHyfxd+Ib6pVIII+LYpdLuBPPeP3m8ZDQOfl4ZF3/AxAYly/e3agOBppanj9o3UDuk7oPQc2v+HfjmGuMSxHOvXXnZlB+yVsn8tUEPvoLPDxhf1utIJHeCAKdeChv6F9kW1NmkWM1UuR5eIpCvfZpLAMMBB39yOzQeITIAAD/aAkkS43+3jv8p47xdSPDv3daaDY41482zfFQ2y4Eo7qxBNMThDESjv3BI8eJCqwWduMJbwwAvX8V8Ih1hupGGNTUglQxRtYvttECNAzFUaZ96qN6YXA9ahAPYQGxkFy51Id1pRtw3TVcTMUoC+dYkAgfEXxEdZdR8vgJbHgwUbc11LYYAAHMDknHLTzv/z9aFnCVozSW4eJYRX69plcviJpOfvyJ0bCf+5NSsTSpwYoRpzwetI/mdG55rcuPKzv30v+cCAXo125opRg9/56yiPS9BEmgKM1YWwYNGNRhIrF8SfRwg7Oq/1HhWVd5gAAAAAAAAAAAA==",
+  closetModular:"data:image/webp;base64,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",
+  bibliotecaModular:"data:image/webp;base64,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",
+  aereoAbatible:"data:image/webp;base64,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",
+  tvAbatible:"data:image/webp;base64,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",
   closetCorredizo:"data:image/webp;base64,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",
   armario2p:"data:image/webp;base64,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",
   armarioGav:"data:image/webp;base64,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",
@@ -8349,7 +8635,7 @@ function buildTemplate(tpl, v, replace){
   if(tpl.custom){
     res = tpl.build(null, v.color2, vals);
   } else {
-    const f = T_frame({ ox, W:v.W, H:v.H, D:v.D, t:v.t, color:v.color, zocalo:tpl.def.zocalo || 0 });
+    const f = T_frame({ ox, W:v.W, H:v.H, D:v.D, t:v.t, color:v.color, zocalo:tpl.def.zocalo || 0, lat: v.lat || 'fuera' });
     res = tpl.build(f, v.color2, vals);
     if(!(res && res.noFondo)) T_fondo(f);
   }
@@ -8385,8 +8671,13 @@ function hardwareItems(){
   Object.keys(HINGE_TYPES).forEach(k=>{
     const ds = doors.filter(d=>hingeTypeOf(d)===k);
     const q = ds.reduce((s,d)=> s + hingeQtyOf(d)*(d.qty||1), 0);
-    if(q) out.push({ key:'bisagra-'+k, name:HINGE_TYPES[k].name, qty:q, unit:'und', loc: ds.map(d=>`${d.name} (${hingeQtyOf(d)}, ${d.hinge==='left'?'izq':'der'})`).join(' · ') });
+    if(q) out.push({ key:'bisagra-'+k, name:HINGE_TYPES[k].name, qty:q, unit:'und', loc: ds.map(d=>`${d.name} (${hingeQtyOf(d)}, ${d.flap ? (d.flap==='arriba' ? 'borde de arriba' : 'borde de abajo') : (d.hinge==='left'?'izq':'der')})`).join(' · ') });
   });
+  const fUp = doors.filter(d=>d.flap==='arriba'), fDn = doors.filter(d=>d.flap==='abajo');
+  if(fUp.length) out.push({ key:'piston', name:'Pistón a gas para puerta abatible', qty: fUp.reduce((s,d)=>s+2*(d.qty||1),0), unit:'und',
+    loc: fUp.map(d=>`${d.name}: 2 · puerta ≈ ${pieceKg(Object.assign({}, d, { qty:1 }))} kg`).join(' · ') });
+  if(fDn.length) out.push({ key:'compas', name:'Compás de soporte para abatible hacia abajo', qty: fDn.reduce((s,d)=>s+2*(d.qty||1),0), unit:'und',
+    loc: fDn.map(d=>`${d.name}: 2 · puerta ≈ ${pieceKg(Object.assign({}, d, { qty:1 }))} kg`).join(' · ') });
   const sl = pieces.filter(p=>p.isDoor && p.sliding);
   if(sl.length){
     add('kit-corrediza', 'Kit corredizo (ruedas y guías, por puerta)', sl.reduce((s,p)=>s+(p.qty||1),0));
@@ -8959,6 +9250,7 @@ function showTemplateForm(tpl){
   const box = document.getElementById('tplForm');
   const d = tpl.def;
   let color = d.color, color2 = d.color2;
+  let lat = d.lat || 'dentro', mods = d.mods || 0;
   const dots = (sel, attr)=> colorPaletteHtml(sel, attr);
   box.innerHTML = `
     <div class="fitbox" style="margin-top:12px;">
@@ -8970,6 +9262,10 @@ function showTemplateForm(tpl){
         <div class="field"><label>Fondo (cm)</label><input type="number" step="0.5" id="tp-D" value="${d.D}"></div>
         <div class="field"><label>Espesor (cm)</label><input type="number" step="0.1" id="tp-t" value="${d.t}"></div>
       </div>
+      ${mods ? `<div class="field"><label>Módulos</label><div class="seg">${[2,3,4].map(k=>`<button type="button" data-tmods="${k}" class="${mods===k?'on':''}">${k} módulos</button>`).join('')}</div></div>` : ''}
+      ${tpl.custom && !tpl.modular ? '' : `<div class="field"><label>Costados</label><div class="seg">
+        <button type="button" data-tlat="dentro" class="${lat==='dentro'?'on':''}" title="Techo y piso de punta a punta, costados encajados entre ellos: aguanta más peso">Por dentro (más peso)</button>
+        <button type="button" data-tlat="fuera" class="${lat==='fuera'?'on':''}" title="Costados de arriba a abajo, techo y piso entre ellos">Por fuera</button></div></div>`}
       <div class="field"><label>Cuerpo: <b id="tp-cn" style="color:var(--text);">${finishName(color)}</b></label><div class="colors">${dots(color,'data-tc')}</div></div>
       <div class="field"><label>Frentes (puertas y gavetas): <b id="tp-cn2" style="color:var(--text);">${finishName(color2)}</b></label><div class="colors">${dots(color2,'data-tc2')}</div></div>
       <label class="canto-chip ${pieces.length?'on':''}" style="display:${_tplFromHome?'none':'flex'};margin-top:6px;"><input type="checkbox" id="tp-replace" ${pieces.length||_tplFromHome?'checked':''}> Empezar de cero (quita lo que hay ahora — se puede deshacer con Ctrl+Z)</label>
@@ -8980,10 +9276,12 @@ function showTemplateForm(tpl){
   box.querySelectorAll('[data-tc2]').forEach(dv=>dv.addEventListener('click', ()=>{ color2 = dv.dataset.tc2; box.querySelectorAll('[data-tc2]').forEach(x=>x.classList.toggle('sel', x===dv)); document.getElementById('tp-cn2').textContent = finishName(color2); }));
   const rep = document.getElementById('tp-replace');
   rep.addEventListener('change', ()=> rep.parentElement.classList.toggle('on', rep.checked));
+  box.querySelectorAll('[data-tlat]').forEach(b=>b.addEventListener('click', ()=>{ lat = b.dataset.tlat; box.querySelectorAll('[data-tlat]').forEach(x=>x.classList.toggle('on', x===b)); }));
+  box.querySelectorAll('[data-tmods]').forEach(b=>b.addEventListener('click', ()=>{ mods = +b.dataset.tmods; box.querySelectorAll('[data-tmods]').forEach(x=>x.classList.toggle('on', x===b)); }));
   box.scrollIntoView({ block:'nearest' });
   document.getElementById('tp-create').addEventListener('click', ()=>{
     const num = id => parseFloat(document.getElementById(id).value);
-    const v = { W:num('tp-W'), H:num('tp-H'), D:num('tp-D'), t:num('tp-t'), color, color2 };
+    const v = { W:num('tp-W'), H:num('tp-H'), D:num('tp-D'), t:num('tp-t'), color, color2, lat, mods };
     const msg = document.getElementById('tp-msg');
     if([v.W,v.H,v.D,v.t].some(x=>isNaN(x) || x<=0)){ msg.innerHTML = '<span style="color:var(--danger);font-weight:600;">Revisa las medidas: todas deben ser mayores que 0.</span>'; return; }
     if(v.t*4 >= Math.min(v.W, v.H) || v.D < 15){ msg.innerHTML = '<span style="color:var(--danger);font-weight:600;">Las medidas son muy pequeñas para este mueble.</span>'; return; }
