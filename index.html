@@ -681,6 +681,25 @@
     .brand-txt, .proj-pill{display:none;}
     #sidebar{width:200px;}
   }
+
+  .side-close{display:none;position:absolute;top:8px;right:8px;z-index:2;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:#fff;align-items:center;justify-content:center;font-size:14px;cursor:pointer;color:var(--text);}
+  /* ===== celular y tablet: los paneles flotan encima del 3D, el 3D usa toda la pantalla ===== */
+  @media (max-width:900px){
+    main{position:relative;}
+    #sidebar{position:absolute;left:66px;top:0;bottom:0;z-index:40;width:min(300px, calc(100vw - 80px)) !important;
+      box-shadow:8px 0 28px rgba(30,25,20,.22);transition:transform .2s ease;}
+    #app.side-hidden #sidebar{display:flex;transform:translateX(calc(-100% - 80px));pointer-events:none;}
+    #rightPanel{position:absolute;left:0;right:0;bottom:0;top:auto;width:auto !important;height:56%;z-index:35;
+      border-left:none;border-top:1px solid var(--line);border-radius:16px 16px 0 0;box-shadow:0 -10px 30px rgba(30,25,20,.2);}
+    #sidebar .side-close{display:flex;}
+    #rightPanel::before{content:'';display:block;width:42px;height:4px;border-radius:4px;background:#d9d2c8;margin:7px auto 0;flex-shrink:0;}
+  }
+  @media (max-width:560px){
+    #rail{width:52px;} #sidebar{left:52px;width:calc(100vw - 112px) !important;}
+    .rail-btn span{font-size:9px;}
+    #rightPanel{height:60%;}
+    #camControls, #camDock .viewpair{display:none !important;}   /* en el celular la cámara se mueve con el dedo */
+  }
   @media (max-width:900px){
     #sidebar{width:210px;}
     #rightPanel{width:250px;}
@@ -733,7 +752,7 @@
           <button id="btnSave"><b>Guardar proyecto</b><small>Descarga el archivo a tu equipo</small></button>
           <button id="btnSaveMine"><b>⭐ Guardar en Mis muebles</b><small>Para usarlo otra vez en otra medida o color</small></button>
           <button id="btnRailCat"><b>⚙ Catálogo de rieles</b><small>Referencias, precios y medidas de Madecentro</small></button>
-          <div style="padding:8px 12px 4px;font-size:11px;color:var(--text-dim);border-top:1px solid var(--line);margin-top:4px;">Versión 65 · 25 nov 2026 · abatibles, costados por dentro y modulares</div>
+          <div style="padding:8px 12px 4px;font-size:11px;color:var(--text-dim);border-top:1px solid var(--line);margin-top:4px;">Versión 66 · 27 nov 2026 · manija desde el piso y arreglo para celular</div>
           <div class="menu-sep"></div>
           <button id="btnExportCsv"><b>Exportar CSV</b><small>Lista de corte para Excel</small></button>
           <button id="btnPrintPlan"><b>Imprimir plan de corte / PDF</b><small>Lista + láminas acomodadas</small></button>
@@ -7202,11 +7221,22 @@ function buildHandleMeshes(face){
     add(new THREE.BoxGeometry(L, 0.4, 2.4), 0, yOff + 0.2, -0.9);
     add(new THREE.BoxGeometry(L, 2.2, 0.3), 0, yOff - 0.7, 0.6);
   }
-  g.position.set(pos.x + size.sx/2, pos.y + size.sy/2, pos.z + size.sz);
+  g.position.set(pos.x + size.sx/2, pos.y + (door ? doorHandleCenter(face, h) : size.sy/2), pos.z + size.sz);
   if(door) g.rotation.z = face.hinge==='left' ? -Math.PI/2 : Math.PI/2; // el "borde" local apunta al lado libre
   return [g];
 }
 
+// centro de la manija de una puerta, medido desde el borde de abajo de la puerta.
+// Si la manija tiene "piso" (cm desde el piso), se usa esa altura para que varias
+// puertas queden parejas; si no, va a la mitad de la puerta.
+function doorHandleCenter(face, h){
+  h = h || face.handle || {};
+  const half = round2(face.h/2);
+  if(h.piso == null || h.piso === '' || isNaN(Number(h.piso))) return half;
+  const m = h.type==='pomo' ? 2.5 : round2((h.cc||128)/20 + (h.type==='embutir' ? 3 : 1.5));
+  const c = round2(Number(h.piso) - piecePosition(face).y);
+  return round2(Math.min(Math.max(c, m), round2(face.h - m)));
+}
 // rieles: parte fija (en el mueble) y parte móvil (en la caja, sale con la gaveta)
 function buildRailMeshes(d){
   if(!d.latL || !d.latR) return { fixed:[], moving:[] };
@@ -7243,8 +7273,15 @@ function handleHoles(face){
   const h = face.handle;
   if(!h || h.type==='ninguna' || h.type==='perfil') return null;
   const cc = h.cc/10;
+  if(face.isDoor && face.flap){
+    // abatible: la manija va acostada, a 5 cm del borde que sube o baja
+    const alto = face.flap === 'arriba' ? 5 : round2(face.h - 5);
+    if(h.type==='pomo') return { alto, xs:[round2(face.w/2)] };
+    const ext = h.type==='embutir' ? 1.5 : 0;
+    return { alto, xs:[round2(face.w/2 - cc/2 - ext), round2(face.w/2 + cc/2 + ext)], fresado: h.type==='embutir' };
+  }
   if(face.isDoor){
-    const c = round2(face.h/2);
+    const c = doorHandleCenter(face, h);
     if(h.type==='pomo') return { door:true, borde:5, ys:[c] };
     const ext = h.type==='embutir' ? 1.5 : 0;
     return { door:true, borde:5, ys:[round2(c - cc/2 - ext), round2(c + cc/2 + ext)], fresado: h.type==='embutir' };
@@ -7282,6 +7319,16 @@ function handleEditorHtml(face){
           <button type="button" data-hpos="arriba" class="${h.pos==='arriba'?'on':''}">Arriba</button>
         </div>
       </div>` : ''}
+    ${(face.isDoor && !face.flap && h.type!=='ninguna' && h.type!=='perfil') ? `
+      <div class="field">
+        <label>Altura de la manija</label>
+        <div class="seg" style="margin-bottom:4px;">
+          <button type="button" id="h-hcentro" class="${(h.piso==null||h.piso==='')?'on':''}">Mitad de la puerta</button>
+          <button type="button" id="h-hpiso" class="${(h.piso!=null&&h.piso!=='')?'on':''}">Desde el piso</button>
+        </div>
+        ${(h.piso!=null&&h.piso!=='') ? `<div style="display:flex;align-items:center;gap:6px;"><input type="number" id="h-piso" step="0.5" value="${h.piso}" style="width:90px;"> <span class="hint" style="margin:0;">cm del piso al centro de la manija</span></div>
+        <div class="hint">Pon la misma altura en todas las puertas (o usa el botón de abajo) y las manijas quedan parejas.</div>` : ''}
+      </div>` : ''}
     ${h.type!=='ninguna' ? `
       <div class="field">
         <label>Acabado</label>
@@ -7309,6 +7356,9 @@ function bindHandleEditor(box, face){
   box.querySelectorAll('[data-htype]').forEach(b=>b.addEventListener('click', ()=>setH({ type:b.dataset.htype })));
   box.querySelectorAll('[data-hpos]').forEach(b=>b.addEventListener('click', ()=>setH({ pos:b.dataset.hpos })));
   box.querySelectorAll('[data-hcolor]').forEach(b=>b.addEventListener('click', ()=>setH({ color:b.dataset.hcolor })));
+  const bc = box.querySelector('#h-hcentro'); if(bc) bc.addEventListener('click', ()=>setH({ piso:null }));
+  const bp = box.querySelector('#h-hpiso'); if(bp) bp.addEventListener('click', ()=>{ if(cur().piso==null) setH({ piso: round2(piecePosition(face).y + face.h/2) }); });
+  const ip = box.querySelector('#h-piso'); if(ip) ip.addEventListener('change', e=>{ const v = parseFloat(e.target.value); if(!isNaN(v)) setH({ piso: round2(v) }); });
   const ccSel = box.querySelector('#h-cc');
   if(ccSel) ccSel.addEventListener('change', e=>setH({ cc:Number(e.target.value) }));
   box.querySelector('#h-all').addEventListener('click', ()=>{
@@ -10628,6 +10678,22 @@ function setSideTab(tab, toggle){
 }
 document.querySelectorAll('.rail-btn[data-side]').forEach(b=>b.addEventListener('click', ()=> setSideTab(b.dataset.side, true)));
 document.getElementById('railCut').addEventListener('click', ()=> document.getElementById('btnCutlist').click());
+/* ---------- celular / tablet: el panel de la izquierda empieza cerrado y se cierra al tocar el 3D ---------- */
+(function(){
+  const narrow = ()=> window.matchMedia('(max-width:900px)').matches;
+  const app = document.getElementById('app');
+  if(narrow()) app.classList.add('side-hidden');
+  const sync = ()=> document.querySelectorAll('.rail-btn[data-side]').forEach(b=>b.classList.toggle('on', b.dataset.side===sideTab && !app.classList.contains('side-hidden')));
+  sync();
+  const wrap = document.getElementById('canvas3d-wrap');
+  if(wrap) wrap.addEventListener('pointerdown', ()=>{ if(narrow() && !app.classList.contains('side-hidden')){ app.classList.add('side-hidden'); sync(); } }, true);
+  // al escoger algo del panel que abre una ventana (plantillas, puerta, gavetas…), se cierra para dejar ver
+  const sb = document.getElementById('sidebar');
+  if(sb){ sb.style.position = sb.style.position || ''; const x = document.createElement('button'); x.type = 'button'; x.className = 'side-close'; x.title = 'Cerrar'; x.textContent = '✕';
+    x.addEventListener('click', ()=>{ app.classList.add('side-hidden'); sync(); }); sb.appendChild(x); }
+  if(sb) sb.addEventListener('click', e=>{ if(narrow() && e.target.closest('.big-btn, .tool-btn, .card-btn, [data-tpl-open], #tplBtn, #doorBtn, #drawerBtn')){ setTimeout(()=>{ app.classList.add('side-hidden'); sync(); }, 0); } });
+})();
+
 document.getElementById('seeAllPieces').addEventListener('click', e=>{ e.preventDefault(); setSideTab('piezas'); });
 document.getElementById('multiSelectBtn').addEventListener('click', ()=>{ if(multiSelectMode) setSideTab('piezas'); });
 // menú Archivo
